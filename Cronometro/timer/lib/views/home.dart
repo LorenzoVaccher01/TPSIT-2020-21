@@ -22,11 +22,11 @@ class _HomeScreenState extends State<HomeScreen> {
       _clock.stop();
     } else {
       _clock.start().listen((data) => {
-            //_clock.addSecond(),
+            _clock.addSecond(),
             setState(() {
-              _seconds = 0;
-              _minutes = 0;
-              _hours = 0;
+              _seconds = _clock.seconds;
+              _minutes = _clock.minutes;
+              _hours = _clock.hours;
             })
       });
     }

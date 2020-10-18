@@ -1,23 +1,24 @@
-class Clock {
-  int _minutes;
-  int _seconds;
-  int _hours;
+/**
+ * 
+ */
+class Clock extends _Ticker {
+  int _minutes = 0;
+  int _seconds = 0;
+  int _hours = 0;
   bool _status = false; //false == stopped, true = running
 
-  Duration duration;
+  Duration _duration;
 
-  Stream<int> _stream;
-
-  Clock(this.duration);
+  Clock(this._duration) : super(_duration);
 
   Stream<int> start() {
     _status = true;
-    _stream = timedCounter(duration);
-    return _stream;
+    return super.start();
   }
 
   void stop() {
     _status = false;
+    //TODO: stoppare lo stream
   }
 
   void reset() {
@@ -39,34 +40,30 @@ class Clock {
     }
   }
 
-  Stream<int> timedCounter(Duration interval) async* {
-    int i = 0;
-    while (true) {
-      print(i);
-      await Future.delayed(interval);
-      yield i++;
-    }
-  }
-
-  int get minutes => _minutes;
-  int get seconds => _seconds;
-  int get hours => _hours;
-  bool get status => _status;
+  int get minutes {return _minutes; }
+  int get seconds {return _seconds; }
+  int get hours {return _hours; }
+  bool get status {return _status; }
 }
 
+/**
+ * Questa è la classe che gestisce i tick per la classe Clock.
+ */
 class _Ticker {
   Duration duration;
-  Stream<int> _stream;
+  static Stream<int> _stream;
 
-  Ticker(this.duration);
+  _Ticker(this.duration);
 
   Stream<int> start() {
-    _stream = timedCounter(duration);
+    //if (_stream == null) {
+      _stream = timedCounter(duration);
+    //}
     return _stream;
   }
 
   void stop() {
-    _stream.
+    
   }
 
   Stream<int> timedCounter(Duration interval) async* {
