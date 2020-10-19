@@ -9,15 +9,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Cronometro - Timer',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.red,
         visualDensity: VisualDensity.adaptivePlatformDensity
       ),
-      /*initialRoute: '/',
-      routes: {
-        '/': (context) => HomeScreen(),
-        '/timer': (context) => TimerScreen()
-      }*/
       home: HomeScreen(title: 'Home page'),
     );
   }

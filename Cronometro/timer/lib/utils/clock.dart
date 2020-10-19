@@ -1,3 +1,5 @@
+import 'dart:async';
+
 /**
  * 
  */
@@ -16,9 +18,14 @@ class Clock extends _Ticker {
     return super.start();
   }
 
-  void stop() {
+  void pause(StreamSubscription streamSubscription) {
     _status = false;
-    //TODO: stoppare lo stream
+    streamSubscription.pause();
+  }
+  
+  void stop(StreamSubscription streamSubscription) {
+    _status = false;
+    streamSubscription.cancel();
   }
 
   void reset() {
@@ -62,14 +69,9 @@ class _Ticker {
     return _stream;
   }
 
-  void stop() {
-    
-  }
-
   Stream<int> timedCounter(Duration interval) async* {
     int i = 0;
     while (true) {
-      print(i);
       await Future.delayed(interval);
       yield i++;
     }
