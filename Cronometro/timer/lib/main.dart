@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material.dart';
 import 'views/home.dart';
 
 void main() => runApp(MyApp());
@@ -10,9 +10,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Cronometro - Timer',
       theme: ThemeData(
-        primarySwatch: Colors.red,
-        visualDensity: VisualDensity.adaptivePlatformDensity
-      ),
+          primarySwatch: Colors.red,
+          visualDensity: VisualDensity.adaptivePlatformDensity),
       /*initialRoute: '/',
       routes: {
         '/': (context) => HomeScreen(),
