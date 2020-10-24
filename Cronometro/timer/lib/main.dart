@@ -1,5 +1,6 @@
-import 'package:material.dart';
+import 'package:flutter/material.dart';
 import 'views/home.dart';
+import './utils/laps.dart';
 
 void main() => runApp(MyApp());
 
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.red,
         visualDensity: VisualDensity.adaptivePlatformDensity
       ),
-      home: HomeScreen(title: 'Home page'),
+      home: HomeScreen(title: 'Timer'),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:timer/utils/clock.dart';
+import '../utils/laps.dart';
 
 class HomeScreen extends StatefulWidget {
   final String title;
@@ -14,32 +15,28 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Clock _clock = new Clock(Duration(seconds: 1));
+  // ignore: cancel_subscriptions
   StreamSubscription _streamSubscription;
-  bool _clockStatus;
-
-  int _seconds = 0;
-  int _minutes = 0;
-  int _hours = 0;
-
+  
   void _startCounter() {
     if (_clock.status) {
       _clock.stop(_streamSubscription);
-      setState(() {
-        _clockStatus = _clock.status;
-      });
+      setState(() {});
     } else {
-      setState(() {
-        _clockStatus = _clock.status;
-      });
-      _streamSubscription = _clock.start().listen((data) => {
-            _clock.addSecond(),
-            setState(() {
-              _seconds = _clock.seconds;
-              _minutes = _clock.minutes;
-              _hours = _clock.hours;
-            })
-          });
+      _streamSubscription = _clock
+          .start()
+          .listen((data) => {_clock.addSecond(), setState(() {})});
     }
+  }
+
+  void _resetClock() {
+    _clock.reset();
+    setState(() {});
+  }
+
+  void _addLap() {
+    _clock.addLap(_clock.hours, _clock.minutes, _clock.seconds);
+    setState(() {});
   }
 
   @override
@@ -52,27 +49,105 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              /*Text(
-                'Clicca il bottone sottostante \nper avviare/stoppare il timer.',
-                style: TextStyle(fontSize: 22, color: Color(0xFF4e5257)),
-              ),*/
-              new Container(
-                margin: EdgeInsets.only(top: 20),
+              Container(
+                margin: EdgeInsets.only(top: 50),
                 child: Text(
-                    '${_hours.toString().padLeft(2, '0')}:${_minutes.toString().padLeft(2, '0')}:${_seconds.toString().padLeft(2, '0')}',
+                    '${_clock.hours.toString().padLeft(2, '0')}:${_clock.minutes.toString().padLeft(2, '0')}:${_clock.seconds.toString().padLeft(2, '0')}',
                     style: TextStyle(fontSize: 40, color: Colors.blueGrey)),
               ),
-              new Container(
-                  margin: EdgeInsets.only(top: 20),
-                  child: new RaisedButton(
-                    color: _clock.status ? Colors.red : Colors.green,
-                    child: Container(
-                        padding: EdgeInsets.all(5),
-                        child: Icon(_clock.status ? Icons.stop : Icons.play_arrow)),/*Text(_clock.status ? "Stop" : "Start",
-                            style:
-                                TextStyle(fontSize: 20, color: Colors.white))),*/
-                    onPressed: _startCounter,
-                  ))
+              Visibility(
+                child: Container(
+                  height: 500,
+                  margin: EdgeInsets.only(top: 10),
+                  child: ListView.separated(
+                    padding: EdgeInsets.all(10),
+                    itemCount: _clock.laps.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Container(
+                          height: 70,
+                          color: Colors.grey[200],
+                          child: Container(
+                            margin: EdgeInsets.only(left: 25, right: 25),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Giro ' + (index + 1).toString(),
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold)),
+                                    Container(
+                                      margin: EdgeInsets.only(top: 5),
+                                      child: Text(
+                                        'Trascorsi ${_clock.laps[index].hoursPassed.toString().padLeft(2, '0')}:${_clock.laps[index].minutesPassed.toString().padLeft(2, '0')}:${_clock.laps[index].secondsPassed.toString().padLeft(2, '0')}',
+                                        style: TextStyle(fontSize: 15),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                    '${_clock.laps[index].hours.toString().padLeft(2, '0')}:${_clock.laps[index].minutes.toString().padLeft(2, '0')}:${_clock.laps[index].seconds.toString().padLeft(2, '0')}',
+                                    style: TextStyle(fontSize: 26)),
+                              ],
+                            ),
+                          ));
+                    },
+                    separatorBuilder: (BuildContext context, int index) =>
+                        const Divider(),
+                  ),
+                ),
+                visible: true,
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 0),
+                child: ButtonBar(
+                  alignment: MainAxisAlignment.center,
+                  children: [
+                    Visibility(
+                      child: RaisedButton(
+                        color: Colors.orange[300],
+                        child: Container(
+                          padding: EdgeInsets.all(5),
+                          child: Icon(Icons.refresh_outlined),
+                        ),
+                        onPressed: _addLap,
+                      ),
+                      visible: ((_clock.seconds == 0 &&
+                              _clock.minutes == 0 &&
+                              _clock.hours == 0 &&
+                              !_clock.status)
+                          ? false
+                          : true),
+                    ),
+                    RaisedButton(
+                      color: _clock.status ? Colors.red : Colors.green,
+                      child: Container(
+                          padding: EdgeInsets.all(5),
+                          child: Icon(
+                              _clock.status ? Icons.stop : Icons.play_arrow)),
+                      onPressed: _startCounter,
+                    ),
+                    Visibility(
+                      child: new RaisedButton(
+                        color: Colors.grey[300],
+                        child: Container(
+                            padding: EdgeInsets.all(5),
+                            child: Icon(Icons.repeat)),
+                        onPressed: _resetClock,
+                      ),
+                      visible: ((_clock.seconds == 0 &&
+                              _clock.minutes == 0 &&
+                              _clock.hours == 0 &&
+                              !(_clock.status))
+                          ? false
+                          : true),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ));
