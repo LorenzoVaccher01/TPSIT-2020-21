@@ -10,13 +10,14 @@ class Clock extends Ticker {
   int _minutes = 0;
   int _seconds = 0;
   int _hours = 0;
-  Duration _duration;
+  final Duration _duration;
+  final bool _revers;
 
   bool _status = false; //false == stopped, true = running
 
   Laps _laps = new Laps<Lap>();
 
-  Clock(this._duration) : super(_duration);
+  Clock(this._duration, this._revers, {int hours, int minutes, int seconds}) : super(_duration);
 
   Stream<int> start() {
     _status = true;
