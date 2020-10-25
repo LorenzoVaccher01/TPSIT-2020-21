@@ -39,6 +39,13 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _resetGame() {
+    setState(() {
+      _score = 0;
+      _visibilityStatus = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,6 +56,17 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Visibility(
+                child: Container(
+                  alignment: Alignment(0.95, -1),
+                  child: RaisedButton(
+                    color: Colors.red,
+                    child: Icon(Icons.fullscreen_exit),
+                    onPressed: _resetGame,
+                  ),
+                ),
+                visible: !_visibilityStatus,
+              ),
               Visibility(
                 child: Container(
                   child: Text('Clicca il tasto Start per iniziare a giocare!',

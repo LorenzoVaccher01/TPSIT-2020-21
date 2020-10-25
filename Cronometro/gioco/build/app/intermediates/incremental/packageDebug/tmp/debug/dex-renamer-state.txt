@@ -1,4 +1,4 @@
-#Mon Oct 19 11:13:19 CEST 2020
+#Tue Oct 20 09:28:49 CEST 2020
 base.0=D\:\\Repository\\TPSIT-2020-21\\Cronometro\\gioco\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\out\\classes.dex
 path.0=classes.dex
 renamed.0=classes.dex

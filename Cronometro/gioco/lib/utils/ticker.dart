@@ -1,9 +1,11 @@
+import 'dart:async';
+
 /**
  * Questa è la classe che gestisce i tick per la classe Clock.
  */
 class _Ticker {
   Duration duration;
-  static Stream<int> _stream;
+  Stream<int> _stream;
 
   _Ticker(this.duration);
 
@@ -14,7 +16,9 @@ class _Ticker {
     return _stream;
   }
 
-  void stop() {}
+  void stop(StreamSubscription streamSubscription) {
+    streamSubscription.cancel();
+  }
 
   Stream<int> timedCounter(Duration interval) async* {
     int i = 0;
