@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:timer/utils/clock.dart';
 
 class StopWatchView extends StatefulWidget {
-
   StopWatchView();
 
   @override
@@ -108,7 +107,7 @@ class _StopWatchState extends State<StopWatchView> {
                     color: Colors.orange[300],
                     child: Container(
                       padding: EdgeInsets.all(5),
-                      child: Icon(Icons.refresh_outlined),
+                      child: Icon(Icons.flag),
                     ),
                     onPressed: _addLap,
                   ),

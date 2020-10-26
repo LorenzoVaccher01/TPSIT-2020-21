@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:html';
 
 import 'package:flutter/material.dart';
 import 'package:timer/utils/clock.dart';
@@ -12,11 +11,16 @@ class TimerView extends StatefulWidget {
 }
 
 class _TimerViewState extends State<TimerView> {
+  int _hours = 0;
+  int _minutes = 0;
+  int _seconds = 0;
+
   Clock _clock = new Clock(Duration(seconds: 1), true);
   // ignore: cancel_subscriptions
   StreamSubscription _streamSubscription;
 
   void _startCounter() {
+    _clock = new Clock(Duration(seconds: 1), true);
     if (_clock.status) {
       _clock.stop(_streamSubscription);
       setState(() {});
@@ -39,17 +43,153 @@ class _TimerViewState extends State<TimerView> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Row (
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Column(
                 children: [
-                  
+                  Container(
+                    margin: EdgeInsets.only(bottom: 20),
+                    child: RaisedButton(
+                      color: Colors.grey[100],
+                      child: Icon(
+                        Icons.add,
+                        size: 35,
+                        color: Colors.green[700],
+                      ),
+                      onPressed: () => {
+                        if (_hours < 99)
+                          {
+                            _hours++,
+                            setState(() {}),
+                          }
+                      },
+                    ),
+                  ),
+                  Text(
+                    '${_hours.toString().padLeft(2, '0')}',
+                    style: TextStyle(fontSize: 40, color: Colors.blueGrey),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 20),
+                    child: RaisedButton(
+                      color: Colors.grey[100],
+                      child: Icon(
+                        Icons.remove,
+                        size: 35,
+                        color: Colors.red[700],
+                      ),
+                      onPressed: () => {
+                        if (_hours > 0)
+                          {
+                            _hours--,
+                            setState(() {}),
+                          }
+                      },
+                    ),
+                  )
                 ],
-              )
+              ),
+              Text(
+                ':',
+                style: TextStyle(fontSize: 40, color: Colors.blueGrey),
+              ),
+              Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(bottom: 20),
+                    child: RaisedButton(
+                      color: Colors.grey[100],
+                      child: Icon(
+                        Icons.add,
+                        size: 35,
+                        color: Colors.green[700],
+                      ),
+                      onPressed: () => {
+                        if (_minutes < 59)
+                          {
+                            _minutes++,
+                            setState(() {}),
+                          }
+                      },
+                    ),
+                  ),
+                  Text(
+                    '${_minutes.toString().padLeft(2, '0')}',
+                    style: TextStyle(fontSize: 40, color: Colors.blueGrey),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 20),
+                    child: RaisedButton(
+                      color: Colors.grey[100],
+                      child: Icon(
+                        Icons.remove,
+                        size: 35,
+                        color: Colors.red[700],
+                      ),
+                      onPressed: () => {
+                        if (_minutes > 0)
+                          {
+                            _minutes--,
+                            setState(() {}),
+                          }
+                      },
+                    ),
+                  )
+                ],
+              ),
+              Text(
+                ':',
+                style: TextStyle(fontSize: 40, color: Colors.blueGrey),
+              ),
+              Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(bottom: 20),
+                    child: RaisedButton(
+                      color: Colors.grey[100],
+                      child: Icon(
+                        Icons.add,
+                        size: 35,
+                        color: Colors.green[700],
+                      ),
+                      onPressed: () => {
+                        if (_seconds < 59)
+                          {
+                            _seconds++,
+                            setState(() {}),
+                          }
+                      },
+                    ),
+                  ),
+                  Text(
+                    '${_seconds.toString().padLeft(2, '0')}',
+                    style: TextStyle(fontSize: 40, color: Colors.blueGrey),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 20),
+                    child: RaisedButton(
+                      color: Colors.grey[100],
+                      child: Icon(
+                        Icons.remove,
+                        size: 35,
+                        color: Colors.red[700],
+                      ),
+                      onPressed: () => {
+                        if (_seconds > 0)
+                          {
+                            _seconds--,
+                            setState(() {}),
+                          }
+                      },
+                    ),
+                  )
+                ],
+              ),
             ],
-          )
+          ),
           Container(
-            margin: EdgeInsets.only(top: 100),
+            margin: EdgeInsets.only(top: 70),
             child: ButtonBar(
               alignment: MainAxisAlignment.center,
               children: [
