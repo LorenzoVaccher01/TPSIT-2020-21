@@ -11,23 +11,20 @@ class TimerView extends StatefulWidget {
 }
 
 class _TimerViewState extends State<TimerView> {
-  int _hours = 0;
-  int _minutes = 0;
-  int _seconds = 0;
-
   Clock _clock = new Clock(Duration(seconds: 1), true);
-  // ignore: cancel_subscriptions
   StreamSubscription _streamSubscription;
 
   void _startCounter() {
-    _clock = new Clock(Duration(seconds: 1), true);
     if (_clock.status) {
       _clock.stop(_streamSubscription);
       setState(() {});
     } else {
-      _streamSubscription = _clock
-          .start()
-          .listen((data) => {_clock.addSecond(), setState(() {})});
+      _streamSubscription = _clock.start().listen((data) => {
+            _clock.addSecond(),
+            if (_clock.hours == 0 && _clock.minutes == 0 && _clock.seconds == 0)
+              {_clock.stop(_streamSubscription)},
+            setState(() {})
+          });
     }
   }
 
@@ -50,42 +47,109 @@ class _TimerViewState extends State<TimerView> {
                 children: [
                   Container(
                     margin: EdgeInsets.only(bottom: 20),
-                    child: RaisedButton(
-                      color: Colors.grey[100],
-                      child: Icon(
-                        Icons.add,
-                        size: 35,
-                        color: Colors.green[700],
+                    child: Opacity(
+                      child: RaisedButton(
+                        color: Colors.grey[100],
+                        child: Icon(
+                          Icons.add,
+                          size: 35,
+                          color: Colors.green[700],
+                        ),
+                        onPressed: _clock.status
+                            ? null
+                            : () => {
+                                  if (_clock.hours < 99)
+                                    {
+                                      _clock.hours++,
+                                      setState(() {}),
+                                    }
+                                },
                       ),
-                      onPressed: () => {
-                        if (_hours < 99)
-                          {
-                            _hours++,
-                            setState(() {}),
-                          }
-                      },
+                      opacity: _clock.status ? 0 : 1,
                     ),
                   ),
                   Text(
-                    '${_hours.toString().padLeft(2, '0')}',
+                    '${_clock.hours.toString().padLeft(2, '0')}',
+                    style: TextStyle(fontSize: 40, color: Colors.blueGrey),
+                  ),
+                  Container(
+                      margin: EdgeInsets.only(top: 20),
+                      child: Opacity(
+                        child: RaisedButton(
+                          color: Colors.grey[100],
+                          child: Icon(
+                            Icons.remove,
+                            size: 35,
+                            color: Colors.red[700],
+                          ),
+                          onPressed: _clock.status
+                              ? null
+                              : () => {
+                                    if (_clock.hours > 0)
+                                      {
+                                        _clock.hours--,
+                                        setState(() {}),
+                                      }
+                                  },
+                        ),
+                        opacity: _clock.status ? 0 : 1,
+                      ))
+                ],
+              ),
+              Text(
+                ':',
+                style: TextStyle(fontSize: 40, color: Colors.blueGrey),
+              ),
+              Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(bottom: 20),
+                    child: Opacity(
+                      child: RaisedButton(
+                        color: Colors.grey[100],
+                        child: Icon(
+                          Icons.add,
+                          size: 35,
+                          color: Colors.green[700],
+                        ),
+                        onPressed: _clock.status
+                            ? null
+                            : () => {
+                                  if (_clock.minutes < 59)
+                                    {
+                                      _clock.minutes++,
+                                      setState(() {}),
+                                    }
+                                },
+                      ),
+                      opacity: _clock.status ? 0 : 1,
+                    ),
+                  ),
+                  Text(
+                    '${_clock.minutes.toString().padLeft(2, '0')}',
                     style: TextStyle(fontSize: 40, color: Colors.blueGrey),
                   ),
                   Container(
                     margin: EdgeInsets.only(top: 20),
-                    child: RaisedButton(
-                      color: Colors.grey[100],
-                      child: Icon(
-                        Icons.remove,
-                        size: 35,
-                        color: Colors.red[700],
+                    child: Opacity(
+                      child: RaisedButton(
+                        color: Colors.grey[100],
+                        child: Icon(
+                          Icons.remove,
+                          size: 35,
+                          color: Colors.red[700],
+                        ),
+                        onPressed: _clock.status
+                            ? null
+                            : () => {
+                                  if (_clock.minutes > 0)
+                                    {
+                                      _clock.minutes--,
+                                      setState(() {}),
+                                    }
+                                },
                       ),
-                      onPressed: () => {
-                        if (_hours > 0)
-                          {
-                            _hours--,
-                            setState(() {}),
-                          }
-                      },
+                      opacity: _clock.status ? 0 : 1,
                     ),
                   )
                 ],
@@ -98,90 +162,52 @@ class _TimerViewState extends State<TimerView> {
                 children: [
                   Container(
                     margin: EdgeInsets.only(bottom: 20),
-                    child: RaisedButton(
-                      color: Colors.grey[100],
-                      child: Icon(
-                        Icons.add,
-                        size: 35,
-                        color: Colors.green[700],
+                    child: Opacity(
+                      child: RaisedButton(
+                        color: Colors.grey[100],
+                        child: Icon(
+                          Icons.add,
+                          size: 35,
+                          color: Colors.green[700],
+                        ),
+                        onPressed: _clock.status
+                            ? null
+                            : () => {
+                                  if (_clock.seconds < 59)
+                                    {
+                                      _clock.seconds++,
+                                      setState(() {}),
+                                    }
+                                },
                       ),
-                      onPressed: () => {
-                        if (_minutes < 59)
-                          {
-                            _minutes++,
-                            setState(() {}),
-                          }
-                      },
+                      opacity: _clock.status ? 0 : 1,
                     ),
                   ),
                   Text(
-                    '${_minutes.toString().padLeft(2, '0')}',
+                    '${_clock.seconds.toString().padLeft(2, '0')}',
                     style: TextStyle(fontSize: 40, color: Colors.blueGrey),
                   ),
                   Container(
                     margin: EdgeInsets.only(top: 20),
-                    child: RaisedButton(
-                      color: Colors.grey[100],
-                      child: Icon(
-                        Icons.remove,
-                        size: 35,
-                        color: Colors.red[700],
+                    child: Opacity(
+                      child: RaisedButton(
+                        color: Colors.grey[100],
+                        child: Icon(
+                          Icons.remove,
+                          size: 35,
+                          color: Colors.red[700],
+                        ),
+                        onPressed: _clock.status
+                            ? null
+                            : () => {
+                                  if (_clock.seconds > 0)
+                                    {
+                                      _clock.seconds--,
+                                      setState(() {}),
+                                    }
+                                },
                       ),
-                      onPressed: () => {
-                        if (_minutes > 0)
-                          {
-                            _minutes--,
-                            setState(() {}),
-                          }
-                      },
-                    ),
-                  )
-                ],
-              ),
-              Text(
-                ':',
-                style: TextStyle(fontSize: 40, color: Colors.blueGrey),
-              ),
-              Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(bottom: 20),
-                    child: RaisedButton(
-                      color: Colors.grey[100],
-                      child: Icon(
-                        Icons.add,
-                        size: 35,
-                        color: Colors.green[700],
-                      ),
-                      onPressed: () => {
-                        if (_seconds < 59)
-                          {
-                            _seconds++,
-                            setState(() {}),
-                          }
-                      },
-                    ),
-                  ),
-                  Text(
-                    '${_seconds.toString().padLeft(2, '0')}',
-                    style: TextStyle(fontSize: 40, color: Colors.blueGrey),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    child: RaisedButton(
-                      color: Colors.grey[100],
-                      child: Icon(
-                        Icons.remove,
-                        size: 35,
-                        color: Colors.red[700],
-                      ),
-                      onPressed: () => {
-                        if (_seconds > 0)
-                          {
-                            _seconds--,
-                            setState(() {}),
-                          }
-                      },
+                      opacity: _clock.status ? 0 : 1,
                     ),
                   )
                 ],

@@ -15,7 +15,6 @@ class Ticker {
   Stream<int> timedCounter(Duration interval) async* {
     int i = 0;
     while (true) {
-      print(i);
       await Future.delayed(interval);
       yield i++;
     }

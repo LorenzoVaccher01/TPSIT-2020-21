@@ -9,7 +9,8 @@ class Lap {
   int _minutesPassed;
   int _hoursPassed;
 
-  Lap(this._hours, this._minutes, this._seconds, this._hoursPassed, this._minutesPassed, this._secondsPassed);
+  Lap(this._hours, this._minutes, this._seconds, this._hoursPassed,
+      this._minutesPassed, this._secondsPassed);
 
   int get minutes {
     return _minutes;
