@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
                 ),
               ],
               onTap: (index) {
-                StopWatchView();
+                //print(index);
               },
             ),
           ),

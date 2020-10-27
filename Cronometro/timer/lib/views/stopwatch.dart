@@ -11,7 +11,6 @@ class StopWatchView extends StatefulWidget {
 }
 
 class _StopWatchState extends State<StopWatchView> {
-  // ignore: cancel_subscriptions
   StreamSubscription _streamSubscription;
   Clock _clock = new Clock(Duration(seconds: 1), false);
 

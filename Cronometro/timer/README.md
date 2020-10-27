@@ -28,11 +28,11 @@ Questo esercizio verte sulla realizzazione di un Timer e un Cronometro mediante 
 ```
 
 Come illustrato nel diagramma qui sopra mostrato, il progetto, contenuto nalla cartella principale (`lib`), è stato suddiviso nei seguenti files:
-- `main` → Classe principale del progetto
-- `clock` → Classe che gestisce le ore, i secondi e i minuti. Tale classe estende la classe `Ticker`, **ereditando i metodi presenti in quest'ultima**. 
+- `main` → File contenente la Classe principale del progetto
+- `clock` → Classe che gestisce le ore, i secondi, i minuti e le funzioni per avviare, stoppare e resettare l'orario. Tale classe estende la classe `Ticker`. 
 - `laps` → File suddiviso nelle seguenti classi:
   - `Laps` → Classe che estende 
-  - `Lap` → 
+  - `Lap` → Struttura dati (Classe) per il salvataggio dei dati relativi ad un Lap (giro del cronometro).
 - `ticker` → 
-- `stopwatch` →
+- `stopwatch` → 
 - `timer` → 
