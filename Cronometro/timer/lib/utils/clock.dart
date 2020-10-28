@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import './ticker.dart';
-import './laps.dart';
+import 'ticker.dart';
+import 'laps.dart';
 
 /**
  * 

@@ -1,5 +1,5 @@
-/**
- * Questa è la classe che gestisce i tick per la classe Clock.
+ /**
+ * Classe per generare un segnale che funge da metronomo per la classe Clock.
  */
 class Ticker {
   Duration duration;
