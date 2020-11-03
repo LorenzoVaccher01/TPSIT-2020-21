@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import '../main.dart' as Main;
 import 'package:flutter/material.dart';
 import 'package:timer/utils/clock.dart';
 
@@ -12,7 +13,7 @@ class StopWatchView extends StatefulWidget {
 
 class _StopWatchState extends State<StopWatchView> {
   StreamSubscription _streamSubscription;
-  Clock _clock = new Clock(Duration(seconds: 1), false);
+  Clock _clock = Main.stopWatchClock;
 
   _StopWatchState();
 

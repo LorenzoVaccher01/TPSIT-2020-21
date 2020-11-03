@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import '../main.dart' as Main;
 import 'package:flutter/material.dart';
 import 'package:timer/utils/clock.dart';
 
@@ -11,7 +12,7 @@ class TimerView extends StatefulWidget {
 }
 
 class _TimerViewState extends State<TimerView> {
-  Clock _clock = new Clock(Duration(seconds: 1), true);
+  Clock _clock = Main.timerClock;
   StreamSubscription _streamSubscription;
 
   void _startCounter() {
