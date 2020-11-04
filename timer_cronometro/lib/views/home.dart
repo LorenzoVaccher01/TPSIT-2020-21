@@ -50,8 +50,7 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   void dispose() {
-    _clock.pause(_streamSubscription);
-    _clock = null;
+    if (_streamSubscription != null) _clock.pause(_streamSubscription);
     super.dispose();
   }
 

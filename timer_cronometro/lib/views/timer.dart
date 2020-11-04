@@ -35,8 +35,7 @@ class _TimerViewState extends State<TimerView> {
 
   @override
   void dispose() {
-    _clock.pause(_streamSubscription);
-    _clock = null;
+    if (_streamSubscription != null) _clock.pause(_streamSubscription);
     super.dispose();
   }
 

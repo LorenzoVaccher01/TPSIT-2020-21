@@ -1,5 +1,7 @@
 # Cronometro & Timer
-Questo esercizio verte sulla realizzazione di un Timer e un Cronometro mediante l'utilizzo di uno Stream per la gestione dei Tick (segnali di tempo prestabiliti) in Flutter (Dart). Come richiesto dalla consegna dell'esercizio sono state realizzare diverse features sia grafiche che tecniche, come per esempio i Lap, ovvero i tempi parziali (per il StopWatch) che l'utente può tracciare, oppure la selezione del tempo per il Timer mediante dei bottoni (`+` e `-`).
+Questo esercizio verte sulla realizzazione di un Timer e un Cronometro mediante l'utilizzo di uno **Stream** per la gestione dei Tick (segnali di tempo prestabiliti) in **Flutter** (Dart). Come richiesto dalla consegna dell'esercizio sono state realizzare **diverse features** sia grafiche che tecniche, come per esempio i Lap, ovvero i tempi parziali (per il StopWatch) che l'utente può tracciare, oppure la selezione del tempo per il Timer mediante dei bottoni (`+` e `-`).
+
+Dato l'utilizzo degli `Stream` del progetto è fondamentale dare una **definizione** a tale classe. Uno **stream**, che tradotto significa flusso, è un metodo per fornire sequenze di dati in modo asincrono tramite degli eventi invocati. Ogni evento è un evento di dati, chiamato anche elemento dello stream, o un errore, che è una notifica che qualcosa non è riuscito. Tale flusso può essere ascoltato mediante il metodo `listen()` che ritorna un oggetto `StreamSubscription` che è l'oggetto attivo che fornisce gli eventi e che può essere utilizzato per interrompere nuovamente l'ascolto o per sospendere temporaneamente gli eventi. Esistono due tipo di Stream: "Single-subscription" e "Broadcast". Nel primo caso, metodo utilizzato nel progetto in questione, uno Stream può fornire i dati a un solo ascoltatore, mentre, nel secondo caso, lo Stream fornisce dati a un numero qualsiasi di ascoltatori.
 
 ## Struttura del progetto
 ```
@@ -22,36 +24,39 @@ Questo esercizio verte sulla realizzazione di un Timer e un Cronometro mediante 
 |   \---views               //Visualizzazioni della pagina
 |           stopwatch.dart  //Visualizzazione della sezione stopwatch
 |           timer.dart      //Visualizzazione della sezione timer
+|           home.dart       //Visualizzazione della pagina principale
 |
 \---test                    //Cartella di test
         widget_test.dart
 ```
 
 Come illustrato nel diagramma ad albero qui sopra mostrato, il progetto, contenuto nalla cartella principale (`lib`), è stato suddiviso nei seguenti **files**:
-- `main` → File contenente la Classe principale del progetto.
+- `main` → File contenente la Classe principale del progetto. Tale classe viene eseguita per avviare l'applicazione.
 - `clock` → File contenente la Classe che gestisce le ore, i secondi, i minuti e le funzioni per avviare, stoppare e resettare l'orario. Tale classe estende la classe `Ticker`. 
 - `laps` → File suddiviso nelle seguenti classi:
-  - `Laps` → Struttura dati che estende `ListBase` per la realizzazione di una lista di `Lap` (`Laps<Lap>`).
-  - `Lap` → Struttura dati (Classe) per il salvataggio dei dati relativi ad un Lap (giro del cronometro).
+  - `Laps` → Struttura dati che estende `ListBase` per la realizzazione di una lista di `Lap` (`Laps<Lap>`). Questa classe 
+  - `Lap` → Struttura dati (Classe) per il salvataggio dei dati relativi a un Lap (giro del cronometro).
 - `ticker` → Classe che gestisce i Tick dato un tempo prestabilito (`Duration`), esempio: 1 secondo. Tale classe viene estesa da `Clock` in quanto utilizzata per gestire il tempo come se fosse un metronomo.
 - `stopwatch` → Widget della pagina dedicata allo `StopWatch`.
 - `timer` → Wiget della pagina dedicata al `Timer`.
+- `home` → Widget della pagina principale del progetto. Essa mostra l'ora e la data attuale, informazioni ottenute grazie alla Classe `Date` e aggiornate ogni secondo grazie alla Classe `Clock`.
 
 ## Struttura delle classi
 Qui di seguito è riportato il diagramma UML delle classi presenti nella cartella `utils`, classi utilizzate per la realizzazione di strutture dati personalizzate.
+<div align="center">
+  <img src="./classesUML.png" alt="UMl diagram of classes" width="650">
+</div>
 
-![UMl diagram of classes](./classesUML.png)
-
-**NB:** Per semplicità non sono stati riportati, nel diagramma UML mostrato, i motodi `getter` e `setter`
+**NB:** Per semplicità non sono stati riportati, nel diagramma UML mostrato, i metodi `getter` e `setter`.
 
 ### Clock
 ##### Attributi:
 - `reverse` → Attributo utilizzato per deterrminare se la Classe `Clock` viene utilizzata dal Timer o dallo StopWatch.
 ##### Metodi:
-- **start():** `Stream<int>` → Metodo utilizzata per avviare il Clock. Il tipo di rotorno è uno `Stream<int>` fornendo un metodo asincrono per inviare dati in modo continuo e, nel caso del Clock, in modo costante.
-- **stop(StreamSubscription streamSubscription):** `void` → Metodo, che dato uno `StreamSubscription`, il ritorno del metodo `listen()` di uno Stream, stoppa il conteggio del tempo.
-- **reset():** `void` → Reset del tempo (porta a `0` i secondi, i minuti e le ore).
-- **addSecond() :** `void` → In base a `reservation` questo metodo sottrae un secondo all'orario scelto (Timer) o ne aggiunge uno (StopWatch).
+- **start():** `Stream<int>` → Metodo utilizzato per avviare il Clock. Il tipo di ritorno è uno `Stream<int>` fornendo un metodo asincrono per inviare dati in modo continuo e costante.
+- **stop(StreamSubscription streamSubscription):** `void` → Metodo che, dato uno `StreamSubscription` ovvero il valore ritornato dal metodo `listen()` di uno Stream, stoppa il conteggio del tempo.
+- **reset():** `void` → Reset del tempo (porta a `0` i secondi, i minuti e le ore). Oltre a resettare il conteggio del tempo, questo metodo resetta, dove necessario, la lista Laps.
+- **addSecond() :** `void` → In base a `reverse` questo metodo sottrae un secondo all'orario scelto (Timer) o ne aggiunge uno (StopWatch), tenendo in considerazione anche una eventuale somma o sottrazione di minuti/ore.
 - **addLap(int hours, int minutes, int seconds):** `void` → Aggiunge un giro alla lista `Laps<Lap>`.
 - **resetLaps():** `void` → Metodo utilizzato per resettare tutti i `Lap` presenti nella lista `Laps<lap>`.
 
@@ -69,8 +74,76 @@ Qui di seguito è riportato il diagramma UML delle classi presenti nella cartell
   }
 ```
 
-### Struttuda dei Widget (views)
-#### Timer
+## Struttuda delle views
+Tutte le "Views" qui sotto descritte sono dei `Widget` utilizzati per realizzazione delle singole "pagine". Tutte le `Tab` ("pagine"), istanziate nella classe `Main`, sono contenute in una `TabBar` che a sua volta è coontenuta nella `AppBar` dell'applicazione. Ogni `Tab` è composta da una `Icon` e un `Text`.
+
+Un metodo in comune che hanno tutte le View è il seguente:
+```Dart
+  @override
+  void dispose() {
+    if (_streamSubscription != null) _clock.pause(_streamSubscription);
+    super.dispose();
+  }
+```
+Tale metodo evita che il `Clock` continui a mandare dei Tick alle Views quando queste vengono tolte //TODO!
+
+### Home
+##### Struttura
+```
++--- Scaffold
+|     \-- Center
+|         +-- Column
+|              +-- Container
+|              |     \-- Text                                 //Orario {hh:mm:ss}
+|              +-- Container
+               |    \-- Text                                  //"Ora standard dell'Europa centrale"
+|              \-- Container
+|                   \-- Text                                  //Data {GG dd MM}
+```
+##### Immagini
+<div align="center">
+  <img src="./home.png" alt="Home image" width="200">
+</div>
+
+### StopWatch
+##### Struttura
+```
++--- Scaffold
+|     \-- Center
+|         +-- Column
+|              +-- Container
+|              |     \-- Text                                 //Orario {hh:mm:ss}
+|              +-- Visibility
+|              |    \-- Container
+|              |        \-- ListView.separated                //Widget per la grafica dei Laps
+|              |             \-- Container
+|              |                  \-- Container
+|              |                      \-- Row
+|              |                          \-- Column
+|              |                              +-- Text        //Identificativo del lap
+|              |                              +-- Container
+|              |                              |   \-- Text    //hh:mm:ss trascorsi
+|              |                              \-- Text        //Orario del Lap
+|              \-- Container
+|                   \-- ButtonBar                             //Contenitore dei bottoni
+|                       +-- Visibility
+|                       |    +-- RaisedButton                 //Bottono per i Lap
+|                       |        +-- Icon
+|                       +-- RaisedButton                      //Bottone "start" e "stop"
+|                       \-- Visibility
+|                           \-- RaisedButton                  //Bottone per il reset
+|                               +-- Icon
+```
+##### Immagini
+<div align="center">
+  <img src="./stopWatch_1.png" alt="StopWatch image" width="200">
+  <img src="./stopWatch_2.png" alt="StopWatch image" width="200">
+  <img src="./stopWatch_3.png" alt="StopWatch image" width="200">
+  <img src="./stopWatch_4.png" alt="StopWatch image" width="200">
+</div>
+
+### Timer
+##### Struttura
 ```
 +--- Scaffold
 |     \-- Center
@@ -119,31 +192,9 @@ Qui di seguito è riportato il diagramma UML delle classi presenti nella cartell
 |                                \-- Icon                   //Icona di reset
 ```
 
-#### StopWatch
-```
-+--- Scaffold
-|     \-- Center
-|         +-- Column
-|              +-- Container
-|              |     \-- Text                                 //Orario {hh:mm:ss}
-|              +-- Visibility
-|              |    \-- Container
-|              |        \-- ListView.separated                //Widget per la grafica dei Laps
-|              |             \-- Container
-|              |                  \-- Container
-|              |                      \-- Row
-|              |                          \-- Column
-|              |                              +-- Text        //Identificativo del lap
-|              |                              +-- Container
-|              |                              |   \-- Text    //hh:mm:ss trascorsi
-|              |                              \-- Text        //Orario del Lap
-|              \-- Container
-|                   \-- ButtonBar                             //Contenitore dei bottoni
-|                       +-- Visibility
-|                       |    +-- RaisedButton                 //Bottono per i Lap
-|                       |        +-- Icon
-|                       +-- RaisedButton                      //Bottone "start" e "stop"
-|                       \-- Visibility
-|                           \-- RaisedButton                  //Bottone per il reset
-|                               +-- Icon
-```
+##### Immagini
+<div align="center">
+  <img src="./timer_1.png" alt="Timer image" width="200">
+  <img src="./timer_2.png" alt="Timer image" width="200">
+  <img src="./timer_3.png" alt="Timer image" width="200">
+</div>
