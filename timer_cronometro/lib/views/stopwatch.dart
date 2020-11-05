@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../utils/clock.dart';
 
+/// Widget della pagina StopWatch
 class StopWatchView extends StatefulWidget {
   StopWatchView();
 
@@ -11,11 +12,20 @@ class StopWatchView extends StatefulWidget {
 }
 
 class _StopWatchState extends State<StopWatchView> {
+  /// Inizializzazione della variabile _Clock con un secondo di durata (tempo
+  /// utilizzato tra un tick e un altro) e con il campo reverse "false" in quanto il tempo
+  /// parte da 0 e non da n a 0
   Clock _clock = new Clock(Duration(seconds: 1), false);
+
+  /// Variabile privata utilizzata per gestire lo Stream.
+  /// A questa variabile viene associato il ritorno di Stream.listen()
   StreamSubscription _streamSubscription;
 
   _StopWatchState();
 
+  /// Funzione utilizzato per avviare il conteggio dei secondi, minuti e ore. Se lo stato del
+  /// Clock è "true", allora quanto tale funzione viene invocata ferma il conteggio del tempo, 
+  /// altrimenti avvia il Cronometro
   void _startCounter() {
     if (_clock.status) {
       _clock.stop(_streamSubscription);
@@ -27,16 +37,21 @@ class _StopWatchState extends State<StopWatchView> {
     }
   }
 
+  /// Funzione utilizzata per resettare il clock. Quando tale funzione viene invocata,
+  /// le ore, i secondi e i minuti vengono portati a 0 e inoltre vengono resettati anche i
+  /// giri parziali
   void _resetClock() {
     _clock.reset();
     setState(() {});
   }
 
+  /// Funzione che aggiunge un giro parziale
   void _addLap() {
     _clock.addLap(_clock.hours, _clock.minutes, _clock.seconds);
     setState(() {});
   }
 
+  /// Metodo invocato quando il Widget viene tolto dall'albero dei Widget
   @override
   void dispose() {
     if (_streamSubscription != null) _clock.pause(_streamSubscription);
@@ -108,6 +123,7 @@ class _StopWatchState extends State<StopWatchView> {
               alignment: MainAxisAlignment.center,
               children: [
                 Visibility(
+                  // Bottone per aggiungere un lap
                   child: RaisedButton(
                     color: Colors.orange[300],
                     child: Container(
@@ -123,6 +139,7 @@ class _StopWatchState extends State<StopWatchView> {
                       ? false
                       : true),
                 ),
+                // Bottone start/stop
                 RaisedButton(
                   color: _clock.status ? Colors.red : Colors.green,
                   child: Container(
@@ -132,6 +149,7 @@ class _StopWatchState extends State<StopWatchView> {
                   onPressed: _startCounter,
                 ),
                 Visibility(
+                  // Bottone per il reset
                   child: new RaisedButton(
                     color: Colors.grey[300],
                     child: Container(

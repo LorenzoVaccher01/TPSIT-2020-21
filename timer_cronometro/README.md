@@ -1,7 +1,7 @@
 # Cronometro & Timer
 Questo esercizio verte sulla realizzazione di un Timer e un Cronometro mediante l'utilizzo di uno **Stream** per la gestione dei Tick (segnali di tempo prestabiliti) in **Flutter** (Dart). Come richiesto dalla consegna dell'esercizio sono state realizzare **diverse features** sia grafiche che tecniche, come per esempio i Lap, ovvero i tempi parziali (per il StopWatch) che l'utente può tracciare, oppure la selezione del tempo per il Timer mediante dei bottoni (`+` e `-`).
 
-Dato l'utilizzo degli `Stream` del progetto è fondamentale dare una **definizione** a tale classe. Uno **stream**, che tradotto significa flusso, è un metodo per fornire sequenze di dati in modo asincrono tramite degli eventi invocati. Ogni evento è un evento di dati, chiamato anche elemento dello stream, o un errore, che è una notifica che qualcosa non è riuscito. Tale flusso può essere ascoltato mediante il metodo `listen()` che ritorna un oggetto `StreamSubscription` che è l'oggetto attivo che fornisce gli eventi e che può essere utilizzato per interrompere nuovamente l'ascolto o per sospendere temporaneamente gli eventi. Esistono due tipo di Stream: "Single-subscription" e "Broadcast". Nel primo caso, metodo utilizzato nel progetto in questione, uno Stream può fornire i dati a un solo ascoltatore, mentre, nel secondo caso, lo Stream fornisce dati a un numero qualsiasi di ascoltatori.
+Dato l'utilizzo degli `Stream` nel progetto è fondamentale dare una **definizione** a tale classe. Uno **stream**, che tradotto significa flusso, è un metodo per fornire sequenze di dati in modo asincrono tramite degli eventi invocati. Ogni evento è un evento di dati, chiamato anche elemento dello stream, o un errore, che è una notifica che qualcosa non è riuscito. Tale flusso può essere ascoltato mediante il metodo `listen()` che ritorna un oggetto `StreamSubscription` che è l'oggetto attivo che fornisce gli eventi e che può essere utilizzato per interrompere nuovamente l'ascolto o per sospendere temporaneamente gli eventi. Esistono due tipo di Stream: "Single-subscription" e "Broadcast". Nel primo caso, metodo utilizzato nel progetto in questione, uno Stream può fornire i dati a un solo ascoltatore, mentre, nel secondo caso, lo Stream fornisce dati a un numero qualsiasi di ascoltatori.
 
 ## Struttura del progetto
 ```
@@ -63,7 +63,7 @@ Qui di seguito è riportato il diagramma UML delle classi presenti nella cartell
 ### Ticker
 ##### Metodi:
 - **start():** `Stream<int>` → Inizializza lo `Stream` mediante il metodo `timedCounter`.
-- **timedCounter(Duration duration):** `Stream<int>` → Funzione privata della Classe `Ticker` che realizza gli impulsi in base all'intervallo passato come parametro. 
+- **timedCounter(Duration duration):** `Stream<int>` → Funzione privata della Classe `Ticker` che realizza gli impulsi in base all'intervallo passato come parametro. Di seguito è riportato il codice del metodo in questione.
 ``` dart
   Stream<int> timedCounter(Duration interval) async* {
     int i = 0;
@@ -74,20 +74,22 @@ Qui di seguito è riportato il diagramma UML delle classi presenti nella cartell
   }
 ```
 
-## Struttuda delle views
+## Struttura delle views
 Tutte le "Views" qui sotto descritte sono dei `Widget` utilizzati per realizzazione delle singole "pagine". Tutte le `Tab` ("pagine"), istanziate nella classe `Main`, sono contenute in una `TabBar` che a sua volta è coontenuta nella `AppBar` dell'applicazione. Ogni `Tab` è composta da una `Icon` e un `Text`.
 
-Un metodo in comune che hanno tutte le View è il seguente:
-```Dart
+Un metodo in comune che hanno tutte le Views, oltre al metodo `build`, è il seguente:
+
+``` Dart
   @override
   void dispose() {
     if (_streamSubscription != null) _clock.pause(_streamSubscription);
     super.dispose();
   }
 ```
-Tale metodo evita che il `Clock` continui a mandare dei Tick alle Views quando queste vengono tolte //TODO!
+Tale metodo evita che il `Clock` continui a mandare impusi (Tick) alla/e Views quando queste vengono tolte dall'albero dei Widget, ovvero quando viene cambiata la Tab dall'utente. Tale metodo viene invocato, appunto, quando la View viene tolta dall'albero dei Widget.
 
 ### Home
+`Home` è la View principale del progetto, quella che viene mostrata all'avvio dell'applicazione. In questa `Tab` viene mostrata l'ora e la data attuale. Per ottenere l'aggiornamento in tempo reale dalla data è stata utilizzata la classe `Date`, per ottenere l'ora e la data, e la classe `Clock`, per gestire gli impulsi, i secondi, i minuti e le ore.
 ##### Struttura
 ```
 +--- Scaffold
@@ -96,7 +98,7 @@ Tale metodo evita che il `Clock` continui a mandare dei Tick alle Views quando q
 |              +-- Container
 |              |     \-- Text                                 //Orario {hh:mm:ss}
 |              +-- Container
-               |    \-- Text                                  //"Ora standard dell'Europa centrale"
+|              |    \-- Text                                  //"Ora standard dell'Europa centrale"
 |              \-- Container
 |                   \-- Text                                  //Data {GG dd MM}
 ```
@@ -106,6 +108,7 @@ Tale metodo evita che il `Clock` continui a mandare dei Tick alle Views quando q
 </div>
 
 ### StopWatch
+Il Widget `StopWatch` è la View, come dice il nome stesso della Classe, della `Tab` relativa al Cronometro. Di particolare in questa sezione è sicuramente la gestione dei `Laps`/`Laps`, descritti precedentemente, e la gestione dei bottoni (`RaisedButton`). Infatti, questi, vengono gestiti tramite il campo `status` della Classe `Clock` e tramite i Widget `Visibility`, che permettono di oscurare un elemento grafico in base ad un valore booleano passatogli come valore.
 ##### Struttura
 ```
 +--- Scaffold
@@ -143,6 +146,7 @@ Tale metodo evita che il `Clock` continui a mandare dei Tick alle Views quando q
 </div>
 
 ### Timer
+Come per quanto riguarda la View dello `StopWatch`, anche nella View del `Timer`, i bottoni vengono gestiti tramite il Widget `Visibility` e tramite un campo (`status`) della Classse `Clock`. Un aspetto paricolare di questa View sono i bottoni `+` e `-` che permettono all'utente di selezionare il tempo da cui far partire il Timer.
 ##### Struttura
 ```
 +--- Scaffold

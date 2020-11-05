@@ -11,9 +11,18 @@ class TimerView extends StatefulWidget {
 }
 
 class _TimerViewState extends State<TimerView> {
+  /// Inizializzazione della variabile _Clock con un secondo di durata (tempo
+  /// utilizzato tra un tick e un altro) e con il campo reverse "false" in quanto il tempo
+  /// parte da 0 e non da n a 0
   Clock _clock = new Clock(Duration(seconds: 1), true);
+
+  /// Variabile privata utilizzata per gestire lo Stream.
+  /// A questa variabile viene associato il ritorno di Stream.listen()
   StreamSubscription _streamSubscription;
 
+  /// Funzione utilizzato per avviare il conteggio dei secondi, minuti e ore. Se lo stato del
+  /// Clock è "true", allora quanto tale funzione viene invocata ferma il conteggio del tempo,
+  /// altrimenti avvia il Cronometro
   void _startCounter() {
     if (_clock.status) {
       _clock.stop(_streamSubscription);
@@ -28,11 +37,15 @@ class _TimerViewState extends State<TimerView> {
     }
   }
 
+  /// Funzione utilizzata per resettare il clock. Quando tale funzione viene invocata,
+  /// le ore, i secondi e i minuti vengono portati a 0 e inoltre vengono resettati anche i
+  /// giri parziali
   void _resetClock() {
     _clock.reset();
     setState(() {});
   }
 
+  /// Metodo invocato quando il Widget viene tolto dall'albero dei Widget
   @override
   void dispose() {
     if (_streamSubscription != null) _clock.pause(_streamSubscription);

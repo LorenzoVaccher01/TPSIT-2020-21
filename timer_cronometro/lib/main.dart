@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import './views/timer.dart';
-import 'utils/clock.dart';
 import 'views/timer.dart';
 import 'views/stopwatch.dart';
 import 'views/home.dart';
@@ -11,10 +10,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Timer & StopWatch',
-      debugShowCheckedModeBanner: false,
+      title: 'Timer & StopWatch', //titolo dell'app
+      debugShowCheckedModeBanner: false, //toglie il banner di debug
       theme: ThemeData(
-        primarySwatch: Colors.indigo,
+        primarySwatch: Colors.indigo, //Colore primario dell'applicazione
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: DefaultTabController(
@@ -24,6 +23,7 @@ class MyApp extends StatelessWidget {
             toolbarHeight: 70, //Altezza dell'AppBar (toglie lo spazio del Titolo)
             bottom: TabBar(
               tabs: [
+                //Tab relativa alla Home
                 Container( //Tab per lo StopWatch
                   height: 67,
                   child: Tab(
@@ -41,6 +41,7 @@ class MyApp extends StatelessWidget {
                     ),
                   ),
                 ),
+                //Tab relativa allo StopWatch
                 Container( //Tab per lo StopWatch
                   height: 67,
                   child: Tab(
@@ -58,6 +59,7 @@ class MyApp extends StatelessWidget {
                     ),
                   ),
                 ),
+                //Tab relativa al Timer
                 Container(
                   height: 67,
                   child: Tab(
@@ -78,6 +80,7 @@ class MyApp extends StatelessWidget {
               ],
             ),
           ),
+          //Widget associati alle 3 Tabs dichiarate sopra
           body: TabBarView(
             children: [
               HomeView(),

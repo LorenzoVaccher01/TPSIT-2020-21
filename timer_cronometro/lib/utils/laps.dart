@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+/// Struttura dati utilizzata per salvare un giro parziale del Cronometro.
 class Lap {
   int _seconds;
   int _minutes;
@@ -37,6 +38,7 @@ class Lap {
   }
 }
 
+/// Struttura dati con connotati simili a quelli di una lista.
 class Laps<Lap> extends ListBase<Lap> {
   List<Lap> _laps;
 
