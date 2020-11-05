@@ -20,11 +20,13 @@ class MyApp extends StatelessWidget {
         length: 3, //Indica il numero di Tab presenti nel Menù
         child: Scaffold(
           appBar: AppBar(
-            toolbarHeight: 70, //Altezza dell'AppBar (toglie lo spazio del Titolo)
+            toolbarHeight:
+                70, //Altezza dell'AppBar (toglie lo spazio del Titolo)
             bottom: TabBar(
               tabs: [
                 //Tab relativa alla Home
-                Container( //Tab per lo StopWatch
+                Container(
+                  //Tab per lo StopWatch
                   height: 67,
                   child: Tab(
                     child: Column(
@@ -42,7 +44,8 @@ class MyApp extends StatelessWidget {
                   ),
                 ),
                 //Tab relativa allo StopWatch
-                Container( //Tab per lo StopWatch
+                Container(
+                  //Tab per lo StopWatch
                   height: 67,
                   child: Tab(
                     child: Column(
@@ -88,6 +91,10 @@ class MyApp extends StatelessWidget {
               TimerView(),
             ],
           ),
+          /*floatingActionButton: FloatingActionButton(
+            onPressed: null,
+            child: Icon(Icons.mood),
+          ),*/
         ),
       ),
     );

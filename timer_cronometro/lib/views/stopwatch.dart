@@ -24,7 +24,7 @@ class _StopWatchState extends State<StopWatchView> {
   _StopWatchState();
 
   /// Funzione utilizzato per avviare il conteggio dei secondi, minuti e ore. Se lo stato del
-  /// Clock è "true", allora quanto tale funzione viene invocata ferma il conteggio del tempo, 
+  /// Clock è "true", allora quanto tale funzione viene invocata ferma il conteggio del tempo,
   /// altrimenti avvia il Cronometro
   void _startCounter() {
     if (_clock.status) {
@@ -91,21 +91,21 @@ class _StopWatchState extends State<StopWatchView> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Giro ' + (index + 1).toString(),
+                                Text('Giro ' + ((_clock.laps.length - index - 1) + 1).toString(),
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold)),
                                 Container(
                                   margin: EdgeInsets.only(top: 5),
                                   child: Text(
-                                    'Trascorsi ${_clock.laps[index].hoursPassed.toString().padLeft(2, '0')}:${_clock.laps[index].minutesPassed.toString().padLeft(2, '0')}:${_clock.laps[index].secondsPassed.toString().padLeft(2, '0')}',
+                                    'Trascorsi ${_clock.laps[(_clock.laps.length - index - 1)].hoursPassed.toString().padLeft(2, '0')}:${_clock.laps[(_clock.laps.length - index - 1)].minutesPassed.toString().padLeft(2, '0')}:${_clock.laps[(_clock.laps.length - index - 1)].secondsPassed.toString().padLeft(2, '0')}',
                                     style: TextStyle(fontSize: 15),
                                   ),
                                 ),
                               ],
                             ),
                             Text(
-                                '${_clock.laps[index].hours.toString().padLeft(2, '0')}:${_clock.laps[index].minutes.toString().padLeft(2, '0')}:${_clock.laps[index].seconds.toString().padLeft(2, '0')}',
+                                '${_clock.laps[(_clock.laps.length - index - 1)].hours.toString().padLeft(2, '0')}:${_clock.laps[(_clock.laps.length - index - 1)].minutes.toString().padLeft(2, '0')}:${_clock.laps[(_clock.laps.length - index - 1)].seconds.toString().padLeft(2, '0')}',
                                 style: TextStyle(fontSize: 26)),
                           ],
                         ),
