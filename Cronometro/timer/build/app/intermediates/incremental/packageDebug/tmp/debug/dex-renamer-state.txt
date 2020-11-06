@@ -1,4 +1,0 @@
-#Fri Oct 30 13:18:17 CET 2020
-base.0=E\:\\GitHub Repository\\TPSIT-2020-21\\Cronometro\\timer\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\out\\classes.dex
-path.0=classes.dex
-renamed.0=classes.dex
