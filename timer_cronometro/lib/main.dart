@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './views/timer.dart';
+
 import 'views/timer.dart';
 import 'views/stopwatch.dart';
 import 'views/home.dart';
@@ -13,6 +13,7 @@ class MyApp extends StatelessWidget {
       title: 'Timer & StopWatch', //titolo dell'app
       debugShowCheckedModeBanner: false, //toglie il banner di debug
       theme: ThemeData(
+        brightness: Brightness.light,
         primarySwatch: Colors.indigo, //Colore primario dell'applicazione
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
@@ -91,10 +92,10 @@ class MyApp extends StatelessWidget {
               TimerView(),
             ],
           ),
-          /*floatingActionButton: FloatingActionButton(
-            onPressed: null,
-            child: Icon(Icons.mood),
-          ),*/
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {},
+            child: Icon(Icons.nightlight_round, color: Colors.white),
+          ),
         ),
       ),
     );
