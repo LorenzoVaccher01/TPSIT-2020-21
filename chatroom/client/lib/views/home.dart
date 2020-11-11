@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import './home/login.dart';
 import './home/register.dart';
 
-/// Pagina principale del progetto, tale pagina viene utilizzata 
+/// Pagina principale del progetto, tale pagina viene utilizzata
 /// per il login o la registrazione di un nuovo utente
 class HomePage extends StatelessWidget {
   @override
@@ -12,6 +12,7 @@ class HomePage extends StatelessWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Color(0xFF075E55),
           toolbarHeight: 70,
           bottom: TabBar(
             tabs: [
