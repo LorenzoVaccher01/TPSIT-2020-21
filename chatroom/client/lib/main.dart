@@ -1,7 +1,8 @@
+import 'package:client/views/chats.dart';
 import 'package:client/views/home.dart';
 import 'package:flutter/material.dart';
+
 import './utils/client.dart';
-import 'package:client/views/chat.dart';
 
 /// Indirizzo Ip e porta del server. Tale costante viene utilizzata
 /// per la connessione al server tramite WebSocket.
@@ -23,7 +24,8 @@ void main() {
     initialRoute: '/home',
     routes: {
       '/home': (context) => HomePage(),
-      '/chat': (context) => ChatPage(1, 'Lorenzo', 'Vaccher'),
+      '/chats': (context) => ChatsPage(),
     },
   ));
 }
+

@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+
+import 'package:client/utils/services/server.dart';
+import '../../utils/client.dart';
+import '../../main.dart' as Main;
 
 class RegisterView extends StatefulWidget {
   RegisterView();
@@ -13,6 +18,8 @@ class _RegisterViewState extends State<RegisterView> {
   final _nicknameController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  String _error = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,10 +30,12 @@ class _RegisterViewState extends State<RegisterView> {
             shrinkWrap: true,
             children: [
               Container(
+                margin: EdgeInsets.only(top: 30),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset("assets/img/register.png", width: 80, height: 80),
+                    Image.asset("assets/img/register.png",
+                        width: 80, height: 80),
                     Container(
                       margin: EdgeInsets.only(top: 20),
                       child: Text('Effettua la registrazione per iniziare!',
@@ -35,12 +44,20 @@ class _RegisterViewState extends State<RegisterView> {
                   ],
                 ),
               ),
+              Visibility(
+                visible: (_error != '' ? true : false),
+                child: Container(
+                  alignment: Alignment.center,
+                  margin: EdgeInsets.only(top: 20),
+                  child: Text(_error, style: TextStyle(color: Colors.red)),
+                ),
+              ),
               Container(
                 margin: EdgeInsets.only(left: 30, right: 30, top: 20),
                 child: TextField(
                   controller: _nameController,
                   autocorrect: false,
-                  maxLength: 30,
+                  maxLength: 20,
                   decoration: InputDecoration(
                     labelText: 'Name',
                     labelStyle: TextStyle(fontSize: 18),
@@ -55,7 +72,7 @@ class _RegisterViewState extends State<RegisterView> {
                   controller: _surnameController,
                   autocorrect: false,
                   obscureText: false,
-                  maxLength: 30,
+                  maxLength: 20,
                   decoration: InputDecoration(
                     labelText: 'Surname',
                     labelStyle: TextStyle(fontSize: 18),
@@ -70,7 +87,7 @@ class _RegisterViewState extends State<RegisterView> {
                   controller: _nicknameController,
                   autocorrect: false,
                   obscureText: false,
-                  maxLength: 15,
+                  maxLength: 30,
                   decoration: InputDecoration(
                     labelText: 'Nickname',
                     labelStyle: TextStyle(fontSize: 18),
@@ -85,7 +102,7 @@ class _RegisterViewState extends State<RegisterView> {
                   controller: _passwordController,
                   autocorrect: false,
                   obscureText: true,
-                  maxLength: 30,
+                  maxLength: 25,
                   decoration: InputDecoration(
                     labelText: 'Password',
                     labelStyle: TextStyle(fontSize: 18),
@@ -95,7 +112,8 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(left: 30, right: 30, top: 20),
+                margin:
+                    EdgeInsets.only(left: 30, right: 30, top: 20, bottom: 25),
                 child: RaisedButton(
                   child: Text('Register',
                       style: TextStyle(
@@ -103,7 +121,31 @@ class _RegisterViewState extends State<RegisterView> {
                           fontWeight: FontWeight.bold,
                           fontSize: 16)),
                   color: Colors.green,
-                  onPressed: () {},
+                  onPressed: () async {
+                    ServerConnection serverConnection = new ServerConnection();
+                    serverConnection
+                        .registration(
+                            name: _nameController.text,
+                            surname: _surnameController.text,
+                            nickname: _nicknameController.text,
+                            password: _passwordController.text)
+                        .listen((event) {
+                      var data = json.decode(event);
+                      if (data['status'] == 200) {
+                        Main.client = new Client(
+                            id: data['user']['id'],
+                            name: data['user']['name'],
+                            surname: data['user']['surname'],
+                            nickname: data['user']['nickname'],
+                            token: data['user']['token']);
+                        Navigator.pushNamed(context, '/chats');
+                      } else {
+                        setState(() {
+                          _error = data['error'];
+                        });
+                      }
+                    });
+                  },
                 ),
               ),
             ],
@@ -117,7 +159,8 @@ class _RegisterViewState extends State<RegisterView> {
 /// Classe utilizzata per gestire il comportamento di una ListView.
 class MyBehavior extends ScrollBehavior {
   @override
-  Widget buildViewportChrome(BuildContext context, Widget child, AxisDirection axisDirection) {
+  Widget buildViewportChrome(
+      BuildContext context, Widget child, AxisDirection axisDirection) {
     return child;
   }
 }
