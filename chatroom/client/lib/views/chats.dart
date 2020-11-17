@@ -1,8 +1,10 @@
 import 'package:client/utils/models/chats.dart';
+import 'package:client/utils/services/server.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
 import './chat.dart';
+import '../main.dart' as Main;
 
 class ChatsPage extends StatefulWidget {
   ChatsPage();
@@ -13,9 +15,12 @@ class ChatsPage extends StatefulWidget {
 
 class _ChatsPageState extends State<ChatsPage> {
   List<Chat> _chats = [];
+  Stream _stream;
 
   @override
   void initState() {
+    _stream = new ServerConnection().chats(Main.client);
+
     _chats.add(new Chat(id: 1, imageId: 4, name: "Tommaso", surname: "Rizzo", message: new Message(text: "Ciao a tutti! io sono Rizzo", date: "2020-11-12 17:58:39")));
     _chats.add(new Chat(id: 2, imageId: 10, name: "Giacomo", surname: "Davanzo", message: new Message(text: "Lorem ipsum!", date: "2020-11-12 17:58:39")));
     _chats.add(new Chat(id: 3, imageId: 16, name: "Jia Hao", surname: "Ruan", message: new Message(text: "Ciao, questo è un test molto testoso!", date: "2020-11-12 17:58:39")));
@@ -59,29 +64,45 @@ class _ChatsPageState extends State<ChatsPage> {
         children: <Widget>[
           Expanded(
             child: Container(
-              child: ListView.separated(
-                reverse: false,
-                padding: EdgeInsets.only(top: 5, bottom: 5),
-                itemCount: _chats.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return GestureDetector(
-                    child: Container(
-                      margin: EdgeInsets.only(top: 10, bottom: 5),
-                      child: _Chat(_chats[index].id, _chats[index].name, _chats[index].surname, _chats[index].message.text, _chats[index].imageId),
-                    ),
-                    onTap: () => {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage(1, "Tommaso", "Rizzo")))
+              child: StreamBuilder<Object>(
+                stream: _stream,
+                initialData: [],
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    print(snapshot.error);
+                  } else {
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.none: print('NONE'); break;
+                      case ConnectionState.waiting: print('WAITING'); break;
+                      case ConnectionState.active: print('ACTIVE'); break;
+                      case ConnectionState.done: print('DONE'); break;
                     }
+                  }
+                  return ListView.separated(
+                    reverse: false,
+                    padding: EdgeInsets.only(top: 5, bottom: 5),
+                    itemCount: _chats.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return InkWell( ///Widget utilizzato come GestureDetector, con l'unica differenza che prende il 100% della lunghezza del contenitore e non solo la lunghezza dei Widget
+                        child: Container(
+                          margin: EdgeInsets.only(top: 10, bottom: 5),
+                          child: _Chat(_chats[index].id, _chats[index].name, _chats[index].surname, _chats[index].message.text, _chats[index].imageId),
+                        ),
+                        onTap: () => {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage(1, _chats[index].name, _chats[index].surname)))
+                        }
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) =>
+                        const Divider(
+                      color: Colors.grey,
+                      height: 10,
+                      thickness: 0.4,
+                      indent: 70,
+                      endIndent: 15,
+                    ),
                   );
-                },
-                separatorBuilder: (BuildContext context, int index) =>
-                    const Divider(
-                  color: Colors.grey,
-                  height: 10,
-                  thickness: 0.4,
-                  indent: 70,
-                  endIndent: 15,
-                ),
+                }
               ),
             ),
           ),

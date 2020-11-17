@@ -134,8 +134,8 @@ class _Message extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       margin: EdgeInsets.only(
-          top: 15, left: (_isPeer ? 20 : 100), right: (_isPeer ? 100 : 20)),
-      padding: EdgeInsets.all(15),
+          top: 15, left: (_isPeer ? 20 : 80), right: (_isPeer ? 80 : 20)),
+      padding: EdgeInsets.all(10),
       child:
           Text(_message, style: TextStyle(color: Colors.black, fontSize: 14)),
     );

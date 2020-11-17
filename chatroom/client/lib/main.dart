@@ -6,7 +6,7 @@ import './utils/client.dart';
 
 /// Indirizzo Ip e porta del server. Tale costante viene utilizzata
 /// per la connessione al server tramite WebSocket.
-final String SOCKET_URL = "ws://144.91.88.65:25501";
+final String SOCKET_IP = "144.91.88.65";
 
 /// Variabile globale utilizzata per riferirsi al Client corrente.
 /// Tutte le informazioni relative al client vengono ricevuto del server
@@ -15,7 +15,7 @@ Client client = null;
 
 void main() {
   runApp(MaterialApp(
-    title: 'Named Routes Demo',
+    title: 'ChatRoom',
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
       primaryColor: Color(0xFF075E55),

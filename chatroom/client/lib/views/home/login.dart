@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:client/utils/services/server.dart';
 import '../../utils/client.dart';
@@ -85,8 +88,16 @@ class _LoginViewState extends State<LoginView> {
                         fontSize: 16)),
                 color: Colors.green,
                 onPressed: () async {
-                  ServerConnection serverConnection = new ServerConnection();
-                  serverConnection
+                  Socket.connect("144.91.88.65", 25501).then((socket) {
+                    socket.write('{"event": "chats"}');
+                    socket.listen((event) {
+                      print('asd');
+                      print(event);
+                    });
+                  });
+                  /*ServerConnection serverConnection = new ServerConnection();
+                  StreamSubscription channel;
+                  channel = serverConnection
                       .login(
                           nickname: _nicknameController.text,
                           password: _passwordController.text)
@@ -105,7 +116,8 @@ class _LoginViewState extends State<LoginView> {
                         _error = data['error'];
                       });
                     }
-                  });
+                    channel.cancel();
+                  });*/
                 },
               ),
             ),

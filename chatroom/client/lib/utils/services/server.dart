@@ -2,14 +2,17 @@
 import 'dart:convert';
 
 import '../../main.dart' as Main;
+import '../client.dart';
 import 'package:web_socket_channel/io.dart';
 
 class ServerConnection extends Messanger {
   IOWebSocketChannel _channel;
 
   ServerConnection() {
-    this._channel = IOWebSocketChannel.connect(Main.SOCKET_URL);
+    this._channel = IOWebSocketChannel.connect(Main.SOCKET_IP);
   }
+
+  IOWebSocketChannel get channel => this._channel;
 
   /// Metodo utilizzato per effettuare il login da parte di un utente.
   Stream<dynamic> login({String nickname, String password}) {
@@ -28,6 +31,11 @@ class ServerConnection extends Messanger {
       'nickname': nickname,
       'password': password
     }));
+    return this._channel.stream;
+  }
+
+  Stream<dynamic> chats(Client client) {
+    this._channel.sink.add('[chats]' + json.encode(client.toJson()));
     return this._channel.stream;
   }
 
