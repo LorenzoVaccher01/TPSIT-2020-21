@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import './home/login.dart';
-import './home/register.dart';
+import './components/home/login.dart';
+import './components/home/register.dart';
 
 /// Pagina principale del progetto, tale pagina viene utilizzata
 /// per il login o la registrazione di un nuovo utente
@@ -14,6 +14,7 @@ class HomePage extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Color(0xFF075E55),
           toolbarHeight: 70,
+          elevation: 8.0,
           bottom: TabBar(
             tabs: [
               //Tab relativa al login

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'dart:io';
+
+import '../main.dart' as Main;
 
 class ChatPage extends StatefulWidget {
   final int _peerId;
@@ -15,6 +19,32 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final _textController = TextEditingController();
+  String _error = "";
+
+  @override
+  void initState() {
+    Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT).then((socket) {
+      var data = {"event": "getChat", "peerId": 2, "client": Main.client.toJson()};
+
+      /// send data
+      socket.write('' + json.encode(data));
+
+      /// listen data
+      socket.listen((event) {
+        var data = json.decode(utf8.decode(event));
+
+        if (data['status'] == 200) {
+          //TODO: ricevere tutti i messaggi
+          //TODO: inserire tutti i messaggi
+        } else {
+          setState(() {
+            //TODO: gestire errori
+            _error = data['error'];
+          });
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,29 +55,13 @@ class _ChatPageState extends State<ChatPage> {
         title: RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
-            children: [
+            children: [ //TODO: aggiungere immagina del profilo stile WhatsApp
               TextSpan(
                   text: '${widget._peerName} ${widget._peerSurname}',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   )),
-              /*widget._peerIsOnline ? // TODO: inserire quando creato codice nel server
-              TextSpan(
-                text: 'Online',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                ),
-              )
-              :
-              TextSpan(
-                text: 'Offline',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                ),
-              )*/
             ],
           ),
         ),
@@ -61,9 +75,10 @@ class _ChatPageState extends State<ChatPage> {
         ],
         leading: IconButton(
             icon: Icon(Icons.arrow_back_ios),
+            iconSize: 25.0,
             color: Colors.white,
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pushNamed(context, '/chats');
             }),
       ),
       body: Column(
