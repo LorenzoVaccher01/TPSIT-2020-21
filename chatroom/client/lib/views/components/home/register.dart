@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -127,10 +129,11 @@ class _RegisterViewState extends State<RegisterView> {
                       var data = {
                         "event": "registration",
                         "data": {
-                          "name": _nameController.text, //TODO: trim dei dati e minuscole
+                          "name": _nameController.text, 
                           "surname": _surnameController.text,
                           "nickname": _nicknameController.text,
-                          "password": _passwordController.text
+                          "password": _passwordController.text,
+                          "imageId": (new Random().nextInt(30) + 1)
                         }
                       };
 
@@ -141,20 +144,22 @@ class _RegisterViewState extends State<RegisterView> {
                       socket.listen((event) {
                         var data = json.decode(utf8.decode(event));
 
-                        if (data['status'] == 200) {
-                          Main.client = new Client(
-                              id: data['user']['id'],
-                              imageId: 2, //TODO: aggiungere l'immagine di default
-                              name: data['user']['name'],
-                              surname: data['user']['surname'],
-                              nickname: data['user']['nickname'],
-                              token: data['user']['token']);
-                          socket.close();
-                          Navigator.pushNamed(context, '/chats');
-                        } else {
-                          setState(() {
-                            _error = data['error'];
-                          });
+                        if (data['event'] == 'registration') {
+                          if (data['status'] == 200) {
+                            Main.client = new Client(
+                                id: data['user']['id'],
+                                imageId: data['user']['imageId'],
+                                name: data['user']['name'],
+                                surname: data['user']['surname'],
+                                nickname: data['user']['nickname'],
+                                token: data['user']['token']);
+                            socket.close();
+                            Navigator.pushNamed(context, '/chats');
+                          } else {
+                            setState(() {
+                              _error = data['error'];
+                            });
+                          }
                         }
                       });
                     });

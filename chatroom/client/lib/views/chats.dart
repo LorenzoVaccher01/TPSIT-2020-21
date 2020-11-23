@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import './chat.dart';
-import 'components/menu.dart';
+import '../widget/menu.dart';
 import '../main.dart' as Main;
 
 class ChatsPage extends StatefulWidget {
@@ -30,21 +30,18 @@ class _ChatsPageState extends State<ChatsPage> {
       socket.listen((event) {
         var data = json.decode(utf8.decode(event));
 
-        if (data['status'] == 200) {
-          //EVENT: newChats, newChatMessage, newMessage
-          switch (data['event']) {
-            case 'newChats':
-              for (var i = 0; i < data['data'].length; i++) {
-                _chats.add(new Chat.fromJson(data['data'][i]));
-              }
-              setState(() {});
-              break;
+        if (data['event'] == 'chats') {
+          if (data['status'] == 200) {
+            for (var i = 0; i < data['data'].length; i++) {
+              _chats.add(new Chat.fromJson(data['data'][i]));
+            }
+            setState(() {});
+          } else {
+            setState(() {
+              //TODO: gestire errori
+              _error = data['error'];
+            });
           }
-        } else {
-          setState(() {
-            //TODO: gestire errori
-            _error = data['error'];
-          });
         }
       });
     });
@@ -94,6 +91,7 @@ class _ChatsPageState extends State<ChatsPage> {
                 itemCount: _chats.length,
                 itemBuilder: (BuildContext context, int index) {
                   return InkWell(
+
                       ///Widget utilizzato come GestureDetector, con l'unica differenza che prende il 100% della lunghezza del contenitore e non solo la lunghezza dei Widget
                       child: Container(
                         margin: EdgeInsets.only(top: 10, bottom: 5),
@@ -109,7 +107,8 @@ class _ChatsPageState extends State<ChatsPage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => ChatPage(
-                                        1,
+                                        _chats[index].id,
+                                        _chats[index].user.id,
                                         _chats[index].user.name,
                                         _chats[index].user.surname)))
                           });

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import '../utils/models/contacts.dart';
+import '../views/chat.dart';
 import 'dart:convert';
 import '../main.dart' as Main;
 
@@ -27,16 +28,18 @@ class _ContactsState extends State<Contacts> {
       socket.listen((event) {
         var data = json.decode(utf8.decode(event));
 
-        if (data['status'] == 200) {
-          for (var i = 0; i < data['data'].length; i++) {
-            _contacts.add(new Contact.fromJson(data['data'][i]));
-            setState(() {});
+        if (data['event'] == 'contacts') {
+          if (data['status'] == 200) {
+            for (var i = 0; i < data['data'].length; i++) {
+              _contacts.add(new Contact.fromJson(data['data'][i]));
+              setState(() {});
+            }
+          } else {
+            setState(() {
+              //TODO: gestire errori
+              _error = data['error'];
+            });
           }
-        } else {
-          setState(() {
-            //TODO: gestire errori
-            _error = data['error'];
-          });
         }
       });
     });
@@ -86,19 +89,24 @@ class _ContactsState extends State<Contacts> {
                 itemCount: _contacts.length,
                 itemBuilder: (BuildContext context, int index) {
                   return InkWell(
+
                       ///Widget utilizzato come GestureDetector, con l'unica differenza che prende il 100% della lunghezza del contenitore e non solo la lunghezza dei Widget
                       child: Container(
                           margin: EdgeInsets.only(top: 10, bottom: 5),
-                          child: _Contact(_contacts[index].id, _contacts[index].name, _contacts[index].surname, _contacts[index].imageId)
-                      ),
+                          child: _Contact(
+                              _contacts[index].id,
+                              _contacts[index].name,
+                              _contacts[index].surname,
+                              _contacts[index].imageId)),
                       onTap: () => {
-                            /*Navigator.push(
+                            Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => ChatPage(
-                                        1,
-                                        _chats[index].user.name,
-                                        _chats[index].user.surname)))*/
+                                        1, //TODO: inserire chat se esiste con l'utente
+                                        _contacts[index].id,
+                                        _contacts[index].name,
+                                        _contacts[index].surname)))
                           });
                 },
                 separatorBuilder: (BuildContext context, int index) =>

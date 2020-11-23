@@ -1,3 +1,5 @@
+import 'package:client/utils/models/chats.dart';
+import 'package:client/widget/alert.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -6,12 +8,11 @@ import '../main.dart' as Main;
 
 class ChatPage extends StatefulWidget {
   final int _peerId;
+  final int _chatId;
   final String _peerName;
   final String _peerSurname;
-  List<String> _messages;
-  bool _peerIsOnline = false;
 
-  ChatPage(this._peerId, this._peerName, this._peerSurname);
+  ChatPage(this._chatId, this._peerId, this._peerName, this._peerSurname);
 
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -19,12 +20,18 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final _textController = TextEditingController();
+  List<Message> _messages = [];
   String _error = "";
 
   @override
   void initState() {
     Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT).then((socket) {
-      var data = {"event": "getChat", "peerId": 2, "client": Main.client.toJson()};
+      var data = {
+        "event": "chat",
+        "peerId": widget._peerId,
+        "chatId": widget._chatId,
+        "client": Main.client.toJson()
+      };
 
       /// send data
       socket.write('' + json.encode(data));
@@ -33,14 +40,28 @@ class _ChatPageState extends State<ChatPage> {
       socket.listen((event) {
         var data = json.decode(utf8.decode(event));
 
-        if (data['status'] == 200) {
-          //TODO: ricevere tutti i messaggi
-          //TODO: inserire tutti i messaggi
-        } else {
-          setState(() {
-            //TODO: gestire errori
-            _error = data['error'];
-          });
+        if (data['event'] == 'chat') {
+          if (data['status'] == 200) {
+            for (var i = 0; i < data['data'].length; i++) {
+              _messages.add(new Message.fromJson(data['data'][i]));
+              setState(() {});
+            }
+          } else {
+            setState(() {
+              _error = data['error'];
+              socket.close();
+              new Alert(
+                  context: context,
+                  title: "Errore",
+                  body: Text(data['error']),
+                  closeButton: true,
+                  textCanelButton: "",
+                  textConfirmButton: "Ok",
+                  onClick: () {
+                    Navigator.pushNamed(context, '/chats');
+                  });
+            });
+          }
         }
       });
     });
@@ -55,7 +76,8 @@ class _ChatPageState extends State<ChatPage> {
         title: RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
-            children: [ //TODO: aggiungere immagina del profilo stile WhatsApp
+            children: [
+              //TODO: aggiungere immagina del profilo stile WhatsApp
               TextSpan(
                   text: '${widget._peerName} ${widget._peerSurname}',
                   style: TextStyle(
@@ -87,14 +109,16 @@ class _ChatPageState extends State<ChatPage> {
             child: Container(
               color: Color(0xFFE5DDD5),
               child: ListView.builder(
-                reverse: true,
+                reverse: false,
                 padding: EdgeInsets.only(top: 10, bottom: 15),
-                itemCount: 100,
+                itemCount: _messages.length,
                 itemBuilder: (BuildContext context, int index) {
                   return _Message(
-                      'Ciao! $index. Questo è un messaggio di test per testare il container di questo messaggio molto messaggioso!',
+                      _messages[index].text,
                       /*('Oggi 10:$index'),*/
-                      (index % 2 == 0 ? true : false));
+                      (_messages[index].userId == Main.client.id
+                          ? false
+                          : true));
                 },
               ),
             ),
@@ -121,8 +145,26 @@ class _ChatPageState extends State<ChatPage> {
                   iconSize: 25,
                   color: Theme.of(context).primaryColor,
                   onPressed: () {
-                    print(_textController.text);
+                    String message = _textController.text;
+                    setState(() {
+                      _messages.add(new Message(
+                          id: null,
+                          text: message,
+                          userId: Main.client.id,
+                          date: new DateTime.now().toString()));
+                    });
                     _textController.clear();
+                    Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT).then((socket) {
+                      socket.write('' + json.encode({
+                        "event": "message",
+                        "client": Main.client,
+                        "chatId": widget._chatId,
+                        "peerId": widget._peerId,
+                        "data": {
+                          "text": message,
+                        }
+                      }));
+                    });
                   },
                 ),
               ],

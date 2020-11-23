@@ -86,16 +86,16 @@ class _LoginViewState extends State<LoginView> {
                         fontSize: 16)),
                 color: Colors.green,
                 onPressed: () {
-                  Main.client = new Client(
+                  /*Main.client = new Client(
                     id: 1,
                     imageId: 2, 
                     name: 'Lorenzo',
                     surname: 'Vaccher',
-                    nickname: 'lor3xs',
-                    token: 'asdaihg2398123'
+                    nickname: 'LorenzoVaccher01',
+                    token: 'asdasdasd'
                   );
-                  Navigator.pushNamed(context, '/chats'); //TODO: solo per debug
-                  /*Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT)
+                  Navigator.pushNamed(context, '/chats');*/
+                  Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT)
                       .then((socket) {
                     var data = {
                       "event": "login",
@@ -111,23 +111,27 @@ class _LoginViewState extends State<LoginView> {
                     /// listen data
                     socket.listen((event) {
                       var data = json.decode(utf8.decode(event));
-
-                      if (data['status'] == 200) {
-                        Main.client = new Client(
-                            id: data['user']['id'],
-                            name: data['user']['name'],
-                            surname: data['user']['surname'],
-                            nickname: data['user']['nickname'],
-                            token: data['user']['token']);
-                        socket.close();
-                        Navigator.pushNamed(context, '/chats');
-                      } else {
-                        setState(() {
-                          _error = data['error'];
-                        });
+                      print(data);
+                      if (data['event'] == 'login') {
+                        if (data['status'] == 200) {
+                          Main.client = new Client(
+                              id: data['user']['id'],
+                              imageId: data['user']['imageId'],
+                              name: data['user']['name'],
+                              surname: data['user']['surname'],
+                              nickname: data['user']['nickname'],
+                              token: data['user']['token']);
+                          socket.close();
+                          Navigator.pushNamed(context, '/chats');
+                        } else {
+                          setState(() {
+                            _error = data['error'];
+                          });
+                          socket.close();
+                        }
                       }
                     });
-                  });*/
+                  });
                 },
               ),
             ),
