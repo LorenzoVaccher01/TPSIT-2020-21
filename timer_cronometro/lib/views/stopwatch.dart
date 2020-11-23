@@ -66,14 +66,14 @@ class _StopWatchState extends State<StopWatchView> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Container(
-            margin: EdgeInsets.only(top: 0),
+            margin: EdgeInsets.only(top: 20),
             child: Text(
                 '${_clock.hours.toString().padLeft(2, '0')}:${_clock.minutes.toString().padLeft(2, '0')}:${_clock.seconds.toString().padLeft(2, '0')}',
                 style: TextStyle(fontSize: 40, color: Colors.blueGrey)),
           ),
           Visibility(
             child: Container(
-              height: 350,
+              height: 300,
               margin: EdgeInsets.only(top: 10),
               child: ListView.separated(
                 padding: EdgeInsets.all(10),

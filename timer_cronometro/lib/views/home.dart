@@ -58,7 +58,7 @@ class _HomeViewState extends State<HomeView> {
   /// Metodo utilizzato per inizializzare lo stato del Widget
   @override
   void initState() {
-    _clock.hours = _dateTime.hour + 1;
+    _clock.hours = _dateTime.hour;
     _clock.minutes = _dateTime.minute;
     _clock.seconds = _dateTime.second;
     _startCounter();

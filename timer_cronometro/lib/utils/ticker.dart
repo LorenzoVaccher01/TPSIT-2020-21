@@ -16,7 +16,7 @@ class Ticker {
     return _stream;
   }
 
-  /// Funzione utilizzata per la realizzazione di uno Stream dato un intervallo.
+  /// Metodo utilizzato per la realizzazione di uno Stream dato un intervallo.
   /// L'intervallo viene gestito tramite il metodo delayed della classe Future.
   Stream<int> _timedCounter(Duration interval) async* {
     int i = 0;

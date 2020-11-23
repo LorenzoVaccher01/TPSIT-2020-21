@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 
 import './utils/client.dart';
 
-import 'dart:math';
-
 
 /// Indirizzo Ip del server. Tale costante viene utilizzata
 /// per la connessione al server tramite WebSocket.

@@ -92,10 +92,6 @@ class MyApp extends StatelessWidget {
               TimerView(),
             ],
           ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {},
-            child: Icon(Icons.nightlight_round, color: Colors.white),
-          ),
         ),
       ),
     );
