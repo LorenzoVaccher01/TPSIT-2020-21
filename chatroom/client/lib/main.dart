@@ -1,6 +1,6 @@
-import 'package:client/views/chats.dart';
-import 'package:client/views/contacts.dart';
-import 'package:client/views/home.dart';
+import './views/chats.dart';
+import './views/contacts.dart';
+import './views/home.dart';
 import 'package:flutter/material.dart';
 
 import './utils/client.dart';
@@ -37,4 +37,3 @@ void main() {
     },
   ));
 }
-

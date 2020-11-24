@@ -86,7 +86,7 @@ class _LoginViewState extends State<LoginView> {
                         fontSize: 16)),
                 color: Colors.green,
                 onPressed: () {
-                  /*Main.client = new Client(
+                  Main.client = new Client(
                     id: 1,
                     imageId: 2, 
                     name: 'Lorenzo',
@@ -94,8 +94,8 @@ class _LoginViewState extends State<LoginView> {
                     nickname: 'LorenzoVaccher01',
                     token: 'asdasdasd'
                   );
-                  Navigator.pushNamed(context, '/chats');*/
-                  Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT)
+                  Navigator.pushNamed(context, '/chats');
+                  /*Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT)
                       .then((socket) {
                     var data = {
                       "event": "login",
@@ -131,7 +131,7 @@ class _LoginViewState extends State<LoginView> {
                         }
                       }
                     });
-                  });
+                  });*/
                 },
               ),
             ),

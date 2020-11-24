@@ -1,4 +1,4 @@
-import 'package:client/utils/models/chats.dart';
+import '../utils/models/chats.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -17,11 +17,13 @@ class ChatsPage extends StatefulWidget {
 class _ChatsPageState extends State<ChatsPage> {
   List<Chat> _chats = [];
   String _error = "";
+  Socket _socket;
 
   @override
   void initState() {
     Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT).then((socket) {
       var data = {"event": "chats", "client": Main.client.toJson()};
+      _socket = socket;
 
       /// send data
       socket.write('' + json.encode(data));
@@ -45,6 +47,12 @@ class _ChatsPageState extends State<ChatsPage> {
         }
       });
     });
+  }
+  
+  @override
+  void dispose() {
+    _socket.close();
+    super.dispose();
   }
 
   @override
@@ -102,7 +110,8 @@ class _ChatsPageState extends State<ChatsPage> {
                             _chats[index].message.text,
                             _chats[index].user.imageId),
                       ),
-                      onTap: () => {
+                      onTap: () {
+                        _socket.close();
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -110,7 +119,7 @@ class _ChatsPageState extends State<ChatsPage> {
                                         _chats[index].id,
                                         _chats[index].user.id,
                                         _chats[index].user.name,
-                                        _chats[index].user.surname)))
+                                        _chats[index].user.surname)));
                           });
                 },
                 separatorBuilder: (BuildContext context, int index) =>

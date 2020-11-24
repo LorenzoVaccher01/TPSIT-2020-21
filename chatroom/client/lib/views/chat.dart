@@ -1,5 +1,5 @@
-import 'package:client/utils/models/chats.dart';
-import 'package:client/widget/alert.dart';
+import '../utils/models/chats.dart';
+import '../widget/alert.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -20,8 +20,10 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final _textController = TextEditingController();
+  final ScrollController _scrollController = new ScrollController();
   List<Message> _messages = [];
   String _error = "";
+  Socket _socket;
 
   @override
   void initState() {
@@ -33,12 +35,18 @@ class _ChatPageState extends State<ChatPage> {
         "client": Main.client.toJson()
       };
 
+      _socket = socket;
+
       /// send data
       socket.write('' + json.encode(data));
 
       /// listen data
       socket.listen((event) {
         var data = json.decode(utf8.decode(event));
+
+        if (data['event'] == 'message') {
+          print(data);
+        }
 
         if (data['event'] == 'chat') {
           if (data['status'] == 200) {
@@ -58,6 +66,7 @@ class _ChatPageState extends State<ChatPage> {
                   textCanelButton: "",
                   textConfirmButton: "Ok",
                   onClick: () {
+                    _socket.close();
                     Navigator.pushNamed(context, '/chats');
                   });
             });
@@ -65,6 +74,18 @@ class _ChatPageState extends State<ChatPage> {
         }
       });
     });
+  }
+
+  @override
+  void deactivate() {
+    _socket.close();
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    _socket.close();
+    super.dispose();
   }
 
   @override
@@ -100,6 +121,7 @@ class _ChatPageState extends State<ChatPage> {
             iconSize: 25.0,
             color: Colors.white,
             onPressed: () {
+              _socket.close();
               Navigator.pushNamed(context, '/chats');
             }),
       ),
@@ -109,7 +131,8 @@ class _ChatPageState extends State<ChatPage> {
             child: Container(
               color: Color(0xFFE5DDD5),
               child: ListView.builder(
-                reverse: false,
+                controller: _scrollController,
+                reverse: true,
                 padding: EdgeInsets.only(top: 10, bottom: 15),
                 itemCount: _messages.length,
                 itemBuilder: (BuildContext context, int index) {
@@ -147,23 +170,34 @@ class _ChatPageState extends State<ChatPage> {
                   onPressed: () {
                     String message = _textController.text;
                     setState(() {
-                      _messages.add(new Message(
-                          id: null,
-                          text: message,
-                          userId: Main.client.id,
-                          date: new DateTime.now().toString()));
+                      _messages.insert(
+                          0,
+                          new Message(
+                              id: null,
+                              text: message,
+                              userId: Main.client.id,
+                              date: new DateTime.now().toString()));
                     });
                     _textController.clear();
-                    Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT).then((socket) {
-                      socket.write('' + json.encode({
-                        "event": "message",
-                        "client": Main.client,
-                        "chatId": widget._chatId,
-                        "peerId": widget._peerId,
-                        "data": {
-                          "text": message,
-                        }
-                      }));
+                    _scrollController.animateTo(
+                      0,
+                      curve: Curves.easeOut,
+                      duration: const Duration(milliseconds: 300),
+                    );
+                    Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT)
+                        .then((socket) {
+                      print(message);
+                      socket.write('' +
+                          json.encode({
+                            "event": "message",
+                            "client": Main.client,
+                            "chatId": widget._chatId,
+                            "peerId": widget._peerId,
+                            "data": {
+                              "message": message,
+                            }
+                          }));
+                      socket.close();
                     });
                   },
                 ),
