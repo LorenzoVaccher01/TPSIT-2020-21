@@ -17,6 +17,7 @@ class Client {
 
   int get id => _id;
   int get imageId => _imageId;
+  set imageId(int imageId) => _imageId;
   String get name => _name;
   String get surname => _surname;
   String get nickname => _nickname;

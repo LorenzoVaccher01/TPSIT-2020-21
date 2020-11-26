@@ -47,6 +47,7 @@ class _ContactsState extends State<Contacts> {
 
   @override
   void dispose() {
+    _socket.write('' + json.encode({"event": "end", " position": "contacts"}));
     _socket.close();
     super.dispose();
   }
@@ -103,8 +104,9 @@ class _ContactsState extends State<Contacts> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => ChatPage(
-                                        1, //TODO: inserire chat se esiste con l'utente
+                                        1, //TODO: inserire chat se esiste con l'utente DA FARE ASSOLUTAMENTE
                                         _contacts[index].id,
+                                        _contacts[index].imageId,
                                         _contacts[index].name,
                                         _contacts[index].surname)))
                           });

@@ -118,6 +118,7 @@ class _ChatsPageState extends State<ChatsPage> {
                                     builder: (context) => ChatPage(
                                         _chats[index].id,
                                         _chats[index].user.id,
+                                        _chats[index].user.imageId,
                                         _chats[index].user.name,
                                         _chats[index].user.surname)));
                           });

@@ -121,7 +121,20 @@ class _MenuState extends State<Menu> {
                       ),
                     ],
                   ),
-                  onClick: () {});
+                  onClick: () {
+                    print(_selectedAvatar);
+                    if (_selectedAvatar != null) {
+                      Main.client.imageId = _selectedAvatar;
+                      Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT).then((socket) {
+                        socket.write(json.encode({
+                          "event": "changeImage",
+                          "data": {"imageId": _selectedAvatar}
+                        }));
+                        socket.write('' + json.encode({"event": "end", " position": "changeImage"}));
+                        socket.close();
+                      });
+                    }
+                  });
             },
           ),
           Divider(),
@@ -143,7 +156,6 @@ class _MenuState extends State<Menu> {
                 textConfirmButton: "Si",
                 context: context,
                 onClick: () {
-                  //TODO: prima di eliminare l'account chiedere conferma mediante modal
                   Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT)
                       .then((socket) {
                     var data = {
@@ -160,10 +172,12 @@ class _MenuState extends State<Menu> {
 
                       if (data['event'] == 'deleteAccount') {
                         if (data['status'] == 200) {
+                          socket.write('' + json.encode({"event": "end", " position": "deleteAccount"}));
                           socket.close();
                           Main.client = null;
                           Navigator.pushNamed(context, '/home');
                         } else {
+                          socket.write('' + json.encode({"event": "end", " position": "deleteAccount"}));
                           socket.close();
                           //TODO: gestire errori
                         }

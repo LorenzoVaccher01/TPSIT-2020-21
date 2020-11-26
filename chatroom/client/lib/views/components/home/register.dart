@@ -129,7 +129,7 @@ class _RegisterViewState extends State<RegisterView> {
                       var data = {
                         "event": "registration",
                         "data": {
-                          "name": _nameController.text, 
+                          "name": _nameController.text,
                           "surname": _surnameController.text,
                           "nickname": _nicknameController.text,
                           "password": _passwordController.text,
@@ -153,6 +153,11 @@ class _RegisterViewState extends State<RegisterView> {
                                 surname: data['user']['surname'],
                                 nickname: data['user']['nickname'],
                                 token: data['user']['token']);
+                            socket.write('' +
+                                json.encode({
+                                  "event": "end",
+                                  " position": "registration"
+                                }));
                             socket.close();
                             Navigator.pushNamed(context, '/chats');
                           } else {

@@ -9,10 +9,12 @@ import '../main.dart' as Main;
 class ChatPage extends StatefulWidget {
   final int _peerId;
   final int _chatId;
+  final int _peerImageId;
   final String _peerName;
   final String _peerSurname;
 
-  ChatPage(this._chatId, this._peerId, this._peerName, this._peerSurname);
+  ChatPage(this._chatId, this._peerId, this._peerImageId, this._peerName,
+      this._peerSurname);
 
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -45,7 +47,39 @@ class _ChatPageState extends State<ChatPage> {
         var data = json.decode(utf8.decode(event));
 
         if (data['event'] == 'message') {
-          print(data);
+          if (data['status'] == 200) {
+            if (data['data']['chatId'] == widget._chatId) {
+              setState(() {
+                _messages.insert(
+                    0,
+                    new Message(
+                        id: null,
+                        text: data['data']['message'],
+                        userId: data['data']['client']['id'],
+                        date: new DateTime.now().toString()));
+              });
+              _scrollController.animateTo(
+                0,
+                curve: Curves.easeOut,
+                duration: const Duration(milliseconds: 300),
+              );
+            }
+          } else {
+            _error = data['error'];
+            socket.write('' + json.encode({"event": "end", " position": "chat"}));
+            socket.close();
+            new Alert(
+                context: context,
+                title: "Errore",
+                body: Text(data['error']),
+                closeButton: true,
+                textCanelButton: "",
+                textConfirmButton: "Ok",
+                onClick: () {
+                  _socket.close();
+                  Navigator.pushNamed(context, '/chats');
+                });
+          }
         }
 
         if (data['event'] == 'chat') {
@@ -57,6 +91,7 @@ class _ChatPageState extends State<ChatPage> {
           } else {
             setState(() {
               _error = data['error'];
+              socket.write('' + json.encode({"event": "end", " position": "chat"}));
               socket.close();
               new Alert(
                   context: context,
@@ -78,12 +113,14 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void deactivate() {
+    _socket.write('' + json.encode({"event": "end", " position": "chat"}));
     _socket.close();
     super.deactivate();
   }
 
   @override
   void dispose() {
+    _socket.write('' + json.encode({"event": "end", " position": "chat"}));
     _socket.close();
     super.dispose();
   }
@@ -94,33 +131,29 @@ class _ChatPageState extends State<ChatPage> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Theme.of(context).primaryColor,
-        title: RichText(
-          textAlign: TextAlign.center,
-          text: TextSpan(
-            children: [
-              //TODO: aggiungere immagina del profilo stile WhatsApp
-              TextSpan(
-                  text: '${widget._peerName} ${widget._peerSurname}',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  )),
-            ],
-          ),
+        title: Row(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(right: 10),
+              child: Image.asset(
+                'assets/avatars/${widget._peerImageId}.png',
+                width: 50,
+                height: 40,
+              ),
+            ),
+            Text('${widget._peerName} ${widget._peerSurname}',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                )),
+          ],
         ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.more_vert),
-            iconSize: 30.0,
-            color: Colors.white,
-            onPressed: () {},
-          ),
-        ],
         leading: IconButton(
             icon: Icon(Icons.arrow_back_ios),
             iconSize: 25.0,
             color: Colors.white,
             onPressed: () {
+              _socket.write('' + json.encode({"event": "end", " position": "chat"}));
               _socket.close();
               Navigator.pushNamed(context, '/chats');
             }),
@@ -197,6 +230,7 @@ class _ChatPageState extends State<ChatPage> {
                               "message": message,
                             }
                           }));
+                      socket.write('' + json.encode({"event": "end", " position": "message"}));
                       socket.close();
                     });
                   },

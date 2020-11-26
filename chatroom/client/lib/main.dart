@@ -1,10 +1,13 @@
+import 'dart:async';
+
+import 'package:ChatRoom/utils/services/server.dart';
+
 import './views/chats.dart';
 import './views/contacts.dart';
 import './views/home.dart';
 import 'package:flutter/material.dart';
 
 import './utils/client.dart';
-
 
 /// Indirizzo Ip del server. Tale costante viene utilizzata
 /// per la connessione al server tramite WebSocket.
@@ -21,14 +24,16 @@ final String VERSION = "A0.7";
 /// tramite i socket.
 Client client = null;
 
+/// Oggetto utilizzato per la gestione delle connessioni con il server,
+/// ogni client dispone di una sola connessione con il server.
+final ServerConnection SERVER_CONNECTION = new ServerConnection();
+
 void main() {
   runApp(MaterialApp(
     title: 'ChatRoom',
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
-      primaryColor: Color(0xFF075E55),
-      accentColor: Color(0xFF038577)
-    ),
+        primaryColor: Color(0xFF075E55), accentColor: Color(0xFF038577)),
     initialRoute: '/home',
     routes: {
       '/home': (context) => HomePage(),
