@@ -111,7 +111,6 @@ class _LoginViewState extends State<LoginView> {
                     /// listen data
                     socket.listen((event) {
                       var data = json.decode(utf8.decode(event));
-                      print(data);
                       if (data['event'] == 'login') {
                         if (data['status'] == 200) {
                           Main.client = new Client(

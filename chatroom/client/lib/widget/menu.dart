@@ -197,6 +197,10 @@ class _MenuState extends State<Menu> {
                 leading: Icon(Icons.exit_to_app),
                 dense: true),
             onTap: () {
+              Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT).then((socket) {
+                socket.write('' + json.encode({"event": "end", " position": "*"}));
+                socket.close();
+              });
               Main.client = null;
               Navigator.pushNamed(context, '/home');
             },

@@ -3,17 +3,17 @@ import '../widget/alert.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
-
+import 'dart:async';
 import '../main.dart' as Main;
 
 class ChatPage extends StatefulWidget {
-  final int _peerId;
+  final List<Users> _peers;
   final int _chatId;
   final int _peerImageId;
   final String _peerName;
   final String _peerSurname;
 
-  ChatPage(this._chatId, this._peerId, this._peerImageId, this._peerName,
+  ChatPage(this._chatId, this._peers, this._peerImageId, this._peerName,
       this._peerSurname);
 
   @override
@@ -29,10 +29,11 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void initState() {
+    print(widget._peers);
     Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT).then((socket) {
       var data = {
         "event": "chat",
-        "peerId": widget._peerId,
+        "peers": widget._peers,
         "chatId": widget._chatId,
         "client": Main.client.toJson()
       };
@@ -45,6 +46,7 @@ class _ChatPageState extends State<ChatPage> {
       /// listen data
       socket.listen((event) {
         var data = json.decode(utf8.decode(event));
+        print(data['data'][0]);
 
         if (data['event'] == 'message') {
           if (data['status'] == 200) {
@@ -88,6 +90,7 @@ class _ChatPageState extends State<ChatPage> {
               _messages.add(new Message.fromJson(data['data'][i]));
               setState(() {});
             }
+            print(_messages[0].id);
           } else {
             setState(() {
               _error = data['error'];
@@ -164,6 +167,7 @@ class _ChatPageState extends State<ChatPage> {
             child: Container(
               color: Color(0xFFE5DDD5),
               child: ListView.builder(
+                physics: BouncingScrollPhysics(),
                 controller: _scrollController,
                 reverse: true,
                 padding: EdgeInsets.only(top: 10, bottom: 15),
@@ -219,18 +223,17 @@ class _ChatPageState extends State<ChatPage> {
                     );
                     Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT)
                         .then((socket) {
-                      print(message);
                       socket.write('' +
                           json.encode({
                             "event": "message",
                             "client": Main.client,
                             "chatId": widget._chatId,
-                            "peerId": widget._peerId,
+                            "peers": widget._peers,
                             "data": {
                               "message": message,
                             }
                           }));
-                      socket.write('' + json.encode({"event": "end", " position": "message"}));
+                      //Timer(Duration(seconds: 2), () => socket.write('' + json.encode({"event": "end", " position": "message"})));
                       socket.close();
                     });
                   },

@@ -10,7 +10,7 @@ Grazie all'utilizzo di un `server VPS` con sistema operativo `Ubuntu 20.04`, è 
 ## Struttura del progetto
 Di seguito è illustrata, attraverso un diagramma ad albero, la struttura del progetto. 
 
-```
+``` php
 +-- client          //Clinet in Flutter
 |
 +-- server          //Server in Dart
@@ -20,9 +20,8 @@ Di seguito è illustrata, attraverso un diagramma ad albero, la struttura del pr
 
 ## Database
 Per il salvataggio di tutti i messaggi, di tutti gli utenti e di tutte le chats è stato utilizzato un database relazionale (MySQL) strutturato nel seguente modo:
-
 <div align="center">
-  <img src="./database.png" alt="Struttura del database">
+  <img src="./database.png" alt="Struttura del database" width="800px">
 </div>
 
 ### Query particolari
@@ -41,6 +40,11 @@ INNER JOIN users ON userChatAssociations.userId = users.id WHERE userChatAssocia
 WHERE users.id = {n};
 ```
 
+Query utilizzata per la selezione di messaggi di una determinata chat:
+``` SQL
+SELECT id, text, date, userId FROM messages WHERE chatId={n} ORDER BY date DESC
+```
+
 ## Server
 Il server che gestisce tutte le connessioni degli utenti è stato scritto in **NodeJs**, in contemporanea ai seguenti **moduli**: 
 - `net`→ Utilizzato per la gestione della connessione 
@@ -50,8 +54,47 @@ Il server che gestisce tutte le connessioni degli utenti è stato scritto in **N
 
 Oltre ai moduli appena citati sono stati creati dei **moduli personalizzati** per la gestione di funzioni particolari, come ad esempio l'invio di dati specifici o degli eventi inviati tramite Socket oppure per la gestione del database (`database.js`), della console del server (`logger.js`), dell'autenticazione dei client (`auth.js`), ecc. 
 
-### Struttura del server
+### UML
+<div align="center">
+  <img src="./server-uml.png" alt="Struttura del database" width="700px">
+</div>
+
+### Console
+Per una miglior gestione del progetto e per il debug è stato realizzato un sistema di LOG che permette di salvare tutti gli eventi invocati mediante il modulo personalizzato `logger`. Tutte le azioni degli utenti, errori e avvisi, quindi, vengono salvati nella cartella LOG del progetto.
+Qui di seguito è riportata l'immagini visiva della chat del server.
+<div align="center">
+  <img src="./server-console.png" alt="Server UML">
+</div>
+
+### Pezzi di codice significativi
+Di seguito è riportato lo switch che viene utilizzato per la gestione di tutti gli eventi; infatti, grazie a questo è possibile assegnare ogni evento ad un modulo.
+``` JavaScript
+socket.on('data', async (data) => {
+  data = JSON.parse(data);
+
+  // Switch utilizzato per la suddivisione di eventi in diversi file,
+  // tali eventi spesso mantengono una connessione costante con il client
+  // poichè quest'ultimo necessita di aggiornamenti costanti (nuovi messaggi
+  // da parte di altri utenti ecc ecc).
+  switch (data.event) {
+    case 'end':
+      _CONNECTIONS.delete(socket);
+    break;
+    case 'login': require('./modules/socket/events/login')(socket, data.data); break;
+    case 'registration': require('./modules/socket/events/registration')(socket, data.data); break;
+    case 'chats': require('./modules/socket/data/chats').get(socket, data.client); break;
+    case 'chat': require('./modules/socket/data/chat').get(socket, data.client, data.chatId, data.peerId); break;
+    case 'contacts': require('./modules/socket/data/contacts')(socket, data.client); break;
+    case 'deleteAccount': require('./modules/socket/events/deleteAccount')(socket, data.client); break;
+    case 'updateAvatar': require('./modules/socket/events/updateAvatar')(socket, data.client, data.imageId); break;
+    case 'message':
+      [...]
+    break;
+  }
+});
 ```
+### Struttura del server
+``` php
 +-- log/                  //Cartella che contiene tutti i LOG del server
 |
 +-- modules/              //Moduli del progetto
@@ -75,3 +118,9 @@ Oltre ai moduli appena citati sono stati creati dei **moduli personalizzati** pe
 ```
 
 ## Client
+todo: breve descrizione
+
+### UML
+<div align="center">
+  <img src="./client-uml.png" alt="UML client" width="700px">
+</div>

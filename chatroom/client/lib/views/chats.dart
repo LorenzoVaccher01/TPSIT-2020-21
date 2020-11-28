@@ -32,13 +32,33 @@ class _ChatsPageState extends State<ChatsPage> {
       socket.listen((event) {
         var data = json.decode(utf8.decode(event));
 
+        //print(data);
+
+        if (data['event'] == 'message') {
+          if (data['status'] == 200) {
+            for (var i = 0; i < _chats.length; i++) {
+              if (_chats[i].id == data['data']['chatId']) {
+                //TODO: riordinare le chats in base alla data dell'ultimo messaggio
+                setState(() {
+                  //TODO: aggiornare anche la data dell'ultimo messaggio
+                  _chats[i].message.text = data['data']['message'];
+                });
+              }
+            }
+          }
+        }
+
         if (data['event'] == 'chats') {
           if (data['status'] == 200) {
             for (var i = 0; i < data['data'].length; i++) {
-              _chats.add(new Chat.fromJson(data['data'][i]));
+              setState(() {
+                _chats.add(new Chat.fromJson(data['data'][i]));
+              });
             }
-            setState(() {});
           } else {
+            _socket.write(
+                '' + json.encode({"event": "end", " position": "chats"}));
+            _socket.close();
             setState(() {
               //TODO: gestire errori
               _error = data['error'];
@@ -48,9 +68,10 @@ class _ChatsPageState extends State<ChatsPage> {
       });
     });
   }
-  
+
   @override
   void dispose() {
+    _socket.write('' + json.encode({"event": "end", " position": "chats"}));
     _socket.close();
     super.dispose();
   }
@@ -105,23 +126,38 @@ class _ChatsPageState extends State<ChatsPage> {
                         margin: EdgeInsets.only(top: 10, bottom: 5),
                         child: _Chat(
                             _chats[index].id,
-                            _chats[index].user.name,
-                            _chats[index].user.surname,
+                            _chats[index].isGroup
+                                ? _chats[index].message.sender.name
+                                : _chats[index].users[0].name,
+                            _chats[index].isGroup
+                                ? null
+                                : _chats[index].users[0].surname,
                             _chats[index].message.text,
-                            _chats[index].user.imageId),
+                            _chats[index].isGroup
+                                ? 31
+                                : _chats[index].users[0].imageId,
+                            _chats[index].isGroup,
+                            _chats[index].groupName,
+                            _chats[index].groupDescription),
                       ),
                       onTap: () {
+                        _socket.write('' +
+                            json.encode(
+                                {"event": "end", " position": "chats"}));
                         _socket.close();
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ChatPage(
-                                        _chats[index].id,
-                                        _chats[index].user.id,
-                                        _chats[index].user.imageId,
-                                        _chats[index].user.name,
-                                        _chats[index].user.surname)));
-                          });
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ChatPage(
+                                      _chats[index].id,
+                                      _chats[index].users, //TODO: inserire una lista per il gruppo
+                                      _chats[index].isGroup
+                                          ? 31
+                                          : _chats[index].users[0].imageId,
+                                      _chats[index].isGroup ? _chats[index].groupName : _chats[index].users[0].name,
+                                      _chats[index].isGroup ? '' : _chats[index].users[0].surname,
+                                    )));
+                      });
                 },
                 separatorBuilder: (BuildContext context, int index) =>
                     const Divider(
@@ -153,8 +189,12 @@ class _Chat extends StatefulWidget {
   final String _surname;
   final String _message;
   final int _imageId;
+  final bool _isGroup;
+  final String _groupDescription;
+  final String _groupName;
 
-  _Chat(this._id, this._name, this._surname, this._message, this._imageId);
+  _Chat(this._id, this._name, this._surname, this._message, this._imageId,
+      this._isGroup, this._groupName, this._groupDescription);
 
   @override
   _ChatViewState createState() => _ChatViewState();
@@ -163,11 +203,12 @@ class _Chat extends StatefulWidget {
 class _ChatViewState extends State<_Chat> {
   /// Metodo utilizzato per troncare il messaggio dopo tot
   /// caratteri per evitare overflow del testo.
+  /// //TODO: fare il resize in base alla lunghezza del dispositivo
   String _cutMessage(String message) {
-    if (message.length <= 35)
+    if (message.length <= 30)
       return message;
     else
-      return message.substring(0, 35) + '...';
+      return message.substring(0, 30) + '...';
   }
 
   @override
@@ -187,7 +228,9 @@ class _ChatViewState extends State<_Chat> {
             children: [
               Container(
                 child: Text(
-                  "${widget._name} ${widget._surname}",
+                  widget._isGroup
+                      ? "${widget._groupName}"
+                      : "${widget._name} ${widget._surname}",
                   style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
@@ -195,7 +238,9 @@ class _ChatViewState extends State<_Chat> {
                 ),
               ),
               Text(
-                _cutMessage(widget._message),
+                _cutMessage(widget._isGroup
+                    ? widget._name + ': ' + widget._message
+                    : widget._message),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(color: Colors.grey, fontSize: 16),

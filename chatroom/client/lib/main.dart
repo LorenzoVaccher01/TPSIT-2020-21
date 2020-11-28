@@ -1,7 +1,3 @@
-import 'dart:async';
-
-import 'package:ChatRoom/utils/services/server.dart';
-
 import './views/chats.dart';
 import './views/contacts.dart';
 import './views/home.dart';
@@ -23,10 +19,6 @@ final String VERSION = "A0.7";
 /// Tutte le informazioni relative al client vengono ricevuto del server
 /// tramite i socket.
 Client client = null;
-
-/// Oggetto utilizzato per la gestione delle connessioni con il server,
-/// ogni client dispone di una sola connessione con il server.
-final ServerConnection SERVER_CONNECTION = new ServerConnection();
 
 void main() {
   runApp(MaterialApp(

@@ -100,7 +100,8 @@ class _ContactsState extends State<Contacts> {
                               _contacts[index].surname,
                               _contacts[index].imageId)),
                       onTap: () => {
-                            Navigator.push(
+                        print('TODO!')
+                            /*Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => ChatPage(
@@ -108,7 +109,7 @@ class _ContactsState extends State<Contacts> {
                                         _contacts[index].id,
                                         _contacts[index].imageId,
                                         _contacts[index].name,
-                                        _contacts[index].surname)))
+                                        _contacts[index].surname)))*/
                           });
                 },
                 separatorBuilder: (BuildContext context, int index) =>

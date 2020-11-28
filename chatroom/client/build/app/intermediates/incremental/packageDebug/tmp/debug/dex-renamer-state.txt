@@ -1,4 +1,4 @@
-#Thu Nov 26 18:51:24 CET 2020
+#Fri Nov 27 22:20:07 CET 2020
 base.0=E\:\\GitHub Repository\\TPSIT-2020-21\\chatroom\\client\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\out\\classes.dex
 path.0=classes.dex
 renamed.0=classes.dex
