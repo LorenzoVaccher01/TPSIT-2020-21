@@ -11,11 +11,11 @@ Grazie all'utilizzo di un `server VPS` con sistema operativo `Ubuntu 20.04`, è 
 Di seguito è illustrata, attraverso un diagramma ad albero, la struttura del progetto. 
 
 ``` php
-+-- client          //Clinet in Flutter
++-- client          //Client in Flutter
 |
-+-- server          //Server in Dart
++-- server          //Server in NodeJs
 |
-+-- database.sql    //Struttura del database
++-- database.sql    //Database
 ```
 
 ## Database
@@ -25,7 +25,7 @@ Per il salvataggio di tutti i messaggi, di tutti gli utenti e di tutte le chats 
 </div>
 
 ### Query particolari
-#### Query utilizzata per ottenere tutte le chats di un utente dato, appunto, l'id identificativo (`userId`) dell'utente in questione.
+Query utilizzata per ottenere tutte le chats di un utente dato, appunto, l'id identificativo (`userId`) dell'utente in questione.
 
 ``` SQL
 SELECT chats.isGroup, chats.groupDescription, chats.groupName, recipients.userId, recipients.chatId, recipients.name AS userName, recipients.surname AS userSurname, recipients.nickname AS userNickname, recipients.lastAccessDate AS userLastAccessDate, recipients.imageId AS userImageId 
@@ -43,6 +43,19 @@ WHERE users.id = {n};
 Query utilizzata per la selezione di messaggi di una determinata chat:
 ``` SQL
 SELECT id, text, date, userId FROM messages WHERE chatId={n} ORDER BY date DESC
+```
+
+Query utilizzata per verificare la presenza un Chat tra due utenti. Questa query viene utilizzata nella schermata dei contatti per apire una chat (tra i due utenti) esistente.
+``` SQL
+SELECT chats.id
+FROM chats
+INNER JOIN userChatAssociations ON userChatAssociations.chatId = chats.id
+INNER JOIN (
+	SELECT userChatAssociations.chatId
+	FROM userChatAssociations
+	WHERE userChatAssociations.userId = {user_1}
+)utenteDue ON utenteDue.chatId = userChatAssociations.chatId
+WHERE userChatAssociations.userId = {user_2} AND chats.isGroup != 1;
 ```
 
 ## Server
@@ -118,9 +131,76 @@ socket.on('data', async (data) => {
 ```
 
 ## Client
-todo: breve descrizione
+Il client è stato realizzato interamente in Flutter (Dart) prendendo sputto dalle seguenti applicazioni:
+- `WhatsApp`
+- `Telegram`
+
+Per la connessione tramite il server è stata utilizzata la classe `Socket`
 
 ### UML
 <div align="center">
   <img src="./client-uml.png" alt="UML client" width="700px">
+</div>
+
+### Struttura del client
+``` php
++-- android/
+|
++-- assets/               //Immagini del progetto
+|     \-- avatars
+|
++-- build/
+|
++-- ios/
+|
++-- lib/
+|    +-- utils/
+|    |    +-- models/
+|    |    |   +-- chats.dart
+|    |    |   |
+|    |    |   +-- contacts.dart
+|    |    |   |
+|    |    |   \-- message.dart
+|    |    +-- services/
+|    |    |
+|    |    \-- client.dart
+|    +-- views/
+|    |    +-- components
+|    |    |   +-- login.dart
+|    |    |   |
+|    |    |   \-- register.dart
+|    |    |
+|    |    +-- chat.dart
+|    |    |
+|    |    +-- chats.dart
+|    |    |
+|    |    +-- contacts.dart
+|    |    |
+|    |    \-- home.dart   
+|    |
+|    +-- widget/
+|    |    +-- alert.dart
+|    |    |
+|    |    \-- menu.dart
+|    |
+|    \-- main.dart
+|
++-- test/                //Cartella di test
+|
++-- ChatRoom.iml
+|
+\-- pubspec.yaml
+
+```
+
+### Immagini applicazione
+<div align="center">
+  <img src="./flutter_01.png" alt="UML client" width="300px">
+  <img src="./flutter_02.png" alt="UML client" width="300px">
+  <img src="./flutter_03.png" alt="UML client" width="300px">
+  <img src="./flutter_04.png" alt="UML client" width="300px">
+  <img src="./flutter_05.png" alt="UML client" width="300px">
+  <img src="./flutter_06.png" alt="UML client" width="300px">
+  <img src="./flutter_07.png" alt="UML client" width="300px">
+  <img src="./flutter_08.png" alt="UML client" width="300px">
 </div>

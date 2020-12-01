@@ -1,5 +1,6 @@
 import '../utils/models/chats.dart';
 import 'package:flutter/material.dart';
+import '../widget/alert.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -42,6 +43,9 @@ class _ChatsPageState extends State<ChatsPage> {
                 setState(() {
                   //TODO: aggiornare anche la data dell'ultimo messaggio
                   _chats[i].message.text = data['data']['message'];
+                  var chat = _chats[i];
+                  _chats.remove(chat);
+                  _chats.insert(0, chat);
                 });
               }
             }
@@ -60,8 +64,21 @@ class _ChatsPageState extends State<ChatsPage> {
                 '' + json.encode({"event": "end", " position": "chats"}));
             _socket.close();
             setState(() {
-              //TODO: gestire errori
               _error = data['error'];
+                          socket
+                .write('' + json.encode({"event": "end", " position": "chats"}));
+            socket.close();
+            new Alert(
+                context: context,
+                title: "Errore",
+                body: Text(data['error']),
+                closeButton: true,
+                textCanelButton: "",
+                textConfirmButton: "Ok",
+                onClick: () {
+                  _socket.close();
+                  Navigator.pushNamed(context, '/chats');
+                });
             });
           }
         }
@@ -150,6 +167,7 @@ class _ChatsPageState extends State<ChatsPage> {
                             MaterialPageRoute(
                                 builder: (context) => ChatPage(
                                       _chats[index].id,
+                                      _chats[index].isGroup,
                                       _chats[index].users, //TODO: inserire una lista per il gruppo
                                       _chats[index].isGroup
                                           ? 31

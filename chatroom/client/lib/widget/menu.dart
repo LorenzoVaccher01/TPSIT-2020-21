@@ -1,3 +1,5 @@
+import 'package:ChatRoom/themeBuilder.dart';
+
 import './alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -5,9 +7,11 @@ import 'dart:io';
 import 'dart:convert';
 import '../main.dart' as Main;
 
+int _selectedAvatar = Main.client.imageId;
+
 class Menu extends StatefulWidget {
   static final int _AVATARS_COUNT = 30;
-  
+
   Menu();
 
   @override
@@ -15,8 +19,6 @@ class Menu extends StatefulWidget {
 }
 
 class _MenuState extends State<Menu> {
-  int _selectedAvatar = null;
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -37,7 +39,12 @@ class _MenuState extends State<Menu> {
                     height: 70, width: 70),
                 Container(
                   margin: EdgeInsets.only(top: 10, bottom: 5),
-                  child: Text(Main.client.name + ' ' + Main.client.surname,
+                  child: Text(
+                      Main.client.name.substring(0, 1).toUpperCase() +
+                          Main.client.name.substring(1) +
+                          ' ' +
+                          Main.client.surname.substring(0, 1).toUpperCase() +
+                          Main.client.surname.substring(1),
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 22,
@@ -45,7 +52,7 @@ class _MenuState extends State<Menu> {
                 ),
                 Text(
                   '@' + Main.client.nickname,
-                  style: TextStyle(color: Colors.grey[200], fontSize: 16),
+                  style: TextStyle(color: Colors.grey[100], fontSize: 15),
                 )
               ],
             ),
@@ -77,61 +84,36 @@ class _MenuState extends State<Menu> {
                   closeButton: false,
                   textConfirmButton: "Fatto",
                   textCanelButton: "",
-                  body: ListView( //TODO: mostrare tutti gli avatar con i checkbox e appena l'utente preme il bottone inviare evento al server e cambiare immagine al client
-                    children: [
-                      Table(
-                        defaultVerticalAlignment:
-                            TableCellVerticalAlignment.middle,
-                        children: [
-                          TableRow(children: [
-                            Container(
-                              height: 65,
-                              width: 65,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: ExactAssetImage(
-                                      'assets/avatars/${1}.png'),
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                              child: Checkbox(
-                                value:  _selectedAvatar == 1 ? true : false,
-                                activeColor: /*Theme.of(context).primaryColor*/ Colors.transparent,
-                                checkColor: Theme.of(context).primaryColor,
-                                onChanged: (bool val) {
-                                  print(val);
-                                  setState(() {
-                                    val ? _selectedAvatar = null : _selectedAvatar = 1;
-                                  });
-                                },
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(top: 10),
-                              child: Image.asset('assets/avatars/${2}.png',
-                                  height: 65, width: 65),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(top: 10),
-                              child: Image.asset('assets/avatars/${3}.png',
-                                  height: 65, width: 65),
-                            ),
-                          ])
-                        ],
-                      ),
-                    ],
-                  ),
+                  body: _Avatars(),
                   onClick: () {
-                    print(_selectedAvatar);
                     if (_selectedAvatar != null) {
                       Main.client.imageId = _selectedAvatar;
-                      Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT).then((socket) {
+                      Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT)
+                          .then((socket) {
                         socket.write(json.encode({
-                          "event": "changeImage",
+                          "event": "updateAvatar",
+                          "client": Main.client.toJson(),
                           "data": {"imageId": _selectedAvatar}
                         }));
-                        socket.write('' + json.encode({"event": "end", " position": "changeImage"}));
-                        socket.close();
+
+                        socket.listen((event) {
+                          var data = json.decode(utf8.decode(event));
+                          if (data['event'] == 'updateAvatar') {
+                            if (data['status'] == 200) {
+                              Main.client.imageId = _selectedAvatar;
+                              setState(() {
+                                
+                              });
+                            }
+                          }
+
+                          socket.write('' +
+                              json.encode({
+                                "event": "end",
+                                "position": "updateAvatar"
+                              }));
+                          socket.close();
+                        });
                       });
                     }
                   });
@@ -172,12 +154,20 @@ class _MenuState extends State<Menu> {
 
                       if (data['event'] == 'deleteAccount') {
                         if (data['status'] == 200) {
-                          socket.write('' + json.encode({"event": "end", " position": "deleteAccount"}));
+                          socket.write('' +
+                              json.encode({
+                                "event": "end",
+                                " position": "deleteAccount"
+                              }));
                           socket.close();
                           Main.client = null;
                           Navigator.pushNamed(context, '/home');
                         } else {
-                          socket.write('' + json.encode({"event": "end", " position": "deleteAccount"}));
+                          socket.write('' +
+                              json.encode({
+                                "event": "end",
+                                " position": "deleteAccount"
+                              }));
                           socket.close();
                           //TODO: gestire errori
                         }
@@ -198,7 +188,8 @@ class _MenuState extends State<Menu> {
                 dense: true),
             onTap: () {
               Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT).then((socket) {
-                socket.write('' + json.encode({"event": "end", " position": "*"}));
+                socket.write(
+                    '' + json.encode({"event": "end", " position": "*"}));
                 socket.close();
               });
               Main.client = null;
@@ -217,6 +208,676 @@ class _MenuState extends State<Menu> {
           )
         ],
       ),
+    );
+  }
+}
+
+class _Avatars extends StatefulWidget {
+  @override
+  _AvatarState createState() => _AvatarState();
+}
+
+class _AvatarState extends State<_Avatars> {
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: [
+        Table(
+          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+          children: [
+            TableRow(children: [
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${1}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 1
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 1;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${2}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 2
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 2;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${3}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 3
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 3;
+                  });
+                },
+              ),
+            ]),
+            TableRow(children: [
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${4}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 4
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 4;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${5}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 5
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 5;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${6}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 6
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 6;
+                  });
+                },
+              ),
+            ]),
+            TableRow(children: [
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${7}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 7
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 7;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${8}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 8
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 8;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${9}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 9
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 9;
+                  });
+                },
+              ),
+            ]),
+            TableRow(children: [
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${10}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 10
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 10;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${11}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 11
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 11;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${12}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 12
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 12;
+                  });
+                },
+              ),
+            ]),
+            TableRow(children: [
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${13}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 13
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 13;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${14}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 14
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 14;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${15}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 15
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 15;
+                  });
+                },
+              ),
+            ]),
+            TableRow(children: [
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${16}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 16
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 16;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${17}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 17
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 17;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${18}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 18
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 18;
+                  });
+                },
+              ),
+            ]),
+            TableRow(children: [
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${19}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 19
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 19;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${20}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 20
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 20;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${21}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 21
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 21;
+                  });
+                },
+              ),
+            ]),
+            TableRow(children: [
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${22}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 22
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 22;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${23}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 23
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 23;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${24}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 24
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 24;
+                  });
+                },
+              ),
+            ]),
+            TableRow(children: [
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${25}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 25
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 25;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${26}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 26
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 26;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${27}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 27
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 27;
+                  });
+                },
+              ),
+            ]),
+            TableRow(children: [
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${28}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 28
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 28;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${29}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 29
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 29;
+                  });
+                },
+              ),
+              InkWell(
+                child: Container(
+                  height: 65,
+                  width: 65,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/avatars/${30}.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: _selectedAvatar == 30
+                      ? Icon(Icons.check,
+                          color: Theme.of(context).primaryColor, size: 50)
+                      : null,
+                ),
+                onTap: () {
+                  setState(() {
+                    _selectedAvatar = 30;
+                  });
+                },
+              ),
+            ]),
+          ],
+        ),
+      ],
     );
   }
 }

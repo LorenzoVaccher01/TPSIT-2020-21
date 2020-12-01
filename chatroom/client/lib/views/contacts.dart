@@ -1,3 +1,5 @@
+import 'package:ChatRoom/utils/models/chats.dart';
+import 'package:ChatRoom/widget/alert.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import '../utils/models/contacts.dart';
@@ -31,13 +33,27 @@ class _ContactsState extends State<Contacts> {
         if (data['event'] == 'contacts') {
           if (data['status'] == 200) {
             for (var i = 0; i < data['data'].length; i++) {
+              print(data['data'][i]);
               _contacts.add(new Contact.fromJson(data['data'][i]));
               setState(() {});
             }
           } else {
             setState(() {
-              //TODO: gestire errori
               _error = data['error'];
+              socket.write(
+                  '' + json.encode({"event": "end", " position": "contacts"}));
+              socket.close();
+              new Alert(
+                  context: context,
+                  title: "Errore",
+                  body: Text(data['error']),
+                  closeButton: true,
+                  textCanelButton: "",
+                  textConfirmButton: "Ok",
+                  onClick: () {
+                    _socket.close();
+                    Navigator.pushNamed(context, '/chats');
+                  });
             });
           }
         }
@@ -90,7 +106,6 @@ class _ContactsState extends State<Contacts> {
                 itemCount: _contacts.length,
                 itemBuilder: (BuildContext context, int index) {
                   return InkWell(
-
                       ///Widget utilizzato come GestureDetector, con l'unica differenza che prende il 100% della lunghezza del contenitore e non solo la lunghezza dei Widget
                       child: Container(
                           margin: EdgeInsets.only(top: 10, bottom: 5),
@@ -98,19 +113,26 @@ class _ContactsState extends State<Contacts> {
                               _contacts[index].id,
                               _contacts[index].name,
                               _contacts[index].surname,
+                              _contacts[index].nickname,
                               _contacts[index].imageId)),
-                      onTap: () => {
-                        print('TODO!')
-                            /*Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ChatPage(
-                                        1, //TODO: inserire chat se esiste con l'utente DA FARE ASSOLUTAMENTE
-                                        _contacts[index].id,
-                                        _contacts[index].imageId,
-                                        _contacts[index].name,
-                                        _contacts[index].surname)))*/
-                          });
+                      onTap: () {
+                        List<Users> user = [];
+                        user.add(new Users(
+                            id: _contacts[index].id,
+                            imageId: _contacts[index].imageId,
+                            name: _contacts[index].name,
+                            surname: _contacts[index].surname));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ChatPage(
+                                    _contacts[index].chatId,
+                                    false,
+                                    user,
+                                    _contacts[index].imageId,
+                                    _contacts[index].name,
+                                    _contacts[index].surname)));
+                      });
                 },
                 separatorBuilder: (BuildContext context, int index) =>
                     const Divider(
@@ -133,9 +155,10 @@ class _Contact extends StatefulWidget {
   final int _id;
   final String _name;
   final String _surname;
+  final String _nickname;
   final int _imageId;
 
-  _Contact(this._id, this._name, this._surname, this._imageId);
+  _Contact(this._id, this._name, this._surname, this._nickname, this._imageId);
 
   @override
   __ContactState createState() => __ContactState();
@@ -158,12 +181,22 @@ class __ContactState extends State<_Contact> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                child: Text(
-                  "${widget._name} ${widget._surname}",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 19),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "${widget._name.substring(0, 1).toUpperCase()}${widget._name.substring(1)} ${widget._surname.substring(0, 1).toUpperCase()}${widget._surname.substring(1)}",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 19),
+                    ),
+                    Text(
+                      "@${widget._nickname}",
+                      style: TextStyle(color: Colors.grey, fontSize: 15),
+                    )
+                  ],
                 ),
               ),
             ],

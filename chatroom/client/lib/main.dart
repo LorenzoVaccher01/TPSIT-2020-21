@@ -2,7 +2,7 @@ import './views/chats.dart';
 import './views/contacts.dart';
 import './views/home.dart';
 import 'package:flutter/material.dart';
-
+import './themeBuilder.dart';
 import './utils/client.dart';
 
 /// Indirizzo Ip del server. Tale costante viene utilizzata
@@ -21,16 +21,24 @@ final String VERSION = "A0.7";
 Client client = null;
 
 void main() {
-  runApp(MaterialApp(
-    title: 'ChatRoom',
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-        primaryColor: Color(0xFF075E55), accentColor: Color(0xFF038577)),
-    initialRoute: '/home',
-    routes: {
-      '/home': (context) => HomePage(),
-      '/chats': (context) => ChatsPage(),
-      '/contacts': (context) => Contacts()
-    },
-  ));
+  runApp(ThemeBuilder(
+      defaultBrightness: Brightness.light,
+      builder: (context, _brightness) {
+        return MaterialApp(
+          title: 'ChatRoom',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+              primaryColor: Color(0xFF075E55), 
+              accentColor: Color(0xFF038577),
+              //TODO: permettere all'utente di poter scegliare se avere il tema chiaro o scuro
+              brightness: Brightness.light
+            ),
+          initialRoute: '/home',
+          routes: {
+            '/home': (context) => HomePage(),
+            '/chats': (context) => ChatsPage(),
+            '/contacts': (context) => Contacts()
+          },
+        );
+      }));
 }
