@@ -1,0 +1,24 @@
+{
+  "name": "flutter-chat-server",
+  "version": "1.0.0",
+  "description": "Server for a chat application built in Flutter",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon ./app.js"
+  },
+  "keywords": [
+    "chat",
+    "server",
+	"socket"
+  ],
+  "author": "Lorenzo Vaccher",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "fs": "0.0.1-security",
+    "geoip-lite": "^1.4.2",
+    "mysql": "^2.18.1",
+    "net": "^1.0.2",
+    "nodemon": "^2.0.6"
+  }
+}

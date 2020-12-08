@@ -38,18 +38,6 @@
       "languageVersion": "2.12"
     },
     {
-      "name": "convert",
-      "rootUri": "file:///D:/Software/Flutter/.pub-cache/hosted/pub.dartlang.org/convert-2.1.1",
-      "packageUri": "lib/",
-      "languageVersion": "1.17"
-    },
-    {
-      "name": "crypto",
-      "rootUri": "file:///D:/Software/Flutter/.pub-cache/hosted/pub.dartlang.org/crypto-2.1.5",
-      "packageUri": "lib/",
-      "languageVersion": "2.3"
-    },
-    {
       "name": "cupertino_icons",
       "rootUri": "file:///D:/Software/Flutter/.pub-cache/hosted/pub.dartlang.org/cupertino_icons-1.0.0",
       "packageUri": "lib/",
@@ -146,19 +134,13 @@
       "languageVersion": "2.12"
     },
     {
-      "name": "web_socket_channel",
-      "rootUri": "file:///D:/Software/Flutter/.pub-cache/hosted/pub.dartlang.org/web_socket_channel-1.1.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.0"
-    },
-    {
       "name": "ChatRoom",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "2.7"
     }
   ],
-  "generated": "2020-11-24T19:12:05.964496Z",
+  "generated": "2020-12-05T15:22:34.927494Z",
   "generator": "pub",
   "generatorVersion": "2.12.0-49.0.dev"
 }

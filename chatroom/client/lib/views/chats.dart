@@ -33,16 +33,14 @@ class _ChatsPageState extends State<ChatsPage> {
       socket.listen((event) {
         var data = json.decode(utf8.decode(event));
 
-        //print(data);
-
         if (data['event'] == 'message') {
           if (data['status'] == 200) {
             for (var i = 0; i < _chats.length; i++) {
               if (_chats[i].id == data['data']['chatId']) {
-                //TODO: riordinare le chats in base alla data dell'ultimo messaggio
                 setState(() {
-                  //TODO: aggiornare anche la data dell'ultimo messaggio
                   _chats[i].message.text = data['data']['message'];
+                  _chats[i].message.date = data['data']['date'];
+                  _chats[i].message.id = data['data']['id'];
                   var chat = _chats[i];
                   _chats.remove(chat);
                   _chats.insert(0, chat);
@@ -65,20 +63,20 @@ class _ChatsPageState extends State<ChatsPage> {
             _socket.close();
             setState(() {
               _error = data['error'];
-                          socket
-                .write('' + json.encode({"event": "end", " position": "chats"}));
-            socket.close();
-            new Alert(
-                context: context,
-                title: "Errore",
-                body: Text(data['error']),
-                closeButton: true,
-                textCanelButton: "",
-                textConfirmButton: "Ok",
-                onClick: () {
-                  _socket.close();
-                  Navigator.pushNamed(context, '/chats');
-                });
+              socket.write(
+                  '' + json.encode({"event": "end", " position": "chats"}));
+              socket.close();
+              new Alert(
+                  context: context,
+                  title: "Errore",
+                  body: Text(data['error']),
+                  closeButton: true,
+                  textCanelButton: "",
+                  textConfirmButton: "Ok",
+                  onClick: () {
+                    _socket.close();
+                    Navigator.pushNamed(context, '/chats');
+                  });
             });
           }
         }
@@ -150,6 +148,7 @@ class _ChatsPageState extends State<ChatsPage> {
                                 ? null
                                 : _chats[index].users[0].surname,
                             _chats[index].message.text,
+                            _chats[index].message.date,
                             _chats[index].isGroup
                                 ? 31
                                 : _chats[index].users[0].imageId,
@@ -168,12 +167,17 @@ class _ChatsPageState extends State<ChatsPage> {
                                 builder: (context) => ChatPage(
                                       _chats[index].id,
                                       _chats[index].isGroup,
-                                      _chats[index].users, //TODO: inserire una lista per il gruppo
+                                      _chats[index]
+                                          .users,
                                       _chats[index].isGroup
                                           ? 31
                                           : _chats[index].users[0].imageId,
-                                      _chats[index].isGroup ? _chats[index].groupName : _chats[index].users[0].name,
-                                      _chats[index].isGroup ? '' : _chats[index].users[0].surname,
+                                      _chats[index].isGroup
+                                          ? _chats[index].groupName
+                                          : _chats[index].users[0].name,
+                                      _chats[index].isGroup
+                                          ? ''
+                                          : _chats[index].users[0].surname,
                                     )));
                       });
                 },
@@ -206,12 +210,13 @@ class _Chat extends StatefulWidget {
   final String _name;
   final String _surname;
   final String _message;
+  final String _date;
   final int _imageId;
   final bool _isGroup;
   final String _groupDescription;
   final String _groupName;
 
-  _Chat(this._id, this._name, this._surname, this._message, this._imageId,
+  _Chat(this._id, this._name, this._surname, this._message, this._date, this._imageId,
       this._isGroup, this._groupName, this._groupDescription);
 
   @override
@@ -229,31 +234,54 @@ class _ChatViewState extends State<_Chat> {
       return message.substring(0, 30) + '...';
   }
 
+  String _getDate(String date) {
+    DateTime today = DateTime.now();
+    DateTime dateTime = DateTime.parse(date).add(Duration(hours: 1));
+
+    if (today.difference(dateTime).inDays == 1)
+      return "Ieri";
+    else if (today.difference(dateTime).inDays > 1)
+      return "${dateTime.day}/${dateTime.month}/${dateTime.year.toString().substring(2)}";
+    else 
+      return "${dateTime.hour}:${dateTime.minute}";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
           margin: EdgeInsets.only(left: 10, right: 15),
           child: Image.asset("assets/avatars/${widget._imageId}.png",
               width: 55, height: 55),
         ),
-        Container(
+        Expanded(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                child: Text(
-                  widget._isGroup
-                      ? "${widget._groupName}"
-                      : "${widget._name} ${widget._surname}",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 19),
-                ),
+              Row(
+                children: [
+                  Text(
+                    widget._isGroup
+                        ? "${widget._groupName}"
+                        : "${widget._name} ${widget._surname}",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 19),
+                  ),
+                  Spacer(),
+                  Padding(
+                    padding: EdgeInsets.only(right: 15),
+                    child: Text(
+                      _getDate("${widget._date}"),
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                  ),
+                ],
               ),
               Text(
                 _cutMessage(widget._isGroup

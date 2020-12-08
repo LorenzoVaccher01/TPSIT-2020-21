@@ -1,3 +1,5 @@
+import 'package:ChatRoom/utils/services/server.dart';
+
 import './views/chats.dart';
 import './views/contacts.dart';
 import './views/home.dart';
@@ -20,7 +22,16 @@ final String VERSION = "A0.7";
 /// tramite i socket.
 Client client = null;
 
-void main() {
+ServerConnection serverConnection = null;
+
+void main() async {
+  /*serverConnection = new ServerConnection();
+  print('asd');
+  await serverConnection.connect();
+  Stream stream = serverConnection.addStream();
+  stream.listen((event) {
+    print("EVENT: ${event}");
+  });*/
   runApp(ThemeBuilder(
       defaultBrightness: Brightness.light,
       builder: (context, _brightness) {
@@ -28,11 +39,9 @@ void main() {
           title: 'ChatRoom',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-              primaryColor: Color(0xFF075E55), 
+              primaryColor: Color(0xFF075E55),
               accentColor: Color(0xFF038577),
-              //TODO: permettere all'utente di poter scegliare se avere il tema chiaro o scuro
-              brightness: Brightness.light
-            ),
+              brightness: Brightness.light),
           initialRoute: '/home',
           routes: {
             '/home': (context) => HomePage(),

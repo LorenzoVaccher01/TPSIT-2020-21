@@ -33,7 +33,6 @@ class _ContactsState extends State<Contacts> {
         if (data['event'] == 'contacts') {
           if (data['status'] == 200) {
             for (var i = 0; i < data['data'].length; i++) {
-              print(data['data'][i]);
               _contacts.add(new Contact.fromJson(data['data'][i]));
               setState(() {});
             }
@@ -86,6 +85,13 @@ class _ContactsState extends State<Contacts> {
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   )),
+                  TextSpan(text: '\n'),
+                  TextSpan(
+                    text: '${_contacts.length} contatti',
+                    style: TextStyle(
+                      fontSize: 15
+                    )
+                  )
             ],
           ),
         ),

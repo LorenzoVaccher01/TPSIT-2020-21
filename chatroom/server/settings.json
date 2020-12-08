@@ -1,0 +1,12 @@
+{
+  "debug": true,
+  "serverPort": 25501,
+  "database": {
+    "host": "localhost",
+    "database": "chatRoom",
+    "port": 3306,
+    "user": "chatRoom",
+    "password": "chatRoom2020LV",
+    "insecureAuth": true
+  }
+}

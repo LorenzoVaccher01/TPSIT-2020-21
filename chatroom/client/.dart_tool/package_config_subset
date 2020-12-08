@@ -22,14 +22,6 @@ collection
 2.12
 file:///D:/Software/Flutter/.pub-cache/hosted/pub.dartlang.org/collection-1.15.0-nullsafety.5/
 file:///D:/Software/Flutter/.pub-cache/hosted/pub.dartlang.org/collection-1.15.0-nullsafety.5/lib/
-convert
-1.17
-file:///D:/Software/Flutter/.pub-cache/hosted/pub.dartlang.org/convert-2.1.1/
-file:///D:/Software/Flutter/.pub-cache/hosted/pub.dartlang.org/convert-2.1.1/lib/
-crypto
-2.3
-file:///D:/Software/Flutter/.pub-cache/hosted/pub.dartlang.org/crypto-2.1.5/
-file:///D:/Software/Flutter/.pub-cache/hosted/pub.dartlang.org/crypto-2.1.5/lib/
 cupertino_icons
 2.0
 file:///D:/Software/Flutter/.pub-cache/hosted/pub.dartlang.org/cupertino_icons-1.0.0/
@@ -82,10 +74,6 @@ vector_math
 2.12
 file:///D:/Software/Flutter/.pub-cache/hosted/pub.dartlang.org/vector_math-2.1.0-nullsafety.5/
 file:///D:/Software/Flutter/.pub-cache/hosted/pub.dartlang.org/vector_math-2.1.0-nullsafety.5/lib/
-web_socket_channel
-2.0
-file:///D:/Software/Flutter/.pub-cache/hosted/pub.dartlang.org/web_socket_channel-1.1.0/
-file:///D:/Software/Flutter/.pub-cache/hosted/pub.dartlang.org/web_socket_channel-1.1.0/lib/
 sky_engine
 2.12
 file:///D:/Software/Flutter/bin/cache/pkg/sky_engine/

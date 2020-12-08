@@ -7,21 +7,27 @@ class ServerConnection {
   Socket _socket;
   bool _connected = false;
 
-  ServerConnection() {
-    print('ASD!');
-    Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT).then((socket) {
+  ServerConnection() {}
+
+  get connected => _connected;
+
+  Future<dynamic> connect() async {
+    _socket = await Socket.connect(Main.SOCKET_IP, Main.SOCKET_PORT);/*.then((socket) {
       _socket = socket;
       _connected = true;
       print('OK!');
-    });
+    });*/
+    print('pippo');
+    _connected = true;
   }
-
-  get connected => _connected;
 
   Stream addStream() {
     Stream stream;
     _socket.addStream(stream);
     return stream;
+  }
+
+  void removeStream(Stream stream) { //TODO
   }
 
   void sendData(dynamic data, {bool convertToJson}) {
