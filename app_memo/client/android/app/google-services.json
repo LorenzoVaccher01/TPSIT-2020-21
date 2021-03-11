@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "573873021688",
+    "firebase_url": "https://app-memo-bc675-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "app-memo-bc675",
+    "storage_bucket": "app-memo-bc675.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:573873021688:android:868efd22b4ac71ffc2910d",
+        "android_client_info": {
+          "package_name": "com.lorenzovaccher.appmemo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "573873021688-fihbo20m29pe2f8dnlu5mtjag3649jg6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lorenzovaccher.appmemo",
+            "certificate_hash": "00a655bd9d162c022d7aa426ef2511f13077ce02"
+          }
+        },
+        {
+          "client_id": "573873021688-ejscok6g93fqf4gvablkfchi0vin7peg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZ0wszy2HjmpGD1sVCjfsHNED6uV-wQQ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "573873021688-ejscok6g93fqf4gvablkfchi0vin7peg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "573873021688-j23fu17tdbbrl13ghm5hp2hlcfoc3u7m.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lorenzovaccher.appmemo"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
