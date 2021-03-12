@@ -1,6 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:math';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -148,6 +148,14 @@ class _RegisterViewState extends State<RegisterView> {
                             surname: bodyResponse['userData']['surname'],
                             email: bodyResponse['userData']['email'],
                             sessionCookie: response.headers['set-cookie']);
+                        SharedPreferences _prefs =
+                            await SharedPreferences.getInstance();
+                        _prefs.setString('user.name', App.client.name);
+                        _prefs.setString('user.surname', App.client.surname);
+                        _prefs.setString('user.email', App.client.email);
+                        _prefs.setInt('user.id', App.client.id);
+                        _prefs.setString(
+                            'user.sessionCookie', App.client.sessionCookie);
                         Navigator.pushNamed(context, '/home');
                       } else {
                         _error = bodyResponse['message'];

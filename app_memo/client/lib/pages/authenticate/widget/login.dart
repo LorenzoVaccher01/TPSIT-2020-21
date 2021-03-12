@@ -1,6 +1,7 @@
 import 'package:http/http.dart' as http;
 
-import 'package:app_memo/pages/home/home.dart';
+import 'package:app_memo/pages/home/memo.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -88,7 +89,6 @@ class _LoginViewState extends State<LoginView> {
                         fontSize: 16)),
                 color: Colors.green,
                 onPressed: () async {
-
                   final response = await http.post(App.SERVER_WEB + '/login',
                       headers: <String, String>{
                         'Content-Type': 'application/json; charset=UTF-8',
@@ -104,12 +104,19 @@ class _LoginViewState extends State<LoginView> {
                       _error = "";
                       setState(() {});
                       App.client = new Client(
-                        id: bodyResponse['userData']['id'],
-                        name: bodyResponse['userData']['name'],
-                        surname: bodyResponse['userData']['surname'],
-                        email: bodyResponse['userData']['email'],
-                        sessionCookie: response.headers['set-cookie']
-                      );
+                          id: bodyResponse['userData']['id'],
+                          name: bodyResponse['userData']['name'],
+                          surname: bodyResponse['userData']['surname'],
+                          email: bodyResponse['userData']['email'],
+                          sessionCookie: response.headers['set-cookie']);
+                      SharedPreferences _prefs =
+                          await SharedPreferences.getInstance();
+                      _prefs.setString('user.name', App.client.name);
+                      _prefs.setString('user.surname', App.client.surname);
+                      _prefs.setString('user.email', App.client.email);
+                      _prefs.setInt('user.id', App.client.id);
+                      _prefs.setString(
+                          'user.sessionCookie', App.client.sessionCookie);
                       Navigator.pushNamed(context, '/home');
                     } else {
                       _error = bodyResponse['message'];
@@ -117,7 +124,7 @@ class _LoginViewState extends State<LoginView> {
                     }
                   } else {
                     _error = "Failed to load page!";
-                     setState(() {});
+                    setState(() {});
                   }
                 },
               ),
