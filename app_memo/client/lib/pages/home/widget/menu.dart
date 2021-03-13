@@ -31,8 +31,7 @@ class _MenuState extends State<Menu> {
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Image.asset("assets/img/compose.png",
-                    height: 60, width: 60),
+                Image.asset("assets/img/compose.png", height: 60, width: 60),
                 Container(
                   margin: EdgeInsets.only(top: 10, bottom: 5),
                   child: Text(
@@ -53,6 +52,42 @@ class _MenuState extends State<Menu> {
               ],
             ),
           ),
+          InkWell(
+            child: ListTile(
+                title: Text(
+                  'Memos',
+                  style: TextStyle(fontSize: 15),
+                ),
+                leading: Icon(Icons.note_add),
+                dense: true),
+            onTap: () {
+              Navigator.pushNamed(context, '/home');
+            }
+          ),
+          Divider(),
+          InkWell(
+              child: ListTile(
+                  title: Text(
+                    'Categories',
+                    style: TextStyle(fontSize: 15),
+                  ),
+                  leading: Icon(Icons.category),
+                  dense: true),
+              onTap: () {
+                Navigator.pushNamed(context, '/categories');
+              }),
+              Divider(),
+          InkWell(
+              child: ListTile(
+                  title: Text(
+                    'Tags',
+                    style: TextStyle(fontSize: 15),
+                  ),
+                  leading: Icon(Icons.tag),
+                  dense: true),
+              onTap: () {
+                Navigator.pushNamed(context, '/tags');
+              }),
           Divider(),
           InkWell(
             child: ListTile(
@@ -63,20 +98,21 @@ class _MenuState extends State<Menu> {
                 leading: Icon(Icons.exit_to_app),
                 dense: true),
             onTap: () async {
-              final response = await http.post(App.SERVER_WEB + '/logout',
-                      headers: <String, String>{
-                        'Content-Type': 'application/json; charset=UTF-8',
-                      });
+              final response = await http
+                  .post(App.SERVER_WEB + '/logout', headers: <String, String>{
+                'Content-Type': 'application/json; charset=UTF-8',
+              });
 
-                  if (response.statusCode == 200) {
-                    final bodyResponse = json.decode(response.body);
-                    if (bodyResponse['error'] == 200) {
-                      App.client = null;
-                      SharedPreferences _prefs = await SharedPreferences.getInstance();
-                      _prefs.remove('user.sessionCookie');
-                      Navigator.pushNamed(context, '/authenticate');
-                    } else {
-                      Alert(
+              if (response.statusCode == 200) {
+                final bodyResponse = json.decode(response.body);
+                if (bodyResponse['error'] == 200) {
+                  App.client = null;
+                  SharedPreferences _prefs =
+                      await SharedPreferences.getInstance();
+                  _prefs.remove('user.sessionCookie');
+                  Navigator.pushNamed(context, '/authenticate');
+                } else {
+                  Alert(
                       context: context,
                       title: 'Error!',
                       closeButton: false,
@@ -84,10 +120,10 @@ class _MenuState extends State<Menu> {
                       body: Text(bodyResponse['message']),
                       textCanelButton: "",
                       onClick: () {});
-                      setState(() {});
-                    }
-                  } else {
-                    Alert(
+                  setState(() {});
+                }
+              } else {
+                Alert(
                     context: context,
                     title: 'Error!',
                     closeButton: false,
@@ -95,7 +131,7 @@ class _MenuState extends State<Menu> {
                     body: Text('Internal server Error.'),
                     textCanelButton: "",
                     onClick: () {});
-                  }
+              }
             },
           ),
           Divider(),
