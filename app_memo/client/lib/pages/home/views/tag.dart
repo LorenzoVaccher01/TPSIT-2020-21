@@ -78,6 +78,7 @@ class TagPage extends StatelessWidget {
               controller: _nameController,
               decoration: InputDecoration(
                   border: InputBorder.none,
+                  counterText: "",
                   labelText: "Title:",
                   labelStyle: TextStyle(color: Colors.grey, fontSize: 22)),
               maxLength: 35,

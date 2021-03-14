@@ -151,7 +151,7 @@ class _HomeActionButtonState extends State<HomeActionButton> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            MemoPage(true, null, null, null, null, null, null, null, null)));
+                            MemoPage(true, null)));
                 if (result != null) {
                   SharedPreferences _prefs =
                       await SharedPreferences.getInstance();

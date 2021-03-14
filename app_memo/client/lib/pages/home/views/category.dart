@@ -1,15 +1,5 @@
-import 'package:app_memo/pages/home/widget/actionButton.dart';
-import 'package:app_memo/pages/home/widget/menu.dart';
-import 'package:app_memo/utils/models/category.dart';
-import 'package:app_memo/utils/models/memo.dart';
 import 'package:app_memo/widget/alert.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
-import '../../../main.dart' as App;
 
 class CategoryPage extends StatelessWidget {
   bool _newCategory;
@@ -80,6 +70,7 @@ class CategoryPage extends StatelessWidget {
               decoration: InputDecoration(
                   border: InputBorder.none,
                   labelText: "Title:",
+                  counterText: "",
                   labelStyle: TextStyle(color: Colors.grey, fontSize: 22)),
               maxLength: 35,
               style: TextStyle(color: Colors.black)),

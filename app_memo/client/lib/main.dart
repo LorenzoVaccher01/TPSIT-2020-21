@@ -1,6 +1,6 @@
 import 'package:app_memo/pages/authenticate/authenticate.dart';
 import 'package:app_memo/pages/home/categories.dart';
-import 'package:app_memo/pages/home/memo.dart';
+import 'package:app_memo/pages/home/memos.dart';
 import 'package:app_memo/pages/home/tags.dart';
 import 'package:app_memo/utils/client.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +26,7 @@ class App extends StatelessWidget {
         initialRoute: '/authenticate',
         routes: {
           '/authenticate': (context) => AuthenticatePage(),
-          '/home': (context) => MemoPage(),
+          '/home': (context) => MemosPage(),
           '/categories': (context) => CategoriesPage(),
           '/tags': (context) => TagsPage(),
         },

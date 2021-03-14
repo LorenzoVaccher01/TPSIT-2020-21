@@ -1,7 +1,11 @@
 import 'package:app_memo/utils/models/tag.dart';
 import 'package:app_memo/utils/models/category.dart';
+import 'package:app_memo/widget/alert.dart';
 import 'package:flutter/material.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../../main.dart' as App;
 /*
 
 */
@@ -62,6 +66,49 @@ class Memo {
   set category(Category category) => _category = category;
   List<Tag> get tags => _tags;
   set tags(List<Tag> tags) => _tags = tags;
+
+  Future<List<Memo>> getMemos(BuildContext context, String attributes) async {
+    List<Memo> _memos = [];
+        SharedPreferences _prefs = await SharedPreferences.getInstance();
+    final response = await http.get(
+      App.SERVER_WEB + '/api/memo?' + attributes,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Cookie': _prefs.getString('user.sessionCookie')
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final bodyResponse = json.decode(response.body);
+      if (bodyResponse['error'] == 200) {
+        _memos.clear();
+        for (var i = 0; i < bodyResponse['data'].length; i++)
+          _memos.add(new Memo.fromJson(bodyResponse['data'][i]));
+        return _memos;
+      } else {
+        Alert(
+          context: context,
+          closeButton: false,
+          textConfirmButton: 'Ok',
+          textCanelButton: "",
+          onClick: () {},
+          title: 'Error',
+          body: Text(bodyResponse['message']),
+        );
+      }
+    } else {
+      Alert(
+        context: context,
+        closeButton: false,
+        textConfirmButton: 'Ok',
+        textCanelButton: "",
+        onClick: () {},
+        title: 'Error',
+        body: Text("General internal error"),
+      );
+    }
+    return [];
+  }
 
   Memo.fromJson(Map<String, dynamic> json) {
     _id = json['id'];

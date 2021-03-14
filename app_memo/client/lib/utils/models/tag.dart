@@ -1,3 +1,10 @@
+import 'package:app_memo/widget/alert.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../../main.dart' as App;
+
 class Tag {
   int _id;
   String _name;
@@ -29,6 +36,51 @@ class Tag {
   String get lastModifiedDate => _lastModifiedDate;
   set lastModifiedDate(String lastModifiedDate) =>
       _lastModifiedDate = lastModifiedDate;
+
+
+  Future<List<Tag>> getTags(BuildContext context) async {
+    List<Tag> _tags = [];
+
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    final response = await http.get(
+      App.SERVER_WEB + '/api/tag',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Cookie': _prefs.getString('user.sessionCookie')
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final bodyResponse = json.decode(response.body);
+      if (bodyResponse['error'] == 200) {
+        _tags.clear();
+        for (var i = 0; i < bodyResponse['data'].length; i++)
+          _tags.add(new Tag.fromJson(bodyResponse['data'][i]));
+        return _tags;
+      } else {
+        Alert(
+          context: context,
+          closeButton: false,
+          textConfirmButton: 'Ok',
+          textCanelButton: "",
+          onClick: () {},
+          title: 'Error',
+          body: Text(bodyResponse['message']),
+        );
+      }
+    } else {
+      Alert(
+        context: context,
+        closeButton: false,
+        textConfirmButton: 'Ok',
+        textCanelButton: "",
+        onClick: () {},
+        title: 'Error',
+        body: Text("General internal error"),
+      );
+    }
+    return [];
+  }
 
   Tag.fromJson(Map<String, dynamic> json) {
     _id = json['id'];

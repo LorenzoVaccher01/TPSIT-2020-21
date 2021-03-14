@@ -1,6 +1,4 @@
 import 'package:http/http.dart' as http;
-
-import 'package:app_memo/pages/home/memo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';

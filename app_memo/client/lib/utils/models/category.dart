@@ -1,3 +1,10 @@
+import 'package:app_memo/widget/alert.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../../main.dart' as App;
+
 class Category {
   int _id;
   String _name;
@@ -29,6 +36,50 @@ class Category {
   String get lastModifiedDate => _lastModifiedDate;
   set lastModifiedDate(String lastModifiedDate) =>
       _lastModifiedDate = lastModifiedDate;
+
+  Future<List<Category>> getCategories(BuildContext context) async {
+    List<Category> _categories = [];
+
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    final response = await http.get(
+      App.SERVER_WEB + '/api/category',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Cookie': _prefs.getString('user.sessionCookie')
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final bodyResponse = json.decode(response.body);
+      if (bodyResponse['error'] == 200) {
+        _categories.clear();
+        for (var i = 0; i < bodyResponse['data'].length; i++)
+          _categories.add(new Category.fromJson(bodyResponse['data'][i]));
+        return _categories;
+      } else {
+        Alert(
+          context: context,
+          closeButton: false,
+          textConfirmButton: 'Ok',
+          textCanelButton: "",
+          onClick: () {},
+          title: 'Error',
+          body: Text(bodyResponse['message']),
+        );
+      }
+    } else {
+      Alert(
+        context: context,
+        closeButton: false,
+        textConfirmButton: 'Ok',
+        textCanelButton: "",
+        onClick: () {},
+        title: 'Error',
+        body: Text("General internal error"),
+      );
+    }
+    return [];
+  }
 
   Category.fromJson(Map<String, dynamic> json) {
     _id = json['id'];
