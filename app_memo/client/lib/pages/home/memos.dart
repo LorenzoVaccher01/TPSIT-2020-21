@@ -3,6 +3,7 @@ import 'package:app_memo/pages/home/widget/actionButton.dart';
 import 'package:app_memo/pages/home/widget/appBar.dart';
 import 'package:app_memo/pages/home/widget/menu.dart';
 import 'package:app_memo/utils/models/memo.dart';
+import 'package:app_memo/utils/models/tag.dart';
 import 'package:app_memo/widget/alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -19,7 +20,9 @@ class MemosPage extends StatefulWidget {
 
 class _MemosPageState extends State<MemosPage> {
   final String _showTwoCardSettingName = "memo.display";
+  final String _sortSettingName = "memo.sort";
   bool _showTwoCard = true;
+  bool _sortValue = true; //true → a to z
   List<Memo> _memos = [];
   bool _searching = false;
 
@@ -37,6 +40,7 @@ class _MemosPageState extends State<MemosPage> {
 
   _setSettings() async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
+    _sortValue = _prefs.getBool(_sortSettingName) ?? _sortValue;
     _showTwoCard = _prefs.getBool(_showTwoCardSettingName) ?? _showTwoCard;
     setState(() {});
   }
@@ -132,6 +136,19 @@ class _MemosPageState extends State<MemosPage> {
           });
     }
 
+    String _getMemoTags(List<Tag> tags) {
+      String _tagsReturn = "";
+      int count = 0;
+
+      tags.forEach((tag) {
+        if (count >= 6) return;
+        _tagsReturn += "#" + tag.name + " ";
+        count++;
+      });
+
+      return _tagsReturn;
+    }
+
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
@@ -175,17 +192,27 @@ class _MemosPageState extends State<MemosPage> {
             Visibility(
               visible: !_searching,
               child: IconButton(
-                  icon: Icon(Icons.sort),
-                  onPressed: () {
-                    //TODO: realizzare il sistema per il sorting
+                  icon: Icon(Icons.sort_by_alpha),
+                  onPressed: () async {
+                    SharedPreferences _prefs = await SharedPreferences.getInstance();
+                    _sortValue = !_sortValue;
+                    _prefs.setBool(_sortSettingName, _sortValue);
+                    if (_sortValue)
+                      _memos.sort((a, b) => a.title.compareTo(b.title));
+                    else
+                      _memos.sort((a, b) => b.title.compareTo(a.title));
+                    print(_sortValue);
+                    setState(() {});
                   }),
             ),
             Visibility(
                 visible: _searching,
-                child: IconButton(icon: Icon(Icons.close), onPressed: () {
-                  _searching = false;
-                  _getMemos();
-                })),
+                child: IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () {
+                      _searching = false;
+                      _getMemos();
+                    })),
             IconButton(
               icon: Icon(_showTwoCard
                   ? Icons.horizontal_split_rounded
@@ -247,7 +274,7 @@ class _MemosPageState extends State<MemosPage> {
                             MaterialPageRoute(
                                 builder: (context) =>
                                     MemoPage(false, _memos[index])));
-                        print(result);
+
                         //TODO: comunicare dati al server
                       },
                       child: new Container(
@@ -283,7 +310,16 @@ class _MemosPageState extends State<MemosPage> {
                                       ],
                                     ),
                                   )
-                                : Container()
+                                : Container(),
+                            _memos[index].tags.length != 0
+                                ? Padding(padding: EdgeInsets.only(top: 15))
+                                : Container(),
+                            _memos[index].tags.length != 0
+                                ? Text(_getMemoTags(_memos[index].tags),
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold))
+                                : Container(),
                           ],
                         ),
                         padding: EdgeInsets.all(10),
@@ -299,7 +335,7 @@ class _MemosPageState extends State<MemosPage> {
                   ),
                 ),
         ),
-        floatingActionButton: _memos.length != 0 ? HomeActionButton() : null,
+        floatingActionButton: HomeActionButton(),
       ),
     );
   }

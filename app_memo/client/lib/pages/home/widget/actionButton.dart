@@ -150,23 +150,32 @@ class _HomeActionButtonState extends State<HomeActionButton> {
                 final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            MemoPage(true, null)));
+                        builder: (context) => MemoPage(true, null)));
+
+                String _getAttr(dynamic res) {
+                  List<String> _tags = [];
+                  List<String> _accounts = [];
+
+                  res['tags'].forEach((tag) {
+                    _tags.add(tag.id.toString());
+                  });
+
+                  //TODO: creare stesso meccanismo anche per gli utenti come per i tags
+
+                  return "color=" + res['color'].toString().replaceAll('#', '') + "&title=" + res["name"] + "&body=" + res["body"] + "&tags=${_tags.join(',')}" /*+ _tags*/ + "&category=" + (res['category'] != null ? res['category'].id.toString() : "1") + "&accounts=${_accounts.join(',')}" /*+ _accounts*/;
+                }
+
                 if (result != null) {
+                  String attr = _getAttr(result);
+                  print(App.SERVER_WEB + '/api/memo?' + attr);
                   SharedPreferences _prefs =
                       await SharedPreferences.getInstance();
                   final response = await http.post(
-                    App.SERVER_WEB +
-                        '/api/memo?name=' + //TODO: inserire tutti i campi
-                        result['name'] +
-                        '&description=' +
-                        result['description'],
-                    headers: <String, String>{
-                      'Content-Type': 'application/json; charset=UTF-8',
-                      'Cookie': _prefs.getString('user.sessionCookie')
-                    },
-                  );
-                  print(response.statusCode);
+                      App.SERVER_WEB + '/api/memo?' + attr,
+                      headers: <String, String>{
+                        'Content-Type': 'application/json; charset=UTF-8',
+                        'Cookie': _prefs.getString('user.sessionCookie')
+                      });
                   if (response.statusCode == 200) {
                     final bodyResponse = json.decode(response.body);
                     if (bodyResponse['error'] == 200) {

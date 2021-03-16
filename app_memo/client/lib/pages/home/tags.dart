@@ -205,7 +205,6 @@ class _TagsPageState extends State<TagsPage> {
                                           _tags[index].description,
                                           _tags[index].creationDate,
                                           _tags[index].lastModifiedDate)));
-                              print(result);
                               if (result != null) {
                                 SharedPreferences _prefs =
                                     await SharedPreferences.getInstance();
@@ -259,7 +258,7 @@ class _TagsPageState extends State<TagsPage> {
                       }),
                 ),
           ),
-          floatingActionButton: _tags.length != 0 ? HomeActionButton() : null,
+          floatingActionButton:HomeActionButton(),
         ));
   }
 }

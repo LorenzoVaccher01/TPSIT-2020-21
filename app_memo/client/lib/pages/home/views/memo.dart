@@ -14,6 +14,10 @@ import '../../../main.dart' as App;
 class MemoPage extends StatefulWidget {
   bool _newMemo;
   Memo _memo;
+  Color _selectedColor;
+  Category _selectedCategory;
+  List<Tag> _selectedTags = [];
+  List<String> _sharers;
 
   MemoPage(this._newMemo, this._memo);
 
@@ -66,16 +70,32 @@ class _MemoPageState extends State<MemoPage> {
   List<Category> _categories = [];
   List<Tag> _tags = [];
 
-  Color _selectedColor;
-  Category _selectedCategory;
-  List<Tag> _selectedTags;
-  List<String> _sharers;
-
   @override
   void initState() {
-    _selectedColor = this.widget._memo != null ? this.widget._memo.color : _colors[0];
-    this.widget._memo != null ? _getSharers() : null;
-    _sharers = ["tommaso.rizzo@itiszuccante.edu.it", "jiahao.ruan@itiszuccante.edu.it", "elia.coro@itiszuccante.edu.it"];
+    widget._selectedColor =
+        this.widget._memo != null ? this.widget._memo.color : _colors[0];
+
+    _categories.insert(
+        0,
+        new Category(
+            id: 1,
+            name: 'No category',
+            description: '',
+            creationDate: '',
+            lastModifiedDate: ''));
+
+    widget._selectedCategory = this.widget._memo != null
+        ? this.widget._memo.category.id == 1
+            ? _categories[0]
+            : this.widget._memo.category
+        : _categories[0];
+
+    //this.widget._memo != null ? _getSharers() : null; //TODO: decommentare una volta finito il sistema per la condivisione
+    widget._sharers = [
+      "tommaso.rizzo@itiszuccante.edu.it",
+      "jiahao.ruan@itiszuccante.edu.it",
+      "elia.coro@itiszuccante.edu.it"
+    ];
     super.initState();
   }
 
@@ -93,9 +113,9 @@ class _MemoPageState extends State<MemoPage> {
     if (response.statusCode == 200) {
       final bodyResponse = json.decode(response.body);
       if (bodyResponse['error'] == 200) {
-        _sharers.clear();
+        widget._sharers.clear();
         for (var i = 0; i < bodyResponse['data'].length; i++)
-          _sharers.add((bodyResponse['data'][i]));
+          widget._sharers.add((bodyResponse['data'][i]));
       } else {
         Alert(
           context: context,
@@ -143,7 +163,7 @@ class _MemoPageState extends State<MemoPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            (_selectedColor == _colors[index]
+                            (widget._selectedColor == _colors[index]
                                 ? Icon(Icons.check)
                                 : Container()),
                             Container(
@@ -161,7 +181,7 @@ class _MemoPageState extends State<MemoPage> {
                           ],
                         ),
                         onTap: () {
-                          _selectedColor = _colors[index];
+                          widget._selectedColor = _colors[index];
                           setState(() {});
                         },
                       );
@@ -180,18 +200,11 @@ class _MemoPageState extends State<MemoPage> {
     }
 
     Future<void> _openCategoriesMenu() async {
-      _categories = await (new Category()).getCategories(context);
-      _categories.insert(
-          0,
-          new Category(
-              id: 1,
-              name: 'No category',
-              description: '',
-              creationDate: '',
-              lastModifiedDate: ''));
-      _selectedCategory = this.widget._memo != null
-          ? this.widget._memo.category
-          : _categories[0];
+      _categories = _categories.sublist(0, 1);
+      (await (new Category()).getCategories(context)).forEach((element) {
+         _categories.add(element);
+      });
+
       return showDialog(
           context: context,
           barrierDismissible: false,
@@ -211,7 +224,8 @@ class _MemoPageState extends State<MemoPage> {
                           children: [
                             Padding(
                               padding: EdgeInsets.only(top: 10, bottom: 10),
-                              child: (_selectedCategory == _categories[index]
+                              child: (widget._selectedCategory.id ==
+                                      _categories[index].id
                                   ? Icon(Icons.check)
                                   : Container()),
                             ),
@@ -219,9 +233,10 @@ class _MemoPageState extends State<MemoPage> {
                               padding: EdgeInsets.only(
                                   top: 10,
                                   bottom: 10,
-                                  left: (_selectedCategory == _categories[index]
-                                      ? 10
-                                      : 30)),
+                                  left: (widget._selectedCategory.id ==
+                                          _categories[index].id
+                                      ? 5
+                                     : 30)),
                               child: Text(
                                 _categories[index].name,
                                 style: TextStyle(fontSize: 16),
@@ -230,7 +245,7 @@ class _MemoPageState extends State<MemoPage> {
                           ],
                         ),
                         onTap: () {
-                          _selectedCategory = _categories[index];
+                          widget._selectedCategory = _categories[index];
                           setState(() {});
                         },
                       );
@@ -251,7 +266,29 @@ class _MemoPageState extends State<MemoPage> {
     Future<void> _openTagsMenu() async {
       _tags = await (new Tag()).getTags(context);
 
-      _selectedTags = this.widget._memo != null ? this.widget._memo.tags : [];
+      print(_tags[0].id);
+      print(_tags[1].id);
+
+      if (this.widget._memo != null)
+        _tags.forEach((tag) {
+          (widget._memo.tags).forEach((memoTag) {
+            if (tag.id == memoTag.id) {
+              widget._selectedTags.add(tag);
+            }
+          });
+        });
+
+      bool _check(Tag tag) {
+        bool status = false;
+
+        (widget._selectedTags)
+            .forEach((element) => {
+              if (element.id == tag.id) 
+                status = true
+        });
+        return status;
+      }
+
       return showDialog(
           context: context,
           barrierDismissible: false,
@@ -271,17 +308,17 @@ class _MemoPageState extends State<MemoPage> {
                           children: [
                             Padding(
                               padding: EdgeInsets.only(top: 10, bottom: 10),
-                              child: (_selectedTags.contains(_tags[index])
+                              child: _check(_tags[index])
                                   ? Icon(Icons.check)
-                                  : Container()),
+                                  : Container(),
                             ),
                             Padding(
                               padding: EdgeInsets.only(
                                   top: 10,
                                   bottom: 10,
-                                  left: (_selectedTags.contains(_tags[index])
+                                  left: _check(_tags[index])
                                       ? 10
-                                      : 30)),
+                                      : 30),
                               child: Text(
                                 '#' + _tags[index].name,
                                 style: TextStyle(fontSize: 16),
@@ -290,11 +327,30 @@ class _MemoPageState extends State<MemoPage> {
                           ],
                         ),
                         onTap: () {
-                          if (_selectedTags.contains(_tags[index]))
-                            _selectedTags.remove(_tags[index]);
-                          else
-                            _selectedTags.add(_tags[index]);
+                          if ((widget._selectedTags).where((element) => element.id == _tags[index].id).length > 0) {
+                            for (int i = 0; i < (widget._selectedTags).length; i++) {
+                              if ((widget._selectedTags)[i].id == _tags[index].id)
+                                widget._selectedTags.remove((widget._selectedTags)[i]);
+                            }
+                          } else {
+                            widget._selectedTags.add(_tags[index]);
+                          }
                           setState(() {});
+                          /*bool _status = true;
+
+                          (widget._selectedTags).forEach((element) {
+                            if (element.id == _tags[index].id) {
+                              widget._selectedTags.remove(_tags[index]);
+                              _status = true;
+                            }
+                          });
+
+                          print(_status);
+
+                          if (_status)
+                            widget._selectedTags.add(_tags[index]);
+
+                          setState(() {});*/
                         },
                       );
                     }),
@@ -302,6 +358,7 @@ class _MemoPageState extends State<MemoPage> {
                   FlatButton(
                     child: Text("Done"),
                     onPressed: () {
+                      print(widget._selectedTags[0].id);
                       Navigator.of(context).pop();
                     },
                   ),
@@ -320,7 +377,7 @@ class _MemoPageState extends State<MemoPage> {
               return AlertDialog(
                 title: Text("Share memo"),
                 content: ListView.separated(
-                    itemCount: _sharers.length,
+                    itemCount: widget._sharers.length,
                     separatorBuilder: (BuildContext context, int index) =>
                         Divider(),
                     itemBuilder: (context, index) {
@@ -331,7 +388,8 @@ class _MemoPageState extends State<MemoPage> {
                           children: [
                             Padding(
                               padding: EdgeInsets.only(top: 10, bottom: 10),
-                              child: (_sharers.contains(_sharers[index])
+                              child: (widget._sharers
+                                      .contains(widget._sharers[index])
                                   ? Icon(Icons.check)
                                   : Container()),
                             ),
@@ -339,7 +397,8 @@ class _MemoPageState extends State<MemoPage> {
                               padding: EdgeInsets.only(
                                   top: 10,
                                   bottom: 10,
-                                  left: (_selectedTags.contains(_tags[index])
+                                  left: (widget._selectedTags
+                                          .contains(_tags[index])
                                       ? 10
                                       : 30)),
                               child: Text(
@@ -350,10 +409,10 @@ class _MemoPageState extends State<MemoPage> {
                           ],
                         ),
                         onTap: () {
-                          if (_selectedTags.contains(_tags[index]))
-                            _selectedTags.remove(_tags[index]);
+                          if (widget._selectedTags.contains(_tags[index]))
+                            widget._selectedTags.remove(_tags[index]);
                           else
-                            _selectedTags.add(_tags[index]);
+                            widget._selectedTags.add(_tags[index]);
                           setState(() {});
                         },
                       );
@@ -415,8 +474,15 @@ class _MemoPageState extends State<MemoPage> {
           IconButton(
             iconSize: 25,
             icon: Icon(Icons.save),
-            onPressed: () => Navigator.pop(context,
-                {"name": _titleController.text, "body": _bodyController.text}),
+            onPressed: () => Navigator.pop(context, {
+              "name": _titleController.text,
+              "body": _bodyController.text,
+              "color": "#" +
+                  widget._selectedColor.value.toRadixString(16).substring(2),
+              "category": widget._selectedCategory,
+              "tags": widget._selectedTags,
+              "accounts": widget._sharers
+            }),
           ),
         ],
       ),

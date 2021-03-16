@@ -110,6 +110,10 @@ class Memo {
     return [];
   }
 
+  Future<void> putMemos(BuildContext context, Memo memo) async {
+    
+  }
+
   Memo.fromJson(Map<String, dynamic> json) {
     _id = json['id'];
     _isOwner = json['isOwner'];

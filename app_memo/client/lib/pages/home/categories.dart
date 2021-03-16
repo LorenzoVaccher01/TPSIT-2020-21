@@ -268,7 +268,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                         }),
                   ),
           ),
-          floatingActionButton: _categories.length != 0 ? HomeActionButton() : null,
+          floatingActionButton: HomeActionButton(),
         ));
   }
 }
