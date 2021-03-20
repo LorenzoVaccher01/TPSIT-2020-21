@@ -1,17 +1,11 @@
 import 'package:app_memo/pages/home/views/memo.dart';
 import 'package:app_memo/pages/home/widget/actionButton.dart';
-import 'package:app_memo/pages/home/widget/appBar.dart';
 import 'package:app_memo/pages/home/widget/menu.dart';
 import 'package:app_memo/utils/models/memo.dart';
 import 'package:app_memo/utils/models/tag.dart';
-import 'package:app_memo/widget/alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
-import '../../main.dart' as App;
 
 class MemosPage extends StatefulWidget {
   @override
@@ -42,12 +36,30 @@ class _MemosPageState extends State<MemosPage> {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     _sortValue = _prefs.getBool(_sortSettingName) ?? _sortValue;
     _showTwoCard = _prefs.getBool(_showTwoCardSettingName) ?? _showTwoCard;
-    setState(() {});
   }
 
   _getMemos({String attributes = ''}) async {
-    _memos = await (new Memo()).getMemos(context, attributes);
+    _memos = await Memo.get(context, attributes);
+    await _sortMemos(refresh: false);
     setState(() {});
+  }
+
+  Future<void> _sortMemos({bool refresh}) async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    if (_sortValue)
+      _memos.sort((a, b) =>
+          a.title.split(' ').join('').compareTo(b.title.split(' ').join('')));
+    else
+      _memos.sort((a, b) =>
+          b.title.split(' ').join('').compareTo(a.title.split(' ').join('')));
+
+    if (refresh) setState(() {});
+  }
+
+  Future<Null> _refreshMemos() async {
+    _searching = false;
+    print('Refreshing memos...');
+    _getMemos();
   }
 
   Color _darken(Color color, [double amount = .1]) {
@@ -61,10 +73,12 @@ class _MemosPageState extends State<MemosPage> {
   Widget build(BuildContext context) {
     GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-    Future<Null> _refreshMemos() async {
-      _searching = false;
-      print('Refreshing memos...');
-      _getMemos();
+    String _getDate(String inputDate) {
+      List<String> date = inputDate.split('T')[0].split('-');
+      List<String> time = inputDate.split('T')[1].split(':');
+      time.removeAt(2);
+
+      return "${date[2]}/${date[1]}/${date[0]} ${(int.parse(time[0]) + 1).toString()}:${time[1]}";
     }
 
     String _trimString(String string, String type) {
@@ -194,15 +208,11 @@ class _MemosPageState extends State<MemosPage> {
               child: IconButton(
                   icon: Icon(Icons.sort_by_alpha),
                   onPressed: () async {
-                    SharedPreferences _prefs = await SharedPreferences.getInstance();
+                    SharedPreferences _prefs =
+                        await SharedPreferences.getInstance();
                     _sortValue = !_sortValue;
                     _prefs.setBool(_sortSettingName, _sortValue);
-                    if (_sortValue)
-                      _memos.sort((a, b) => a.title.compareTo(b.title));
-                    else
-                      _memos.sort((a, b) => b.title.compareTo(a.title));
-                    print(_sortValue);
-                    setState(() {});
+                    _sortMemos(refresh: true);
                   }),
             ),
             Visibility(
@@ -274,8 +284,18 @@ class _MemosPageState extends State<MemosPage> {
                             MaterialPageRoute(
                                 builder: (context) =>
                                     MemoPage(false, _memos[index])));
+                        int status = await Memo.put(context, result['id'], result['name'], result['body'], result['category'], result['color'], result['tags'], result['accounts']);
 
-                        //TODO: comunicare dati al server
+                        if (status == 1) {
+                          //TODO: verificare correttezza
+                          _memos[index].title = result['name'];
+                          _memos[index].body = result['body'];
+                          _memos[index].category = result['category'];
+                          _memos[index].color = new Color(int.parse(
+                                  result['color'].substring(1, 7), radix: 16) + 0xFF000000);
+                          _memos[index].tags = result['tags'];
+                          setState(() {});
+                        }
                       },
                       child: new Container(
                         child: Column(
@@ -292,7 +312,9 @@ class _MemosPageState extends State<MemosPage> {
                             Text(_trimString(_memos[index].body, 'body'),
                                 style: TextStyle(
                                     color: Colors.grey[700], fontSize: 14)),
-                            Padding(padding: EdgeInsets.only(top: 15)),
+                            _memos[index].category.id != 1
+                                ? Padding(padding: EdgeInsets.only(top: 15))
+                                : Container(),
                             _memos[index].category.id != 1
                                 ? Container(
                                     child: Text(_trimString(
@@ -305,7 +327,7 @@ class _MemosPageState extends State<MemosPage> {
                                       boxShadow: [
                                         BoxShadow(
                                             color: _darken(
-                                                _memos[index].color, 0.09),
+                                                _memos[index].color, 0.2),
                                             spreadRadius: 0.3),
                                       ],
                                     ),
@@ -320,6 +342,13 @@ class _MemosPageState extends State<MemosPage> {
                                         color: Colors.black,
                                         fontWeight: FontWeight.bold))
                                 : Container(),
+                            _memos[index].tags.length != 0 ||
+                                    _memos[index].category.id != 1
+                                ? Padding(padding: EdgeInsets.only(top: 15))
+                                : Container(),
+                            Text(_getDate(_memos[index].creationDate),
+                                style: TextStyle(
+                                    color: Colors.grey[700], fontSize: 12))
                           ],
                         ),
                         padding: EdgeInsets.all(10),

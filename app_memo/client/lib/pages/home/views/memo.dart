@@ -1,15 +1,8 @@
-import 'package:app_memo/pages/home/widget/actionButton.dart';
 import 'package:app_memo/utils/models/category.dart';
 import 'package:app_memo/utils/models/memo.dart';
 import 'package:app_memo/utils/models/tag.dart';
 import 'package:app_memo/widget/alert.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:markdown/markdown.dart' as md;
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../../../main.dart' as App;
 
 class MemoPage extends StatefulWidget {
   bool _newMemo;
@@ -28,6 +21,8 @@ class MemoPage extends StatefulWidget {
 class _MemoPageState extends State<MemoPage> {
   TextEditingController _titleController;
   TextEditingController _bodyController;
+  FocusNode _focusNodeTitle = FocusNode();
+  FocusNode _focusNodeBoby = FocusNode();
 
   List<Color> _colors = [
     Colors.white,
@@ -90,18 +85,26 @@ class _MemoPageState extends State<MemoPage> {
             : this.widget._memo.category
         : _categories[0];
 
+    if (this.widget._memo != null) {
+      (this.widget._memo.tags).forEach((element) {
+        this.widget._selectedTags.add(element);
+      });
+    }
+
     //this.widget._memo != null ? _getSharers() : null; //TODO: decommentare una volta finito il sistema per la condivisione
     widget._sharers = [
       "tommaso.rizzo@itiszuccante.edu.it",
       "jiahao.ruan@itiszuccante.edu.it",
-      "elia.coro@itiszuccante.edu.it"
+      "elia.coro@itiszuccante.edu.it",
+      "giacomo.davanzo@itiszuccante.edu.it",
+      "valentin.necula@itiszuccante.edu.it"
     ];
     super.initState();
   }
 
   //TODO: ottenere tutti quelli che hanno accesso a questo account
   void _getSharers() async {
-    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    /*SharedPreferences _prefs = await SharedPreferences.getInstance();
     final response = await http.get(
       App.SERVER_WEB + '/api/sharers?memoId' + this.widget._memo.id.toString(),
       headers: <String, String>{
@@ -137,7 +140,7 @@ class _MemoPageState extends State<MemoPage> {
         title: 'Error',
         body: Text("General internal error"),
       );
-    }
+    }*/
   }
 
   @override
@@ -201,8 +204,8 @@ class _MemoPageState extends State<MemoPage> {
 
     Future<void> _openCategoriesMenu() async {
       _categories = _categories.sublist(0, 1);
-      (await (new Category()).getCategories(context)).forEach((element) {
-         _categories.add(element);
+      (await Category.get(context)).forEach((element) {
+        _categories.add(element);
       });
 
       return showDialog(
@@ -236,7 +239,7 @@ class _MemoPageState extends State<MemoPage> {
                                   left: (widget._selectedCategory.id ==
                                           _categories[index].id
                                       ? 5
-                                     : 30)),
+                                      : 30)),
                               child: Text(
                                 _categories[index].name,
                                 style: TextStyle(fontSize: 16),
@@ -264,10 +267,7 @@ class _MemoPageState extends State<MemoPage> {
     }
 
     Future<void> _openTagsMenu() async {
-      _tags = await (new Tag()).getTags(context);
-
-      print(_tags[0].id);
-      print(_tags[1].id);
+      _tags = await Tag.get(context);
 
       if (this.widget._memo != null)
         _tags.forEach((tag) {
@@ -282,10 +282,7 @@ class _MemoPageState extends State<MemoPage> {
         bool status = false;
 
         (widget._selectedTags)
-            .forEach((element) => {
-              if (element.id == tag.id) 
-                status = true
-        });
+            .forEach((element) => {if (element.id == tag.id) status = true});
         return status;
       }
 
@@ -316,9 +313,7 @@ class _MemoPageState extends State<MemoPage> {
                               padding: EdgeInsets.only(
                                   top: 10,
                                   bottom: 10,
-                                  left: _check(_tags[index])
-                                      ? 10
-                                      : 30),
+                                  left: _check(_tags[index]) ? 10 : 30),
                               child: Text(
                                 '#' + _tags[index].name,
                                 style: TextStyle(fontSize: 16),
@@ -327,30 +322,23 @@ class _MemoPageState extends State<MemoPage> {
                           ],
                         ),
                         onTap: () {
-                          if ((widget._selectedTags).where((element) => element.id == _tags[index].id).length > 0) {
-                            for (int i = 0; i < (widget._selectedTags).length; i++) {
-                              if ((widget._selectedTags)[i].id == _tags[index].id)
-                                widget._selectedTags.remove((widget._selectedTags)[i]);
+                          if ((widget._selectedTags)
+                                  .where((element) =>
+                                      element.id == _tags[index].id)
+                                  .length >
+                              0) {
+                            for (int i = 0;
+                                i < (widget._selectedTags).length;
+                                i++) {
+                              if ((widget._selectedTags)[i].id ==
+                                  _tags[index].id)
+                                widget._selectedTags
+                                    .remove((widget._selectedTags)[i]);
                             }
                           } else {
                             widget._selectedTags.add(_tags[index]);
                           }
                           setState(() {});
-                          /*bool _status = true;
-
-                          (widget._selectedTags).forEach((element) {
-                            if (element.id == _tags[index].id) {
-                              widget._selectedTags.remove(_tags[index]);
-                              _status = true;
-                            }
-                          });
-
-                          print(_status);
-
-                          if (_status)
-                            widget._selectedTags.add(_tags[index]);
-
-                          setState(() {});*/
                         },
                       );
                     }),
@@ -358,7 +346,6 @@ class _MemoPageState extends State<MemoPage> {
                   FlatButton(
                     child: Text("Done"),
                     onPressed: () {
-                      print(widget._selectedTags[0].id);
                       Navigator.of(context).pop();
                     },
                   ),
@@ -369,6 +356,7 @@ class _MemoPageState extends State<MemoPage> {
     }
 
     Future<void> _openShareMenu() async {
+      TextEditingController _emailController = new TextEditingController();
       return showDialog(
           context: context,
           barrierDismissible: false,
@@ -378,43 +366,80 @@ class _MemoPageState extends State<MemoPage> {
                 title: Text("Share memo"),
                 content: ListView.separated(
                     itemCount: widget._sharers.length,
+                    shrinkWrap: true,
+                    scrollDirection: Axis.vertical,
                     separatorBuilder: (BuildContext context, int index) =>
                         Divider(),
                     itemBuilder: (context, index) {
-                      return InkWell(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(top: 10, bottom: 10),
-                              child: (widget._sharers
-                                      .contains(widget._sharers[index])
-                                  ? Icon(Icons.check)
-                                  : Container()),
+                      return Column(
+                        children: [
+                          /*index == 0
+                              ? Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                      TextField(
+                                          controller: _emailController,
+                                          decoration: InputDecoration(
+                                              border: InputBorder.none,
+                                              counterText: "",
+                                              labelText: "Email:",
+                                              labelStyle: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 18)),
+                                          maxLength: 35,
+                                          style:
+                                              TextStyle(color: Colors.black)),
+                                      InkWell(
+                                          child: Icon(Icons.add,
+                                              size: 30, color: Colors.green),
+                                          onTap: () {
+                                            print('TODO');
+                                          })
+                                    ])
+                              : Container(),*/
+                          InkWell(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                index != 0
+                                    ? Padding(padding: EdgeInsets.only(top: 20))
+                                    : Container(),
+                                Text(widget._sharers[index].length >= 23
+                                    ? widget._sharers[index].substring(0, 23) +
+                                        '...'
+                                    : widget._sharers[index]),
+                                InkWell(
+                                    child: Icon(Icons.delete,
+                                        size: 30, color: Colors.grey),
+                                    onTap: () {
+                                      Alert(
+                                        context: context,
+                                        closeButton: true,
+                                        textConfirmButton: "Yes",
+                                        textCanelButton: "No",
+                                        onClick: () async {
+                                          print('TODO');
+                                          //TODO: inviare richiesta al server per eliminazione utente condiviso
+                                        },
+                                        title: 'Alert',
+                                        body: Text(
+                                            "Do you really want to delete this tag?"),
+                                      );
+                                    })
+                              ],
                             ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  top: 10,
-                                  bottom: 10,
-                                  left: (widget._selectedTags
-                                          .contains(_tags[index])
-                                      ? 10
-                                      : 30)),
-                              child: Text(
-                                '#' + _tags[index].name,
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          if (widget._selectedTags.contains(_tags[index]))
-                            widget._selectedTags.remove(_tags[index]);
-                          else
-                            widget._selectedTags.add(_tags[index]);
-                          setState(() {});
-                        },
+                            onTap: () {
+                              if (widget._selectedTags.contains(_tags[index]))
+                                widget._selectedTags.remove(_tags[index]);
+                              else
+                                widget._selectedTags.add(_tags[index]);
+                              setState(() {});
+                            },
+                          ),
+                        ],
                       );
                     }),
                 actions: [
@@ -430,6 +455,11 @@ class _MemoPageState extends State<MemoPage> {
           });
     }
 
+    void _unfocusTextFields() {
+      _focusNodeTitle.unfocus();
+      _focusNodeBoby.unfocus();
+    }
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -438,28 +468,47 @@ class _MemoPageState extends State<MemoPage> {
         backgroundColor: Theme.of(context).primaryColor,
         title: Text(this.widget._newMemo
             ? 'Add memo'
-            : 'Edit "${this.widget._memo.title}"'),
+            : 'Edit "${this.widget._memo.title.length >= 11 ? this.widget._memo.title.substring(0, 11) + '...' : this.widget._memo.title}"'),
         leading: IconButton(
           iconSize: 25,
           icon: Icon(Icons.arrow_back_outlined),
           onPressed: () {
-            /*if (_titleController.text != this._memo.title ||
-                _bodyController.text != this._memo.body) {*/
-            Alert(
-              context: context,
-              closeButton: true,
-              textConfirmButton: 'Yes',
-              textCanelButton: "No",
-              onClick: () {
+            void _showDialog() {
+              Alert(
+                context: context,
+                closeButton: true,
+                textConfirmButton: 'Yes',
+                textCanelButton: "No",
+                onClick: () {
+                  Navigator.of(context).pop();
+                },
+                title: 'Warning',
+                body: Text(
+                    "Are you sure you want to exit without saving changes?"),
+              );
+            }
+
+            if (this.widget._memo == null) {
+              if (_titleController.text != '' ||
+                  _bodyController.text != '' ||
+                  widget._selectedCategory.id != 1 ||
+                  widget._selectedColor != Colors.white) {
+                //TODO: controllare anche tags e collaboratori
+                _showDialog();
+              } else {
                 Navigator.of(context).pop();
-              },
-              title: 'Warning',
-              body:
-                  Text("Are you sure you want to exit without saving changes?"),
-            );
-            /*} else {
-              Navigator.of(context).pop();
-            }*/
+              }
+            } else {
+              if (_titleController.text != widget._memo.title ||
+                  _bodyController.text != widget._memo.body ||
+                  widget._selectedColor != widget._memo.color ||
+                  widget._selectedCategory != widget._memo.category) {
+                //TODO: controllare anche tags e collaboratori
+                _showDialog();
+              } else {
+                Navigator.of(context).pop();
+              }
+            }
           },
         ),
         actions: [
@@ -468,22 +517,49 @@ class _MemoPageState extends State<MemoPage> {
               : IconButton(
                   iconSize: 25,
                   icon: Icon(Icons.delete),
-                  onPressed: () {
-                    //TODO: eliminare memo
+                  onPressed: () async {
+                    Alert(
+                      context: context,
+                      closeButton: true,
+                      textConfirmButton: 'Yes!',
+                      textCanelButton: "No",
+                      onClick: () async {
+                        await (Memo.delete(context, this.widget._memo));
+                      },
+                      title: 'Warning',
+                      body: Text("Are you sure you want to delete this memo?"),
+                    );
                   })),
           IconButton(
-            iconSize: 25,
-            icon: Icon(Icons.save),
-            onPressed: () => Navigator.pop(context, {
-              "name": _titleController.text,
-              "body": _bodyController.text,
-              "color": "#" +
-                  widget._selectedColor.value.toRadixString(16).substring(2),
-              "category": widget._selectedCategory,
-              "tags": widget._selectedTags,
-              "accounts": widget._sharers
-            }),
-          ),
+              iconSize: 25,
+              icon: Icon(Icons.save),
+              onPressed: () {
+                if (this.widget._memo == null)
+                  Navigator.pop(context, {
+                    "name": _titleController.text,
+                    "body": _bodyController.text,
+                    "color": "#" +
+                        widget._selectedColor.value
+                            .toRadixString(16)
+                            .substring(2),
+                    "category": widget._selectedCategory,
+                    "tags": widget._selectedTags,
+                    "accounts": widget._sharers
+                  });
+                else
+                  Navigator.pop(context, {
+                    "id": this.widget._memo.id,
+                    "name": _titleController.text,
+                    "body": _bodyController.text,
+                    "color": "#" +
+                        widget._selectedColor.value
+                            .toRadixString(16)
+                            .substring(2),
+                    "category": widget._selectedCategory,
+                    "tags": widget._selectedTags,
+                    "accounts": widget._sharers
+                  });
+              }),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -501,44 +577,55 @@ class _MemoPageState extends State<MemoPage> {
         onTap: (int index) async {
           switch (index) {
             case 0:
+              _unfocusTextFields();
               await _openColorsMenu();
               break;
             case 1:
+              _unfocusTextFields();
               await _openCategoriesMenu();
               break;
             case 2:
+              _unfocusTextFields();
               await _openTagsMenu();
               break;
             case 3:
-              print('asdasdasdasd');
+              _unfocusTextFields();
+              await _openShareMenu();
               break;
           }
         },
       ),
-      body: ListView(
-        padding: EdgeInsets.all(16),
-        children: [
-          TextField(
-              controller: _titleController,
+      body: GestureDetector(
+        onTap: () {
+          _unfocusTextFields();
+        },
+        child: ListView(
+          padding: EdgeInsets.all(16),
+          children: [
+            TextField(
+                controller: _titleController,
+                focusNode: _focusNodeTitle,
+                decoration: InputDecoration(
+                    border: InputBorder.none,
+                    counterText: "",
+                    labelText: "Title:",
+                    labelStyle: TextStyle(color: Colors.grey, fontSize: 22)),
+                maxLength: 35,
+                style: TextStyle(color: Colors.black)),
+            TextField(
+              controller: _bodyController,
+              focusNode: _focusNodeBoby,
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
               decoration: InputDecoration(
                   border: InputBorder.none,
-                  counterText: "",
-                  labelText: "Title:",
+                  labelText: "Body:",
                   labelStyle: TextStyle(color: Colors.grey, fontSize: 22)),
-              maxLength: 35,
-              style: TextStyle(color: Colors.black)),
-          TextField(
-            controller: _bodyController,
-            keyboardType: TextInputType.multiline,
-            maxLines: null,
-            decoration: InputDecoration(
-                border: InputBorder.none,
-                labelText: "Body:",
-                labelStyle: TextStyle(color: Colors.grey, fontSize: 22)),
-            maxLength: 65535,
-            style: TextStyle(color: Colors.black),
-          ),
-        ],
+              maxLength: 65535,
+              style: TextStyle(color: Colors.black),
+            ),
+          ],
+        ),
       ),
     );
   }

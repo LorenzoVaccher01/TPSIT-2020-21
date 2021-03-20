@@ -37,7 +37,7 @@ class Category {
   set lastModifiedDate(String lastModifiedDate) =>
       _lastModifiedDate = lastModifiedDate;
 
-  Future<List<Category>> getCategories(BuildContext context) async {
+  static Future<List<Category>> get(BuildContext context) async {
     List<Category> _categories = [];
 
     SharedPreferences _prefs = await SharedPreferences.getInstance();
@@ -79,6 +79,137 @@ class Category {
       );
     }
     return [];
+  }
+
+  static Future<void> add(
+      BuildContext context, String name, String description) async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    final response = await http.post(
+      App.SERVER_WEB +
+          '/api/category?name=' +
+          name +
+          '&description=' +
+          description,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Cookie': _prefs.getString('user.sessionCookie')
+      },
+    );
+    if (response.statusCode == 200) {
+      final bodyResponse = json.decode(response.body);
+      if (bodyResponse['error'] == 200) {
+        if (ModalRoute.of(context).settings.name == '/categories')
+          Navigator.pushNamed(context, ModalRoute.of(context).settings.name);
+      } else {
+        Alert(
+          context: context,
+          closeButton: false,
+          textConfirmButton: 'Ok',
+          textCanelButton: "",
+          onClick: () {},
+          title: 'Error',
+          body: Text(bodyResponse['message']),
+        );
+      }
+    } else {
+      Alert(
+        context: context,
+        closeButton: false,
+        textConfirmButton: 'Ok',
+        textCanelButton: "",
+        onClick: () {},
+        title: 'Error',
+        body: Text("General internal error"),
+      );
+    }
+  }
+
+  static Future<int> delete(BuildContext context, Category category) async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    final response = await http.delete(
+      App.SERVER_WEB +
+          '/api/deleteCategory?id=' +
+          category.id.toString(),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Cookie': _prefs.getString('user.sessionCookie')
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final bodyResponse = json.decode(response.body);
+      if (bodyResponse['error'] == 200) {
+        return 1;
+      } else {
+        Alert(
+          context: context,
+          closeButton: false,
+          textConfirmButton: 'Ok',
+          textCanelButton: "",
+          onClick: () {},
+          title: 'Error',
+          body: Text(bodyResponse['message']),
+        );
+      }
+    } else {
+      Alert(
+        context: context,
+        closeButton: false,
+        textConfirmButton: 'Ok',
+        textCanelButton: "",
+        onClick: () {},
+        title: 'Error',
+        body: Text("General internal error"),
+      );
+    }
+
+    return -1;
+  }
+
+  static Future<int> put(BuildContext context, int id, String name, String description) async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    final response = await http.put(
+      App.SERVER_WEB +
+          '/api/category?id=' +
+          id.toString() +
+          '&name=' +
+          name +
+          '&description=' +
+          description,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Cookie': _prefs.getString('user.sessionCookie')
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final bodyResponse = json.decode(response.body);
+      print(bodyResponse);
+      if (bodyResponse['error'] == 200) {
+        return 1;
+      } else {
+        Alert(
+          context: context,
+          closeButton: false,
+          textConfirmButton: 'Ok',
+          textCanelButton: "",
+          onClick: () {},
+          title: 'Error',
+          body: Text(bodyResponse['message']),
+        );
+      }
+    } else {
+      Alert(
+        context: context,
+        closeButton: false,
+        textConfirmButton: 'Ok',
+        textCanelButton: "",
+        onClick: () {},
+        title: 'Error',
+        body: Text("General internal error"),
+      );
+    }
+    return -1;
   }
 
   Category.fromJson(Map<String, dynamic> json) {

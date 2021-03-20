@@ -4,10 +4,6 @@ import 'package:app_memo/pages/home/widget/menu.dart';
 import 'package:app_memo/utils/models/tag.dart';
 import 'package:app_memo/widget/alert.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../../main.dart' as App;
 
 class TagsPage extends StatefulWidget {
   @override
@@ -25,7 +21,7 @@ class _TagsPageState extends State<TagsPage> {
   }
 
   _getTags() async {
-    _tags = await (new Tag()).getTags(context);
+    _tags = await Tag.get(context);
     setState(() {});
   }
 
@@ -135,56 +131,12 @@ class _TagsPageState extends State<TagsPage> {
                                             textConfirmButton: "Yes",
                                             textCanelButton: "No",
                                             onClick: () async {
-                                              SharedPreferences _prefs =
-                                                  await SharedPreferences
-                                                      .getInstance();
-                                              final response = await http.delete(
-                                                App.SERVER_WEB +
-                                                    '/api/deleteTag?id=' +
-                                                    _tags[index]
-                                                        .id
-                                                        .toString(),
-                                                headers: <String, String>{
-                                                  'Content-Type':
-                                                      'application/json; charset=UTF-8',
-                                                  'Cookie': _prefs.getString(
-                                                      'user.sessionCookie')
-                                                },
-                                              );
-
-                                              if (response.statusCode == 200) {
-                                                final bodyResponse =
-                                                    json.decode(response.body);
-                                                if (bodyResponse['error'] ==
-                                                    200) {
-                                                  _tags.removeWhere(
-                                                      (tag) =>
-                                                          tag.id ==
-                                                          _tags[index].id);
+                                              int status = await Tag.delete(context, _tags[index]);
+                                              if (status == 1) {
+                                                _tags.removeWhere((tag) =>
+                                                      tag.id ==
+                                                      _tags[index].id);
                                                   setState(() {});
-                                                } else {
-                                                  Alert(
-                                                    context: context,
-                                                    closeButton: false,
-                                                    textConfirmButton: 'Ok',
-                                                    textCanelButton: "",
-                                                    onClick: () {},
-                                                    title: 'Error',
-                                                    body: Text(
-                                                        bodyResponse['message']),
-                                                  );
-                                                }
-                                              } else {
-                                                Alert(
-                                                  context: context,
-                                                  closeButton: false,
-                                                  textConfirmButton: 'Ok',
-                                                  textCanelButton: "",
-                                                  onClick: () {},
-                                                  title: 'Error',
-                                                  body: Text(
-                                                      "General internal error"),
-                                                );
                                               }
                                             },
                                             title: 'Alert',
@@ -206,52 +158,12 @@ class _TagsPageState extends State<TagsPage> {
                                           _tags[index].creationDate,
                                           _tags[index].lastModifiedDate)));
                               if (result != null) {
-                                SharedPreferences _prefs =
-                                    await SharedPreferences.getInstance();
-                                final response = await http.put(
-                                  App.SERVER_WEB +
-                                      '/api/tag?id=' +
-                                      _tags[index].id.toString() +
-                                      '&name=' +
-                                      result['name'] +
-                                      '&description=' +
-                                      result['description'],
-                                  headers: <String, String>{
-                                    'Content-Type':
-                                        'application/json; charset=UTF-8',
-                                    'Cookie':
-                                        _prefs.getString('user.sessionCookie')
-                                  },
-                                );
-
-                                if (response.statusCode == 200) {
-                                  final bodyResponse = json.decode(response.body);
-                                  if (bodyResponse['error'] == 200) {
-                                    _tags[index].name = result['name'];
+                                int status = await Tag.put(context, _tags[index].id, result['name'], result['description']);
+                                if (status == 1) {
+                                  _tags[index].name = result['name'];
                                     _tags[index].description =
                                         result['description'];
                                     setState(() {});
-                                  } else {
-                                    Alert(
-                                      context: context,
-                                      closeButton: false,
-                                      textConfirmButton: 'Ok',
-                                      textCanelButton: "",
-                                      onClick: () {},
-                                      title: 'Error',
-                                      body: Text(bodyResponse['message']),
-                                    );
-                                  }
-                                } else {
-                                  Alert(
-                                    context: context,
-                                    closeButton: false,
-                                    textConfirmButton: 'Ok',
-                                    textCanelButton: "",
-                                    onClick: () {},
-                                    title: 'Error',
-                                    body: Text("General internal error"),
-                                  );
                                 }
                               }
                             });

@@ -37,8 +37,7 @@ class Tag {
   set lastModifiedDate(String lastModifiedDate) =>
       _lastModifiedDate = lastModifiedDate;
 
-
-  Future<List<Tag>> getTags(BuildContext context) async {
+  static Future<List<Tag>> get(BuildContext context) async {
     List<Tag> _tags = [];
 
     SharedPreferences _prefs = await SharedPreferences.getInstance();
@@ -80,6 +79,135 @@ class Tag {
       );
     }
     return [];
+  }
+
+  static Future<void> add(
+      BuildContext context, String nameTag, String descriptionTag) async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    final response = await http.post(
+      App.SERVER_WEB +
+          '/api/tag?name=' +
+          nameTag +
+          '&description=' +
+          descriptionTag,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Cookie': _prefs.getString('user.sessionCookie')
+      },
+    );
+    if (response.statusCode == 200) {
+      final bodyResponse = json.decode(response.body);
+      if (bodyResponse['error'] == 200) {
+        if (ModalRoute.of(context).settings.name == '/tags')
+          Navigator.pushNamed(context, ModalRoute.of(context).settings.name);
+      } else {
+        Alert(
+          context: context,
+          closeButton: false,
+          textConfirmButton: 'Ok',
+          textCanelButton: "",
+          onClick: () {},
+          title: 'Error',
+          body: Text(bodyResponse['message']),
+        );
+      }
+    } else {
+      Alert(
+        context: context,
+        closeButton: false,
+        textConfirmButton: 'Ok',
+        textCanelButton: "",
+        onClick: () {},
+        title: 'Error',
+        body: Text("General internal error"),
+      );
+    }
+  }
+
+  static Future<int> put(BuildContext context, int id, String name, String description) async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    final response = await http.put(
+      App.SERVER_WEB +
+          '/api/tag?id=' +
+          id.toString() +
+          '&name=' +
+          name +
+          '&description=' +
+          description,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Cookie': _prefs.getString('user.sessionCookie')
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final bodyResponse = json.decode(response.body);
+      if (bodyResponse['error'] == 200) {
+        return 1;
+      } else {
+        Alert(
+          context: context,
+          closeButton: false,
+          textConfirmButton: 'Ok',
+          textCanelButton: "",
+          onClick: () {},
+          title: 'Error',
+          body: Text(bodyResponse['message']),
+        );
+      }
+    } else {
+      Alert(
+        context: context,
+        closeButton: false,
+        textConfirmButton: 'Ok',
+        textCanelButton: "",
+        onClick: () {},
+        title: 'Error',
+        body: Text("General internal error"),
+      );
+    }
+
+    return -1;
+  }
+
+  static Future<int> delete(BuildContext context, Tag tag) async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    final response = await http.delete(
+      App.SERVER_WEB + '/api/deleteTag?id=' + tag.id.toString(),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Cookie': _prefs.getString('user.sessionCookie')
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final bodyResponse = json.decode(response.body);
+      if (bodyResponse['error'] == 200) {
+        return 1;
+      } else {
+        Alert(
+          context: context,
+          closeButton: false,
+          textConfirmButton: 'Ok',
+          textCanelButton: "",
+          onClick: () {},
+          title: 'Error',
+          body: Text(bodyResponse['message']),
+        );
+      }
+    } else {
+      Alert(
+        context: context,
+        closeButton: false,
+        textConfirmButton: 'Ok',
+        textCanelButton: "",
+        onClick: () {},
+        title: 'Error',
+        body: Text("General internal error"),
+      );
+    }
+
+    return -1;
   }
 
   Tag.fromJson(Map<String, dynamic> json) {

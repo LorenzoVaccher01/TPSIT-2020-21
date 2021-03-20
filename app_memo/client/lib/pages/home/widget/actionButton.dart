@@ -1,14 +1,11 @@
 import 'package:app_memo/pages/home/views/category.dart';
 import 'package:app_memo/pages/home/views/tag.dart';
 import 'package:app_memo/pages/home/views/memo.dart';
+import 'package:app_memo/utils/models/category.dart';
+import 'package:app_memo/utils/models/memo.dart';
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:app_memo/widget/alert.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../../../main.dart' as App;
+import '../../../utils/models/tag.dart';
 
 class HomeActionButton extends StatefulWidget {
   @override
@@ -35,62 +32,22 @@ class _HomeActionButtonState extends State<HomeActionButton> {
           SpeedDialChild(
               child: Icon(Icons.tag),
               label: 'Tag',
-              backgroundColor: Colors.deepOrange,
+              backgroundColor: Colors.deepOrange[300],
               onTap: () async {
                 final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
                             TagPage(true, null, null, null, null, null)));
+
                 if (result != null) {
-                  SharedPreferences _prefs =
-                      await SharedPreferences.getInstance();
-                  final response = await http.post(
-                    App.SERVER_WEB +
-                        '/api/tag?name=' +
-                        result['name'] +
-                        '&description=' +
-                        result['description'],
-                    headers: <String, String>{
-                      'Content-Type': 'application/json; charset=UTF-8',
-                      'Cookie': _prefs.getString('user.sessionCookie')
-                    },
-                  );
-                  print(response.statusCode);
-                  if (response.statusCode == 200) {
-                    final bodyResponse = json.decode(response.body);
-                    if (bodyResponse['error'] == 200) {
-                      if (ModalRoute.of(context).settings.name == '/tags')
-                        Navigator.pushNamed(
-                            context, ModalRoute.of(context).settings.name);
-                    } else {
-                      Alert(
-                        context: context,
-                        closeButton: false,
-                        textConfirmButton: 'Ok',
-                        textCanelButton: "",
-                        onClick: () {},
-                        title: 'Error',
-                        body: Text(bodyResponse['message']),
-                      );
-                    }
-                  } else {
-                    Alert(
-                      context: context,
-                      closeButton: false,
-                      textConfirmButton: 'Ok',
-                      textCanelButton: "",
-                      onClick: () {},
-                      title: 'Error',
-                      body: Text("General internal error"),
-                    );
-                  }
+                  await Tag.add(context, result['name'], result['description']);
                 }
               }),
           SpeedDialChild(
               child: Icon(Icons.category),
               label: 'Category',
-              backgroundColor: Colors.cyan,
+              backgroundColor: Colors.cyan[300],
               onTap: () async {
                 final result = await Navigator.push(
                     context,
@@ -98,112 +55,30 @@ class _HomeActionButtonState extends State<HomeActionButton> {
                         builder: (context) =>
                             CategoryPage(true, null, null, null, null, null)));
                 if (result != null) {
-                  SharedPreferences _prefs =
-                      await SharedPreferences.getInstance();
-                  final response = await http.post(
-                    App.SERVER_WEB +
-                        '/api/category?name=' +
-                        result['name'] +
-                        '&description=' +
-                        result['description'],
-                    headers: <String, String>{
-                      'Content-Type': 'application/json; charset=UTF-8',
-                      'Cookie': _prefs.getString('user.sessionCookie')
-                    },
-                  );
-                  print(response.statusCode);
-                  if (response.statusCode == 200) {
-                    final bodyResponse = json.decode(response.body);
-                    if (bodyResponse['error'] == 200) {
-                      if (ModalRoute.of(context).settings.name == '/categories')
-                        Navigator.pushNamed(
-                            context, ModalRoute.of(context).settings.name);
-                    } else {
-                      Alert(
-                        context: context,
-                        closeButton: false,
-                        textConfirmButton: 'Ok',
-                        textCanelButton: "",
-                        onClick: () {},
-                        title: 'Error',
-                        body: Text(bodyResponse['message']),
-                      );
-                    }
-                  } else {
-                    Alert(
-                      context: context,
-                      closeButton: false,
-                      textConfirmButton: 'Ok',
-                      textCanelButton: "",
-                      onClick: () {},
-                      title: 'Error',
-                      body: Text("General internal error"),
-                    );
-                  }
+                  await Category.add(
+                      context, result['name'], result['description']);
                 }
               }),
           SpeedDialChild(
               child: Icon(Icons.note_add),
               label: 'Memo',
-              backgroundColor: Colors.amber,
+              backgroundColor: Colors.amber[300],
               onTap: () async {
                 final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => MemoPage(true, null)));
 
-                String _getAttr(dynamic res) {
-                  List<String> _tags = [];
-                  List<String> _accounts = [];
-
-                  res['tags'].forEach((tag) {
-                    _tags.add(tag.id.toString());
-                  });
-
-                  //TODO: creare stesso meccanismo anche per gli utenti come per i tags
-
-                  return "color=" + res['color'].toString().replaceAll('#', '') + "&title=" + res["name"] + "&body=" + res["body"] + "&tags=${_tags.join(',')}" /*+ _tags*/ + "&category=" + (res['category'] != null ? res['category'].id.toString() : "1") + "&accounts=${_accounts.join(',')}" /*+ _accounts*/;
-                }
-
                 if (result != null) {
-                  String attr = _getAttr(result);
-                  print(App.SERVER_WEB + '/api/memo?' + attr);
-                  SharedPreferences _prefs =
-                      await SharedPreferences.getInstance();
-                  final response = await http.post(
-                      App.SERVER_WEB + '/api/memo?' + attr,
-                      headers: <String, String>{
-                        'Content-Type': 'application/json; charset=UTF-8',
-                        'Cookie': _prefs.getString('user.sessionCookie')
-                      });
-                  if (response.statusCode == 200) {
-                    final bodyResponse = json.decode(response.body);
-                    if (bodyResponse['error'] == 200) {
-                      if (ModalRoute.of(context).settings.name == '/home')
-                        Navigator.pushNamed(
-                            context, ModalRoute.of(context).settings.name);
-                    } else {
-                      Alert(
-                        context: context,
-                        closeButton: false,
-                        textConfirmButton: 'Ok',
-                        textCanelButton: "",
-                        onClick: () {},
-                        title: 'Error',
-                        body: Text(bodyResponse['message']),
-                      );
-                    }
-                  } else {
-                    Alert(
-                      context: context,
-                      closeButton: false,
-                      textConfirmButton: 'Ok',
-                      textCanelButton: "",
-                      onClick: () {},
-                      title: 'Error',
-                      body: Text("General internal error"),
-                    );
-                  }
+                  print(result);
+                  await Memo.add(
+                      context,
+                      result['name'],
+                      result['body'],
+                      result['category'],
+                      result['color'],
+                      result['tags'],
+                      result['accounts']);
                 }
               }),
         ]);

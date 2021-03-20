@@ -4,10 +4,6 @@ import 'package:app_memo/pages/home/widget/menu.dart';
 import 'package:app_memo/utils/models/category.dart';
 import 'package:app_memo/widget/alert.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../../main.dart' as App;
 import './views/category.dart';
 
 class CategoriesPage extends StatefulWidget {
@@ -26,7 +22,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
   }
 
   _getCategories() async {
-    _categories = await (new Category()).getCategories(context);
+    _categories = await Category.get(context);
     setState(() {});
   }
 
@@ -139,59 +135,17 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                               textConfirmButton: "Yes",
                                               textCanelButton: "No",
                                               onClick: () async {
-                                                SharedPreferences _prefs =
-                                                    await SharedPreferences
-                                                        .getInstance();
-                                                final response =
-                                                    await http.delete(
-                                                  App.SERVER_WEB +
-                                                      '/api/deleteCategory?id=' +
-                                                      _categories[index]
-                                                          .id
-                                                          .toString(),
-                                                  headers: <String, String>{
-                                                    'Content-Type':
-                                                        'application/json; charset=UTF-8',
-                                                    'Cookie': _prefs.getString(
-                                                        'user.sessionCookie')
-                                                  },
-                                                );
-
-                                                if (response.statusCode ==
-                                                    200) {
-                                                  final bodyResponse = json
-                                                      .decode(response.body);
-                                                  if (bodyResponse['error'] ==
-                                                      200) {
-                                                    _categories.removeWhere(
-                                                        (category) =>
-                                                            category.id ==
-                                                            _categories[index]
-                                                                .id);
-                                                    setState(() {});
-                                                  } else {
-                                                    Alert(
-                                                      context: context,
-                                                      closeButton: false,
-                                                      textConfirmButton: 'Ok',
-                                                      textCanelButton: "",
-                                                      onClick: () {},
-                                                      title: 'Error',
-                                                      body: Text(bodyResponse[
-                                                          'message']),
-                                                    );
-                                                  }
-                                                } else {
-                                                  Alert(
-                                                    context: context,
-                                                    closeButton: false,
-                                                    textConfirmButton: 'Ok',
-                                                    textCanelButton: "",
-                                                    onClick: () {},
-                                                    title: 'Error',
-                                                    body: Text(
-                                                        "General internal error"),
-                                                  );
+                                                int status =
+                                                    await Category.delete(
+                                                        context,
+                                                        _categories[index]);
+                                                if (status == 1) {
+                                                  _categories.removeWhere(
+                                                      (category) =>
+                                                          category.id ==
+                                                          _categories[index]
+                                                              .id);
+                                                  setState(() {});
                                                 }
                                               },
                                               title: 'Alert',
@@ -215,53 +169,12 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                                 .lastModifiedDate)));
 
                                 if (result != null) {
-                                  SharedPreferences _prefs =
-                                      await SharedPreferences.getInstance();
-                                  final response = await http.put(
-                                    App.SERVER_WEB +
-                                        '/api/category?id=' +
-                                        _categories[index].id.toString() +
-                                        '&name=' +
-                                        result['name'] +
-                                        '&description=' +
-                                        result['description'],
-                                    headers: <String, String>{
-                                      'Content-Type':
-                                          'application/json; charset=UTF-8',
-                                      'Cookie':
-                                          _prefs.getString('user.sessionCookie')
-                                    },
-                                  );
-
-                                  if (response.statusCode == 200) {
-                                    final bodyResponse =
-                                        json.decode(response.body);
-                                    if (bodyResponse['error'] == 200) {
-                                      _categories[index].name = result['name'];
-                                      _categories[index].description =
-                                          result['description'];
-                                      setState(() {});
-                                    } else {
-                                      Alert(
-                                        context: context,
-                                        closeButton: false,
-                                        textConfirmButton: 'Ok',
-                                        textCanelButton: "",
-                                        onClick: () {},
-                                        title: 'Error',
-                                        body: Text(bodyResponse['message']),
-                                      );
-                                    }
-                                  } else {
-                                    Alert(
-                                      context: context,
-                                      closeButton: false,
-                                      textConfirmButton: 'Ok',
-                                      textCanelButton: "",
-                                      onClick: () {},
-                                      title: 'Error',
-                                      body: Text("General internal error"),
-                                    );
+                                  int status = await Category.put(context, _categories[index].id, result['name'], result['description']);
+                                  if (status == 1) {
+                                    _categories[index].name = result['name'];
+                                    _categories[index].description =
+                                        result['description'];
+                                    setState(() {});
                                   }
                                 }
                               });
