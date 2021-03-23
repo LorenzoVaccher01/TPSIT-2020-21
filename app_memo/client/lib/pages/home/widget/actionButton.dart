@@ -70,7 +70,6 @@ class _HomeActionButtonState extends State<HomeActionButton> {
                         builder: (context) => MemoPage(true, null)));
 
                 if (result != null) {
-                  print(result);
                   await Memo.add(
                       context,
                       result['name'],

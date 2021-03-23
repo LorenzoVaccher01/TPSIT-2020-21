@@ -284,22 +284,42 @@ class _MemosPageState extends State<MemosPage> {
                             MaterialPageRoute(
                                 builder: (context) =>
                                     MemoPage(false, _memos[index])));
-                        int status = await Memo.put(context, result['id'], result['name'], result['body'], result['category'], result['color'], result['tags'], result['accounts']);
+                        dynamic status = await Memo.put(
+                            context,
+                            result['id'],
+                            result['name'],
+                            result['body'],
+                            result['category'],
+                            result['color'],
+                            result['tags'],
+                            result['accounts']);
 
-                        if (status == 1) {
-                          //TODO: verificare correttezza
+                        if (status['error'] == 1 || status['error'] == 404) {
                           _memos[index].title = result['name'];
                           _memos[index].body = result['body'];
                           _memos[index].category = result['category'];
                           _memos[index].color = new Color(int.parse(
-                                  result['color'].substring(1, 7), radix: 16) + 0xFF000000);
+                                  result['color'].substring(1, 7),
+                                  radix: 16) +
+                              0xFF000000);
                           _memos[index].tags = result['tags'];
+                          _memos[index].sharers =
+                              new List<String>.from(status['accounts']);
                           setState(() {});
                         }
                       },
                       child: new Container(
                         child: Column(
                           children: [
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: !_memos[index].isOwner
+                                ? Padding(
+                                    padding: EdgeInsets.only(right: 10),
+                                    child: Icon(Icons.people,
+                                        color: Colors.black54, size: 22))
+                                : Container(),
+                            ),
                             Container(
                               margin: EdgeInsets.only(bottom: 13),
                               child: Text(
@@ -313,42 +333,42 @@ class _MemosPageState extends State<MemosPage> {
                                 style: TextStyle(
                                     color: Colors.grey[700], fontSize: 14)),
                             _memos[index].category.id != 1
-                                ? Padding(padding: EdgeInsets.only(top: 15))
-                                : Container(),
-                            _memos[index].category.id != 1
-                                ? Container(
-                                    child: Text(_trimString(
-                                        _memos[index].category.name,
-                                        'category')),
-                                    padding: EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(50),
-                                      color: Colors.transparent,
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color: _darken(
-                                                _memos[index].color, 0.2),
-                                            spreadRadius: 0.3),
-                                      ],
+                                ? Padding(
+                                    padding: EdgeInsets.only(top: 15),
+                                    child: Container(
+                                      child: Text(_trimString(
+                                          _memos[index].category.name,
+                                          'category')),
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(50),
+                                        color: Colors.transparent,
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color: _darken(
+                                                  _memos[index].color, 0.2),
+                                              spreadRadius: 0.3),
+                                        ],
+                                      ),
                                     ),
                                   )
                                 : Container(),
                             _memos[index].tags.length != 0
-                                ? Padding(padding: EdgeInsets.only(top: 15))
+                                ? Padding(
+                                    padding: EdgeInsets.only(top: 15),
+                                    child: Text(
+                                        _getMemoTags(_memos[index].tags),
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold)),
+                                  )
                                 : Container(),
-                            _memos[index].tags.length != 0
-                                ? Text(_getMemoTags(_memos[index].tags),
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold))
-                                : Container(),
-                            _memos[index].tags.length != 0 ||
-                                    _memos[index].category.id != 1
-                                ? Padding(padding: EdgeInsets.only(top: 15))
-                                : Container(),
-                            Text(_getDate(_memos[index].creationDate),
-                                style: TextStyle(
-                                    color: Colors.grey[700], fontSize: 12))
+                            Padding(
+                              padding: EdgeInsets.only(top: 15),
+                              child: Text(_getDate(_memos[index].creationDate),
+                                  style: TextStyle(
+                                      color: Colors.grey[700], fontSize: 12)),
+                            ),
                           ],
                         ),
                         padding: EdgeInsets.all(10),

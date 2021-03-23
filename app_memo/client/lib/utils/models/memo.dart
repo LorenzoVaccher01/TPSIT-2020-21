@@ -21,6 +21,7 @@ class Memo {
   String _lastModifiedDate;
   Category _category;
   List<Tag> _tags;
+  List<String> _sharers;
 
   Memo(
       {int id,
@@ -32,7 +33,8 @@ class Memo {
       String creationDate,
       String lastModifiedDate,
       Category category,
-      List<Tag> tags}) {
+      List<Tag> tags,
+      List<String> sharers}) {
     this._id = id;
     this._isOwner = isOwner;
     this._permission = permission;
@@ -43,6 +45,7 @@ class Memo {
     this._lastModifiedDate = lastModifiedDate;
     this._category = category;
     this._tags = tags;
+    this._sharers = sharers;
   }
 
   int get id => _id;
@@ -66,6 +69,8 @@ class Memo {
   set category(Category category) => _category = category;
   List<Tag> get tags => _tags;
   set tags(List<Tag> tags) => _tags = tags;
+  List<String> get sharers => _sharers;
+  set sharers(List<String> sharers) => _sharers = sharers;
 
   static Future<void> add(
       BuildContext context,
@@ -76,7 +81,6 @@ class Memo {
       List<Tag> tags,
       List<String> accounts) async {
     List<String> _tags = [];
-    List<String> _accounts = [];
 
     tags.forEach((tag) {
       _tags.add(tag.id.toString());
@@ -93,7 +97,9 @@ class Memo {
         "&tags=${_tags.join(',')}" /*+ _tags*/ +
         "&category=" +
         (category != null ? category.id.toString() : "1") +
-        "&accounts=${_accounts.join(',')}" /*+ _accounts*/;
+        "&accounts=${accounts}" /*+ _accounts*/;
+
+    print(accounts);
 
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     final response = await http
@@ -173,7 +179,7 @@ class Memo {
     return [];
   }
 
-  static Future<int> put(
+  static Future<dynamic> put(
       BuildContext context,
       int id,
       String title,
@@ -187,13 +193,9 @@ class Memo {
     List<String> _tags = [];
     List<String> _accounts = [];
 
-    print(tags);
-
     tags.forEach((tag) {
       _tags.add(tag.id.toString());
     });
-
-    print(tags);
 
     final response = await http.put(
         App.SERVER_WEB + '/api/memo?id=${id.toString()}&title=${title}&body=${body}&color=${color.replaceAll(RegExp('#'), '')}&categoryId=${category.id}&tags=${_tags}&accounts=${accounts}',
@@ -203,8 +205,20 @@ class Memo {
         });
     if (response.statusCode == 200) {
       final bodyResponse = json.decode(response.body);
+      print(bodyResponse);
       if (bodyResponse['error'] == 200) {
-        return 1;
+        return {"error": 1, "accounts": bodyResponse['accounts']};
+      } else if (bodyResponse['error'] == 404) {
+        Alert(
+          context: context,
+          closeButton: false,
+          textConfirmButton: 'Ok',
+          textCanelButton: "",
+          onClick: () {},
+          title: 'Error',
+          body: Text(bodyResponse['message']),
+        );
+        return {"error": 404, "accounts": bodyResponse['accounts']};
       } else {
         Alert(
           context: context,
@@ -215,6 +229,7 @@ class Memo {
           title: 'Error',
           body: Text(bodyResponse['message']),
         );
+        return {"error": -1};
       }
     } else {
       Alert(
@@ -226,9 +241,8 @@ class Memo {
         title: 'Error',
         body: Text("General internal error"),
       );
+      return {"error": -1};
     }
-
-    return -1;
   }
 
   static Future<void> delete(BuildContext context, Memo memo) async {
@@ -285,6 +299,7 @@ class Memo {
         _tags.add(new Tag.fromJson(v));
       });
     }
+    _sharers = json['sharers'].cast<String>();
   }
 
   Map<String, dynamic> toJson() {
@@ -303,6 +318,7 @@ class Memo {
     if (this._tags != null) {
       data['tags'] = this._tags.map((v) => v.toJson()).toList();
     }
+    data['sharers'] = this._sharers;
     return data;
   }
 

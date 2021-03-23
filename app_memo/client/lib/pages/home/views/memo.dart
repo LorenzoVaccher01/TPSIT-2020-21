@@ -10,7 +10,7 @@ class MemoPage extends StatefulWidget {
   Color _selectedColor;
   Category _selectedCategory;
   List<Tag> _selectedTags = [];
-  List<String> _sharers;
+  List<String> _sharers = [];
 
   MemoPage(this._newMemo, this._memo);
 
@@ -89,58 +89,11 @@ class _MemoPageState extends State<MemoPage> {
       (this.widget._memo.tags).forEach((element) {
         this.widget._selectedTags.add(element);
       });
+
+      widget._sharers = this.widget._memo.sharers;
     }
 
-    //this.widget._memo != null ? _getSharers() : null; //TODO: decommentare una volta finito il sistema per la condivisione
-    widget._sharers = [
-      "tommaso.rizzo@itiszuccante.edu.it",
-      "jiahao.ruan@itiszuccante.edu.it",
-      "elia.coro@itiszuccante.edu.it",
-      "giacomo.davanzo@itiszuccante.edu.it",
-      "valentin.necula@itiszuccante.edu.it"
-    ];
     super.initState();
-  }
-
-  //TODO: ottenere tutti quelli che hanno accesso a questo account
-  void _getSharers() async {
-    /*SharedPreferences _prefs = await SharedPreferences.getInstance();
-    final response = await http.get(
-      App.SERVER_WEB + '/api/sharers?memoId' + this.widget._memo.id.toString(),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Cookie': _prefs.getString('user.sessionCookie')
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final bodyResponse = json.decode(response.body);
-      if (bodyResponse['error'] == 200) {
-        widget._sharers.clear();
-        for (var i = 0; i < bodyResponse['data'].length; i++)
-          widget._sharers.add((bodyResponse['data'][i]));
-      } else {
-        Alert(
-          context: context,
-          closeButton: false,
-          textConfirmButton: 'Ok',
-          textCanelButton: "",
-          onClick: () {},
-          title: 'Error',
-          body: Text(bodyResponse['message']),
-        );
-      }
-    } else {
-      Alert(
-        context: context,
-        closeButton: false,
-        textConfirmButton: 'Ok',
-        textCanelButton: "",
-        onClick: () {},
-        title: 'Error',
-        body: Text("General internal error"),
-      );
-    }*/
   }
 
   @override
@@ -159,6 +112,7 @@ class _MemoPageState extends State<MemoPage> {
               return AlertDialog(
                 title: Text("Select a color"),
                 content: ListView.builder(
+                    shrinkWrap: true,
                     itemCount: _colors.length,
                     itemBuilder: (context, index) {
                       return InkWell(
@@ -216,6 +170,7 @@ class _MemoPageState extends State<MemoPage> {
               return AlertDialog(
                 title: Text("Select a category"),
                 content: ListView.separated(
+                    shrinkWrap: true,
                     itemCount: _categories.length,
                     separatorBuilder: (BuildContext context, int index) =>
                         Divider(),
@@ -294,6 +249,7 @@ class _MemoPageState extends State<MemoPage> {
               return AlertDialog(
                 title: Text("Select tags"),
                 content: ListView.separated(
+                    shrinkWrap: true,
                     itemCount: _tags.length,
                     separatorBuilder: (BuildContext context, int index) =>
                         Divider(),
@@ -357,13 +313,71 @@ class _MemoPageState extends State<MemoPage> {
 
     Future<void> _openShareMenu() async {
       TextEditingController _emailController = new TextEditingController();
+
+      Future<void> _openAddAccount() {
+        return showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return StatefulBuilder(builder: (context, setState) {
+                return AlertDialog(
+                  title: Text('Add Account'),
+                  content: TextField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          counterText: "",
+                          labelText: "Email:",
+                          labelStyle:
+                              TextStyle(color: Colors.grey, fontSize: 18)),
+                      maxLength: 35,
+                      style: TextStyle(color: Colors.black)),
+                  actions: [
+                    FlatButton(
+                      child: Text("Cancel"),
+                      onPressed: () {
+                        _emailController.clear();
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    FlatButton(
+                      child: Text("Add"),
+                      onPressed: () {
+                        if (_emailController.text != '' ||
+                            _emailController.text != null)
+                          widget._sharers.add(_emailController.text);
+                        _emailController.clear();
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              });
+            });
+      }
+
       return showDialog(
           context: context,
           barrierDismissible: false,
           builder: (BuildContext context) {
             return StatefulBuilder(builder: (context, setState) {
               return AlertDialog(
-                title: Text("Share memo"),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Share memo"),
+                    widget._memo.isOwner
+                        ? InkWell(
+                            child:
+                                Icon(Icons.add, size: 30, color: Colors.green),
+                            onTap: () async {
+                              await _openAddAccount();
+                              setState(() {});
+                            })
+                        : Container()
+                  ],
+                ),
                 content: ListView.separated(
                     itemCount: widget._sharers.length,
                     shrinkWrap: true,
@@ -371,74 +385,43 @@ class _MemoPageState extends State<MemoPage> {
                     separatorBuilder: (BuildContext context, int index) =>
                         Divider(),
                     itemBuilder: (context, index) {
-                      return Column(
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          /*index == 0
-                              ? Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                      TextField(
-                                          controller: _emailController,
-                                          decoration: InputDecoration(
-                                              border: InputBorder.none,
-                                              counterText: "",
-                                              labelText: "Email:",
-                                              labelStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontSize: 18)),
-                                          maxLength: 35,
-                                          style:
-                                              TextStyle(color: Colors.black)),
-                                      InkWell(
-                                          child: Icon(Icons.add,
-                                              size: 30, color: Colors.green),
-                                          onTap: () {
-                                            print('TODO');
-                                          })
-                                    ])
-                              : Container(),*/
-                          InkWell(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                index != 0
-                                    ? Padding(padding: EdgeInsets.only(top: 20))
-                                    : Container(),
-                                Text(widget._sharers[index].length >= 23
-                                    ? widget._sharers[index].substring(0, 23) +
-                                        '...'
-                                    : widget._sharers[index]),
-                                InkWell(
-                                    child: Icon(Icons.delete,
-                                        size: 30, color: Colors.grey),
-                                    onTap: () {
-                                      Alert(
-                                        context: context,
-                                        closeButton: true,
-                                        textConfirmButton: "Yes",
-                                        textCanelButton: "No",
-                                        onClick: () async {
-                                          print('TODO');
-                                          //TODO: inviare richiesta al server per eliminazione utente condiviso
-                                        },
-                                        title: 'Alert',
-                                        body: Text(
-                                            "Do you really want to delete this tag?"),
-                                      );
-                                    })
-                              ],
-                            ),
-                            onTap: () {
-                              if (widget._selectedTags.contains(_tags[index]))
-                                widget._selectedTags.remove(_tags[index]);
-                              else
-                                widget._selectedTags.add(_tags[index]);
-                              setState(() {});
-                            },
-                          ),
+                          index != 0
+                              ? Padding(padding: EdgeInsets.only(top: 20))
+                              : Container(),
+                          widget._memo.isOwner
+                              ? Text(widget._sharers[index].length >= 23
+                                  ? widget._sharers[index].substring(0, 23) +
+                                      '...'
+                                  : widget._sharers[index])
+                              : Text(widget._sharers[index].length >= 27
+                                  ? widget._sharers[index].substring(0, 27) +
+                                      '...'
+                                  : widget._sharers[index]),
+                          widget._memo.isOwner
+                              ? InkWell(
+                                  child: Icon(Icons.delete,
+                                      size: 30, color: Colors.grey),
+                                  onTap: () {
+                                    Alert(
+                                      context: context,
+                                      closeButton: true,
+                                      textConfirmButton: "Yes",
+                                      textCanelButton: "No",
+                                      onClick: () async {
+                                        widget._sharers
+                                            .remove(widget._sharers[index]);
+                                        setState(() {});
+                                      },
+                                      title: 'Alert',
+                                      body: Text(
+                                          "Do you really want to delete this tag?"),
+                                    );
+                                  })
+                              : Container()
                         ],
                       );
                     }),
@@ -458,6 +441,24 @@ class _MemoPageState extends State<MemoPage> {
     void _unfocusTextFields() {
       _focusNodeTitle.unfocus();
       _focusNodeBoby.unfocus();
+    }
+
+    List<BottomNavigationBarItem> _getBottomNavigationBarItems() {
+      List<BottomNavigationBarItem> _items = [];
+
+      if (widget._memo == null || widget._memo.isOwner) {
+        _items.add(BottomNavigationBarItem(
+            icon: Icon(Icons.color_lens_rounded), label: ''));
+        _items.add(
+            BottomNavigationBarItem(icon: Icon(Icons.category), label: ''));
+        _items.add(BottomNavigationBarItem(icon: Icon(Icons.tag), label: ''));
+        _items.add(BottomNavigationBarItem(icon: Icon(Icons.send), label: ''));
+      } else {
+        _items.add(BottomNavigationBarItem(
+            icon: Icon(Icons.color_lens_rounded), label: ''));
+        _items.add(BottomNavigationBarItem(icon: Icon(Icons.send), label: ''));
+      }
+      return _items;
     }
 
     return Scaffold(
@@ -563,36 +564,43 @@ class _MemoPageState extends State<MemoPage> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         showSelectedLabels: false,
         showUnselectedLabels: false,
         selectedItemColor: Colors.grey[600],
         unselectedItemColor: Colors.grey[600],
-        items: [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.color_lens_rounded), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.category), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.tag), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.send), label: '')
-        ],
+        items: _getBottomNavigationBarItems(),
         onTap: (int index) async {
-          switch (index) {
-            case 0:
-              _unfocusTextFields();
-              await _openColorsMenu();
-              break;
-            case 1:
-              _unfocusTextFields();
-              await _openCategoriesMenu();
-              break;
-            case 2:
-              _unfocusTextFields();
-              await _openTagsMenu();
-              break;
-            case 3:
-              _unfocusTextFields();
-              await _openShareMenu();
-              break;
-          }
+          if (widget._memo == null || widget._memo.isOwner)
+            switch (index) {
+              case 0:
+                _unfocusTextFields();
+                await _openColorsMenu();
+                break;
+              case 1:
+                _unfocusTextFields();
+                await _openCategoriesMenu();
+                break;
+              case 2:
+                _unfocusTextFields();
+                await _openTagsMenu();
+                break;
+              case 3:
+                _unfocusTextFields();
+                await _openShareMenu();
+                break;
+            }
+          else
+            switch (index) {
+              case 0:
+                _unfocusTextFields();
+                await _openColorsMenu();
+                break;
+              case 1:
+                _unfocusTextFields();
+                await _openShareMenu();
+                break;
+            }
         },
       ),
       body: GestureDetector(
