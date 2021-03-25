@@ -27,6 +27,24 @@ Per offrire una maggior sicurezza agli utenti registrati al sito è stato utiliz
   <img src="./_img/db2.png" alt="Struttura del database 2" width="800px">
 </div>
 
+#### Query particolari
+**Eliminazione meno dal database:**
+``` SQL
+DELETE memo FROM memos memo
+INNER JOIN memoAccountAssociations ON memoAccountAssociations.memoId = memo.id
+INNER JOIN accounts ON accounts.id = memoAccountAssociations.accountId
+WHERE accounts.email = :email AND memoAccountAssociations.isOwner = 1 AND memo.id = :id;
+```
+
+**Selezione di tutti i memo per un determinato account:**
+```SQL
+SELECT memos.*, memoAccountAssociations.isOwner, memoAccountAssociations.permission, categories.id AS categoryId, categories.name AS categoryName, categories.description AS categoryDescription, categories.creationDate AS categoryCreationDate, categories.lastModificationDate AS categoryLastModificationDate
+FROM memos
+INNER JOIN categories ON categories.id = memos.categoryId
+INNER JOIN memoAccountAssociations ON memoAccountAssociations.memoId = memos.id
+INNER JOIN accounts ON accounts.id = memoAccountAssociations.accountId
+WHERE accounts.email = :email AND (memos.title LIKE "%:searchQuery%" OR memos.body LIKE "%:searchQuery%";
+```
 ### Client (Floor)
 Floor fornisce una chiara astrazione SQLite le applicazioni Flutter ispirata alla libreria di persistenza Room. Viene fornito con la mappatura automatica tra gli oggetti in memoria e le righe del database, pur offrendo il pieno controllo del database con l'uso di SQL. Di conseguenza, è necessario avere una comprensione di SQL e SQLite per sfruttare appieno il potenziale di Floor.
 
@@ -48,6 +66,72 @@ Grafico UML della struttura del server:
 <div align="center">
   <img src="./_img/serverUML.png" alt="Struttura classi" width="700px">
 </div>
+
+### Moduli personalizzati
+#### Logger
+Modulo utilizzato per la gestione della console del server. Tale modulo, infatti, permette di scrivere delle informazioni nella console e allo stesso tempo di salvarle in una cartella (`/log`) organizzata per anno e per mese dove vi sono tutte le azioni che gli utenti hanno eseguito in un determinato periodo di tempo, indicando data e ora.
+
+Una delle **parti più significative** di tale modulo è la seguente:
+``` JavaScript
+let log = (string, target, args = []) => {
+  if (target != undefined || target != null)
+    if (_TARGET[target.toLocaleLowerCase()] != undefined)
+      string = _TARGET[target.toLocaleLowerCase()] + string;
+    else
+      error('The target is not defined for the following message!');
+
+  for (let i = 0; i < Object.keys(args).length; i++)
+    string = string.split('%' + Object.keys(args)[i] + '%').join(Object.values(args)[i]);
+
+  for (let i = 0; i < Object.values(_COLOR_CODE).length; i++)
+    string = string.split(Object.values(_COLOR_CODE)[i]).join(Object.values(_COLOR)[i]);
+
+  console.log(getConsoleDate() + _TYPE.INFO + string + _COLOR.RESET);
+
+  for (let i = 0; i < Object.values(_COLOR).length; i++)
+    string = string.split(Object.values(_COLOR)[i]).join('');
+
+  fileWrite('[INFO] ' + string);
+}
+```
+#### Email
+Tale progetto prevede anche l'invio di Email agli utenti a cui è stato condiviso un Memo.
+Per l'invio dell'email è stato utilizzato un account Email Pro fornito da OVH (`info@lorenzovaccher.com`) e la seguente funzione:
+``` JavaScript
+exports.send = function (data) {
+  let transporter = nodemailer.createTransport({
+    host: settings.email.host,
+    port: settings.email.port,
+    secure: settings.email.secure,
+    pool: settings.email.pool,
+    auth: {
+      user: settings.email.auth.user,
+      pass: settings.email.auth.password
+    }
+  });
+
+  for (var i = 0; i < data.to.length; i++) {
+    transporter.sendMail({
+      from: settings.email.from,
+      to: data.to[i].email,
+      subject: data.subject,
+      attachments: data.attachments,
+      html: data.data.html
+    }, function (error, info) {
+      if (error) {
+        logger.error(error, "email");
+      } else {
+        logger.log(`Email sent &aTO&r: &a${info.envelope.to}&r. &aEmail ID&r: &a${info.messageId}&r.`, "email");
+      }
+    });
+  }
+};
+```
+
+#### Database
+Come per quanto riguarda l'invio di email e la gestione della console, anche per la gestione del database è presente un mdoulo, che fornisce due funzioni:
+- Una per l'esecuzione di Query in modo Asincrono
+- Ed un'altra per l'esecusione di Query in modo Sincrono (Gestite tramite delle Promise)
 
 ### Console
 Per una miglior gestione del progetto e per il debug è stato realizzato un sistema di LOG che permette di salvare tutti gli eventi invocati mediante il modulo personalizzato `logger`. Tutte le azioni degli utenti, errori e avvisi, quindi, vengono salvati nella cartella LOG del progetto.
