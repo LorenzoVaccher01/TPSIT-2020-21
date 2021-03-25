@@ -16,6 +16,7 @@ Di seguito è illustrata, attraverso un diagramma ad albero, la struttura del pr
 +-- database.sql    //Database
 ```
 ## Database
+### Server (MySQL)
 Per il salvataggio di tutti i memo, di tutte le categorie, di tutti i tags e di tutti gli utenti è stato utilizzato un database relazionale (MySQL) strutturato nel seguente modo:
 <div align="center">
   <img src="./_img/db1.png" alt="Struttura del database 1" width="800px">
@@ -25,6 +26,11 @@ Per offrire una maggior sicurezza agli utenti registrati al sito è stato utiliz
 <div align="center">
   <img src="./_img/db2.png" alt="Struttura del database 2" width="800px">
 </div>
+
+### Client (Floor)
+Floor fornisce una chiara astrazione SQLite le applicazioni Flutter ispirata alla libreria di persistenza Room. Viene fornito con la mappatura automatica tra gli oggetti in memoria e le righe del database, pur offrendo il pieno controllo del database con l'uso di SQL. Di conseguenza, è necessario avere una comprensione di SQL e SQLite per sfruttare appieno il potenziale di Floor.
+
+La struttura di tale database è simile a quella di MySQL, tranne per il fatto che non sono presenti le password nella tabella utenti, la tabella sessioni, utenti bloccati, visitatori e tentativi.
 
 ## Server
 Il server che gestisce tutte le connessioni degli utenti è stato scritto in NodeJs, in contemporanea ai seguenti moduli:
@@ -82,10 +88,14 @@ Qui di seguito è riportata l'immagini visiva della chat del server.
 Il client è stato realizzato in Flutter (Dart) prendendo spunto da diverse immagini presenti in internet.
 Per quanto riguada la connession client-server questa, è stata effettuata mediante la libreria `http` di dart, che permette, per appunto, di realizzare delle richieste HTTP a un determinato server, che in questo caso è: `https://lorenzovaccher.com:8443/`
 
-### UML
+### Schema UML dei modelli
 <div align="center">
   <img src="./_img/clientUML.png" alt="Console server">
 </div>
+
+Per semplicità, nello schema qui sopra riportato non sono stati indicati i metodi getter e setter.
+
+Struttura analoga, hanno i modelli utilizzati per la gestione e creazione del database gestito con Floor. L'unica osservazione da fare su quest'ultimi è che non presentano oggetti come `Category` o `Tag` in quanto il database non è predisposto per salvare questa tipologia di dati.
 
 ### Struttura del client
 ``` php
@@ -100,6 +110,26 @@ Per quanto riguada la connession client-server questa, è stata effettuata media
 |
 +-- lib/
 |    +-- utils/
+|    |    +-- database/
+|    |    |   +-- dao/
+|    |    |   |    +-- accountDao.dart
+|    |    |   |    |
+|    |    |   |    +-- categoryDao.dart
+|    |    |   |    |
+|    |    |   |    +-- memoAccountAssociationDao.dart
+|    |    |   |    |
+|    |    |   |    +-- memoDao.dart
+|    |    |   |    |
+|    |    |   |    +-- memoTagAssociationDao.dart
+|    |    |   |    |
+|    |    |   |    \-- tagDao.dart
+|    |    |   |
+|    |    |   +-- /models //modelli simili ai modelli riportati sotto ma senza oggetti custom
+|    |    |   |
+|    |    |   +-- database.dart
+|    |    |   |
+|    |    |   +-- database.g.dart
+|    |    |   |
 |    |    +-- models/
 |    |    |   +-- category.dart
 |    |    |   |
@@ -150,3 +180,23 @@ Per quanto riguada la connession client-server questa, è stata effettuata media
 ```
 
 ### Immagini
+
+<div align="center">
+  <img src="./_img/img000.jpg" alt="Img" width="300px">
+  <img src="./_img/img001.jpg" alt="Img" width="300px">
+  <img src="./_img/img002.jpg" alt="Img" width="300px">
+  <img src="./_img/img003.jpg" alt="Img" width="300px">
+  <img src="./_img/img004.jpg" alt="Img" width="300px">
+  <img src="./_img/img005.jpg" alt="Img" width="300px">
+  <img src="./_img/img006.jpg" alt="Img" width="300px">
+  <img src="./_img/img007.jpg" alt="Img" width="300px">
+  <img src="./_img/img008.jpg" alt="Img" width="300px">
+  <img src="./_img/img009.jpg" alt="Img" width="300px">
+  <img src="./_img/img010.jpg" alt="Img" width="300px">
+  <img src="./_img/img011.jpg" alt="Img" width="300px">
+  <img src="./_img/img012.jpg" alt="Img" width="300px">
+  <img src="./_img/img013.jpg" alt="Img" width="300px">
+  <img src="./_img/img014.jpg" alt="Img" width="300px">
+  <img src="./_img/img015.jpg" alt="Img" width="300px">
+  <img src="./_img/img016.jpg" alt="Img" width="300px">
+</div>
