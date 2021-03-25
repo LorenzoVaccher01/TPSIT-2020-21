@@ -3,10 +3,10 @@ import '../models/memoTagAssociation.dart';
 
 @dao
 abstract class MemoTagAssociationDao {
-  @Query('SELECT * FROM MemoTagAssociation WHERE memoId = :memoId')
+  @Query('SELECT * FROM FloorMemoTagAssociation WHERE memoId = :memoId')
   Future<FloorMemoTagAssociation> findTagByMemoId(int memoId);
 
-  @Query('SELECT * FROM Tag WHERE tagId = :tagId')
+  @Query('SELECT * FROM FloorMemoTagAssociation WHERE tagId = :tagId')
   Future<FloorMemoTagAssociation> findTagByTagId(int tagId);
 
   @delete

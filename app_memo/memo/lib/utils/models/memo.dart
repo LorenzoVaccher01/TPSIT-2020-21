@@ -99,7 +99,6 @@ class Memo {
         (category != null ? category.id.toString() : "1") +
         "&accounts=${accounts}" /*+ _accounts*/;
 
-    print(accounts);
 
     //SharedPreferences _prefs = await SharedPreferences.getInstance();
     final response = await http
@@ -117,8 +116,11 @@ class Memo {
         final memoAccountAssociation = database.memoAccountAssociationDao;
 
         await memoDao.insertMemo(new FloorMemo(id: null, isOwner: true, permission: 2, title: name, color: color, body: body, creationDate: "", lastModifiedDate: "", categoryId: category.id));
-        
-        //await memoAccountAssociation.insertMemoAccountAssociation(FloorMemoAccountAssociation(null, memoId, accountId, isOwner, permission));
+        FloorMemo lastMemo = await memoDao.findLastMemo();
+        await memoAccountAssociation.insertMemoAccountAssociation(FloorMemoAccountAssociation(null, lastMemo.id, App.client.id, true, 2));
+
+        print("Added a new memo to the local database with id:" + lastMemo.id.toString());
+
         if (ModalRoute.of(context).settings.name == '/home')
           Navigator.pushNamed(context, ModalRoute.of(context).settings.name);
       } else {
@@ -266,6 +268,15 @@ class Memo {
     if (response.statusCode == 200) {
       final bodyResponse = json.decode(response.body);
       if (bodyResponse['error'] == 200) {
+
+      final database =
+        await $FloorAppDatabase.databaseBuilder(App.DATABASE_NAME).build();
+
+        final memoDao = database.memoDao;
+        await memoDao.deleteMemoById(memo.id);
+
+        print("Deleted a memo to the local database with id:" + memo.id.toString());
+
         Navigator.pushNamed(context, '/home');
       } else {
         Alert(

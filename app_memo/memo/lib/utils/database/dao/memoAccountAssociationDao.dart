@@ -4,10 +4,10 @@ import '../models/memoAccountAssociation.dart';
 @dao
 abstract class MemoAccountAssociationDao {
 
-  @Query('SELECT * FROM Memo WHERE accountId = :accountId')
+  @Query('SELECT * FROM FloorMemoAccountAssociation WHERE accountId = :accountId')
   Future<FloorMemoAccountAssociation> findMemoAccountAssociationByAccountId(int accountId);
 
-  @Query('SELECT * FROM Memo WHERE memoId = :memoId')
+  @Query('SELECT * FROM FloorMemoAccountAssociation WHERE memoId = :memoId')
   Future<FloorMemoAccountAssociation> findMemoAccountAssociationByMemoId(int memoId);
 
   @delete

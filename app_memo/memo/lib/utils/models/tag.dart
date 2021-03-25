@@ -1,3 +1,6 @@
+import 'package:memo/utils/database/database.dart';
+import 'package:memo/utils/database/models/memoTagAssociation.dart';
+import 'package:memo/utils/database/models/tag.dart';
 import 'package:memo/widget/alert.dart';
 import 'package:flutter/material.dart';
 //import 'package:shared_preferences/shared_preferences.dart';
@@ -101,6 +104,23 @@ class Tag {
     if (response.statusCode == 200) {
       final bodyResponse = json.decode(response.body);
       if (bodyResponse['error'] == 200) {
+        final database =
+            await $FloorAppDatabase.databaseBuilder(App.DATABASE_NAME).build();
+
+        final tagDao = database.tagDao;
+
+        await tagDao.insertTag(new FloorTag(
+            id: null,
+            name: "",
+            description: "",
+            creationDate: "",
+            lastModifiedDate: ""));
+
+        FloorTag lastTag = await tagDao.findLastTag();
+
+        print("Added a new tag to the local database with id:" +
+            lastTag.id.toString());
+
         if (ModalRoute.of(context).settings.name == '/tags')
           Navigator.pushNamed(context, ModalRoute.of(context).settings.name);
       } else {
@@ -127,7 +147,8 @@ class Tag {
     }
   }
 
-  static Future<int> put(BuildContext context, int id, String name, String description) async {
+  static Future<int> put(
+      BuildContext context, int id, String name, String description) async {
     //SharedPreferences _prefs = await SharedPreferences.getInstance();
     final response = await http.put(
       App.SERVER_WEB +
@@ -188,6 +209,15 @@ class Tag {
     if (response.statusCode == 200) {
       final bodyResponse = json.decode(response.body);
       if (bodyResponse['error'] == 200) {
+        final database =
+            await $FloorAppDatabase.databaseBuilder(App.DATABASE_NAME).build();
+
+        final tagDao = database.tagDao;
+        await tagDao.deleteTagById(tag.id);
+
+        print("Deleted a tag to the local database with id:" +
+            tag.id.toString());
+
         return 1;
       } else {
         Alert(

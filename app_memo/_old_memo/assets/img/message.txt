@@ -1,0 +1,100 @@
+[
+	{
+		"id":8,
+		"image":null,
+		"suggestion":"Per i piloti",
+		"difficult":0,
+		"correctAnswer":"Differenziale",
+		"congratulations":"Si vede che sei tra quelli che si sporcano le mani di grasso",
+		"wrongAnswer":[
+			{
+				"userAnswer":"ingranaggio",
+				"tip":"Si beh, non è sbagliato… Ma più precisamente?"
+			},
+			{
+				"userAnswer":"ingranaggi",
+				"tip":"Si beh, non è sbagliato… Ma più precisamente?"
+			},
+			{
+				"userAnswer":"Frizione",
+				"tip":"Non proprio, è un altro componente"
+			},
+			{
+				"userAnswer":"Reattore",
+				"tip":"Pilota non è solo quello dell’aereo"
+			}
+		]
+	},
+	{
+		"id":1,
+		"image":null,
+		"suggestion":"Una pianta",
+		"difficult":0,
+		"correctAnswer":"Cituta",
+		"congratulations":"Socrate accettò l’ingiusta condanna e ne bevve un infuso, complimenti!",
+		"wrongAnswer":[
+			{
+				"userAnswer":"Fiorellini",
+				"tip":"Si beh, non è sbagliato..."
+			},
+			{
+				"userAnswer":"Erbaccia",
+				"tip":"Si ma il nomee"
+			}
+		]
+	},
+	{
+		"id":1,
+		"image":null,
+		"suggestion":"Una divisa",
+		"difficult":0,
+		"correctAnswer":"Guardia svizzera",
+		"congratulations":"Se non sei Carlo Mavaracchio chiudi questa applicazione",
+		"wrongAnswer":[
+			{
+				"userAnswer":"Cavaliere",
+				"tip":"AHAHAHAHAHAH no."
+			},
+			{
+				"userAnswer":"Pagliaccio",
+				"tip":"Effettivamente ci assomiglia..."
+			}
+		]
+	},
+	{
+		"id":1,
+		"image":null,
+		"suggestion":"Un luogo",
+		"difficult":0,
+		"correctAnswer":"Marienplatz",
+		"congratulations":"Le cose sono due, o sei un membro della 5IC oppure sei bravo in geografia, in entrambi i casi… Complimenti!",
+		"wrongAnswer":[
+			{
+				"userAnswer":"Sagrada familia",
+				"tip":"Sicuro di vederci bene?"
+			},
+			{
+				"userAnswer":"Germania",
+				"tip":"Un po’ troppo generale non credi?"
+			},
+			{
+				"userAnswer":"Monaco",
+				"tip":"Si quella è la città, ma il posto?"
+			}
+		]
+	},
+	{
+		"id":1,
+		"image":null,
+		"suggestion":"",
+		"difficult":0,
+		"correctAnswer":"",
+		"congratulations":"",
+		"wrongAnswer":[
+			{
+				"userAnswer":"",
+				"tip":""
+			}
+		]
+	}
+]

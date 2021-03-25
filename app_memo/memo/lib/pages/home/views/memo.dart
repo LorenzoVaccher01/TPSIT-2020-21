@@ -268,7 +268,7 @@ class _MemoPageState extends State<MemoPage> {
                             Padding(
                               padding: EdgeInsets.only(
                                   top: 10,
-                                  bottom: 10,
+                                  bottom: 10, 
                                   left: _check(_tags[index]) ? 10 : 30),
                               child: Text(
                                 '#' + _tags[index].name,
@@ -367,7 +367,7 @@ class _MemoPageState extends State<MemoPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text("Share memo"),
-                    widget._memo.isOwner
+                    widget._memo == null || widget._memo.isOwner
                         ? InkWell(
                             child:
                                 Icon(Icons.add, size: 30, color: Colors.green),
@@ -392,7 +392,7 @@ class _MemoPageState extends State<MemoPage> {
                           index != 0
                               ? Padding(padding: EdgeInsets.only(top: 20))
                               : Container(),
-                          widget._memo.isOwner
+                          widget._memo == null || widget._memo.isOwner
                               ? Text(widget._sharers[index].length >= 23
                                   ? widget._sharers[index].substring(0, 23) +
                                       '...'
@@ -401,7 +401,7 @@ class _MemoPageState extends State<MemoPage> {
                                   ? widget._sharers[index].substring(0, 27) +
                                       '...'
                                   : widget._sharers[index]),
-                          widget._memo.isOwner
+                          widget._memo == null || widget._memo.isOwner
                               ? InkWell(
                                   child: Icon(Icons.delete,
                                       size: 30, color: Colors.grey),

@@ -1,3 +1,5 @@
+import 'package:memo/utils/database/database.dart';
+import 'package:memo/utils/database/models/category.dart';
 import 'package:memo/widget/alert.dart';
 import 'package:flutter/material.dart';
 //import 'package:shared_preferences/shared_preferences.dart';
@@ -46,7 +48,8 @@ class Category {
       App.SERVER_WEB + '/api/category',
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Cookie': /*_prefs.getString('user.sessionCookie')*/ App.client.sessionCookie
+        'Cookie': /*_prefs.getString('user.sessionCookie')*/ App
+            .client.sessionCookie
       },
     );
 
@@ -93,12 +96,30 @@ class Category {
           description,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Cookie': /*_prefs.getString('user.sessionCookie')*/ App.client.sessionCookie
+        'Cookie': /*_prefs.getString('user.sessionCookie')*/ App
+            .client.sessionCookie
       },
     );
     if (response.statusCode == 200) {
       final bodyResponse = json.decode(response.body);
       if (bodyResponse['error'] == 200) {
+        final database =
+            await $FloorAppDatabase.databaseBuilder(App.DATABASE_NAME).build();
+
+        final categoryDao = database.categoryDao;
+
+        await categoryDao.insertCategory(new FloorCategory(
+            id: null,
+            name: name,
+            description: description,
+            creationDate: "",
+            lastModifiedDate: ""));
+
+        FloorCategory lastCategory = await categoryDao.findLastCategory();
+
+        print("Added a new category to the local database with id:" +
+            lastCategory.id.toString());
+
         if (ModalRoute.of(context).settings.name == '/categories')
           Navigator.pushNamed(context, ModalRoute.of(context).settings.name);
       } else {
@@ -128,18 +149,26 @@ class Category {
   static Future<int> delete(BuildContext context, Category category) async {
     //SharedPreferences _prefs = await SharedPreferences.getInstance();
     final response = await http.delete(
-      App.SERVER_WEB +
-          '/api/deleteCategory?id=' +
-          category.id.toString(),
+      App.SERVER_WEB + '/api/deleteCategory?id=' + category.id.toString(),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Cookie': /*_prefs.getString('user.sessionCookie')*/ App.client.sessionCookie
-      },
+        'Cookie': /*_prefs.getString('user.sessionCookie')*/ App
+            .client.sessionCookie
+      }, 
     );
 
     if (response.statusCode == 200) {
       final bodyResponse = json.decode(response.body);
       if (bodyResponse['error'] == 200) {
+        final database =
+            await $FloorAppDatabase.databaseBuilder(App.DATABASE_NAME).build();
+
+        final categoryDao = database.categoryDao;
+        await categoryDao.deleteCategoryById(category.id);
+
+        print(
+            "Deleted a category to the local database with id:" + category.id.toString());
+
         return 1;
       } else {
         Alert(
@@ -167,7 +196,8 @@ class Category {
     return -1;
   }
 
-  static Future<int> put(BuildContext context, int id, String name, String description) async {
+  static Future<int> put(
+      BuildContext context, int id, String name, String description) async {
     //SharedPreferences _prefs = await SharedPreferences.getInstance();
     final response = await http.put(
       App.SERVER_WEB +
@@ -179,7 +209,8 @@ class Category {
           description,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Cookie': /*_prefs.getString('user.sessionCookie')*/ App.client.sessionCookie
+        'Cookie': /*_prefs.getString('user.sessionCookie')*/ App
+            .client.sessionCookie
       },
     );
 

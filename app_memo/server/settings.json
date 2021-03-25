@@ -1,0 +1,49 @@
+{
+  "debug": true,
+  "website": {
+    "http": {
+      "port": 8080
+    },
+    "https": {
+      "port": 8443,
+      "certificate": {
+        "key": "/etc/letsencrypt/live/lorenzovaccher.com/privkey.pem",
+        "cert": "/etc/letsencrypt/live/lorenzovaccher.com/cert.pem",
+        "ca": "/etc/letsencrypt/live/lorenzovaccher.com/chain.pem"
+      }
+    }
+  },
+  "database": {
+    "host": "localhost",
+    "database": "appMemo",
+    "port": 3306,
+    "user": "appMemo",
+    "password": "",
+    "insecureAuth": true
+  },
+  "email": {
+    "from": "App Memo <info@lorenzovaccher.com>",
+    "host": "pro2.mail.ovh.net",
+    "port": 587,
+    "secure": false,
+    "pool": false,
+    "auth": {
+      "user": "info@lorenzovaccher.com",
+      "password": ""
+    }
+  },
+  "settings": {
+    "login": {
+      "enabled": true,
+      "attempts": 5,
+      "attempts_time": 15,
+      "attempts_time_blocked": 5
+    },
+    "register": {
+      "enabled": true,
+      "attempts": 5,
+      "attempts_time": 15,
+      "attempts_time_blocked": 5
+    }
+  }
+}

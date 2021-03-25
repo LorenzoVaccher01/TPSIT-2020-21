@@ -194,7 +194,20 @@ class _$AccountDao extends AccountDao {
 
   @override
   Future<List<FloorAccount>> findAllAccount() async {
-    return _queryAdapter.queryList('SELECT * FROM Account',
+    return _queryAdapter.queryList('SELECT * FROM FloorAccount',
+        mapper: (Map<String, dynamic> row) => FloorAccount(
+            row['id'] as int,
+            row['name'] as String,
+            row['surname'] as String,
+            row['email'] as String,
+            row['registrationDate'] as String,
+            row['lastAccessDate'] as String));
+  }
+
+  @override
+  Future<FloorAccount> findLastAccount() async {
+    return _queryAdapter.query(
+        'SELECT * FROM FloorAccount WHERE id=(SELECT max(id) FROM FloorAccount)',
         mapper: (Map<String, dynamic> row) => FloorAccount(
             row['id'] as int,
             row['name'] as String,
@@ -206,7 +219,7 @@ class _$AccountDao extends AccountDao {
 
   @override
   Future<List<FloorAccount>> findAccountById(int id) async {
-    return _queryAdapter.queryList('SELECT * FROM Account WHERE id = ?',
+    return _queryAdapter.queryList('SELECT * FROM FloorAccount WHERE id = ?',
         arguments: <dynamic>[id],
         mapper: (Map<String, dynamic> row) => FloorAccount(
             row['id'] as int,
@@ -219,7 +232,7 @@ class _$AccountDao extends AccountDao {
 
   @override
   Future<List<FloorAccount>> findAccountByEmail(String email) async {
-    return _queryAdapter.queryList('SELECT * FROM Account WHERE email = ?',
+    return _queryAdapter.queryList('SELECT * FROM FloorAccount WHERE email = ?',
         arguments: <dynamic>[email],
         mapper: (Map<String, dynamic> row) => FloorAccount(
             row['id'] as int,
@@ -297,7 +310,19 @@ class _$CategoryDao extends CategoryDao {
 
   @override
   Future<List<FloorCategory>> findAllCategory() async {
-    return _queryAdapter.queryList('SELECT * FROM Category',
+    return _queryAdapter.queryList('SELECT * FROM FloorCategory',
+        mapper: (Map<String, dynamic> row) => FloorCategory(
+            id: row['id'] as int,
+            name: row['name'] as String,
+            description: row['description'] as String,
+            creationDate: row['creationDate'] as String,
+            lastModifiedDate: row['lastModifiedDate'] as String));
+  }
+
+  @override
+  Future<FloorCategory> findLastCategory() async {
+    return _queryAdapter.query(
+        'SELECT * FROM FloorCategory WHERE id=(SELECT max(id) FROM FloorCategory)',
         mapper: (Map<String, dynamic> row) => FloorCategory(
             id: row['id'] as int,
             name: row['name'] as String,
@@ -308,7 +333,7 @@ class _$CategoryDao extends CategoryDao {
 
   @override
   Future<List<FloorCategory>> findAllCategoryById(int id) async {
-    return _queryAdapter.queryList('SELECT * FROM Category WHERE id = ?',
+    return _queryAdapter.queryList('SELECT * FROM FloorCategory WHERE id = ?',
         arguments: <dynamic>[id],
         mapper: (Map<String, dynamic> row) => FloorCategory(
             id: row['id'] as int,
@@ -320,8 +345,21 @@ class _$CategoryDao extends CategoryDao {
 
   @override
   Future<List<FloorCategory>> findAllCategoryByEmail(String email) async {
-    return _queryAdapter.queryList('SELECT * FROM Category WHERE email = ?',
+    return _queryAdapter.queryList(
+        'SELECT * FROM FloorCategory WHERE email = ?',
         arguments: <dynamic>[email],
+        mapper: (Map<String, dynamic> row) => FloorCategory(
+            id: row['id'] as int,
+            name: row['name'] as String,
+            description: row['description'] as String,
+            creationDate: row['creationDate'] as String,
+            lastModifiedDate: row['lastModifiedDate'] as String));
+  }
+
+  @override
+  Future<FloorCategory> deleteCategoryById(int id) async {
+    return _queryAdapter.query('DELETE FROM FloorCategory WHERE id = ?',
+        arguments: <dynamic>[id],
         mapper: (Map<String, dynamic> row) => FloorCategory(
             id: row['id'] as int,
             name: row['name'] as String,
@@ -413,7 +451,24 @@ class _$MemoDao extends MemoDao {
 
   @override
   Future<List<FloorMemo>> findAllMemo() async {
-    return _queryAdapter.queryList('SELECT * FROM Memo',
+    return _queryAdapter.queryList('SELECT * FROM FloorMemo',
+        mapper: (Map<String, dynamic> row) => FloorMemo(
+            id: row['id'] as int,
+            isOwner:
+                row['isOwner'] == null ? null : (row['isOwner'] as int) != 0,
+            permission: row['permission'] as int,
+            title: row['title'] as String,
+            color: row['color'] as String,
+            body: row['body'] as String,
+            creationDate: row['creationDate'] as String,
+            lastModifiedDate: row['lastModifiedDate'] as String,
+            categoryId: row['categoryId'] as int));
+  }
+
+  @override
+  Future<FloorMemo> findLastMemo() async {
+    return _queryAdapter.query(
+        'SELECT * FROM FloorMemo WHERE id=(SELECT max(id) FROM FloorMemo)',
         mapper: (Map<String, dynamic> row) => FloorMemo(
             id: row['id'] as int,
             isOwner:
@@ -429,7 +484,7 @@ class _$MemoDao extends MemoDao {
 
   @override
   Future<FloorMemo> findMemoById(int id) async {
-    return _queryAdapter.query('SELECT * FROM Memo WHERE id = ?',
+    return _queryAdapter.query('SELECT * FROM FloorMemo WHERE id = ?',
         arguments: <dynamic>[id],
         mapper: (Map<String, dynamic> row) => FloorMemo(
             id: row['id'] as int,
@@ -446,7 +501,7 @@ class _$MemoDao extends MemoDao {
 
   @override
   Future<FloorMemo> findMemoByTitle(String title) async {
-    return _queryAdapter.query('SELECT * FROM Memo WHERE title = ?',
+    return _queryAdapter.query('SELECT * FROM FloorMemo WHERE title = ?',
         arguments: <dynamic>[title],
         mapper: (Map<String, dynamic> row) => FloorMemo(
             id: row['id'] as int,
@@ -463,8 +518,25 @@ class _$MemoDao extends MemoDao {
 
   @override
   Future<FloorMemo> findMemoByCategoryId(int categoryId) async {
-    return _queryAdapter.query('SELECT * FROM Memo WHERE categoryId = ?',
+    return _queryAdapter.query('SELECT * FROM FloorMemo WHERE categoryId = ?',
         arguments: <dynamic>[categoryId],
+        mapper: (Map<String, dynamic> row) => FloorMemo(
+            id: row['id'] as int,
+            isOwner:
+                row['isOwner'] == null ? null : (row['isOwner'] as int) != 0,
+            permission: row['permission'] as int,
+            title: row['title'] as String,
+            color: row['color'] as String,
+            body: row['body'] as String,
+            creationDate: row['creationDate'] as String,
+            lastModifiedDate: row['lastModifiedDate'] as String,
+            categoryId: row['categoryId'] as int));
+  }
+
+  @override
+  Future<FloorMemo> deleteMemoById(int id) async {
+    return _queryAdapter.query('DELETE FROM FloorMemo WHERE id = ?',
+        arguments: <dynamic>[id],
         mapper: (Map<String, dynamic> row) => FloorMemo(
             id: row['id'] as int,
             isOwner:
@@ -551,7 +623,8 @@ class _$MemoAccountAssociationDao extends MemoAccountAssociationDao {
   @override
   Future<FloorMemoAccountAssociation> findMemoAccountAssociationByAccountId(
       int accountId) async {
-    return _queryAdapter.query('SELECT * FROM Memo WHERE accountId = ?',
+    return _queryAdapter.query(
+        'SELECT * FROM FloorMemoAccountAssociation WHERE accountId = ?',
         arguments: <dynamic>[accountId],
         mapper: (Map<String, dynamic> row) => FloorMemoAccountAssociation(
             row['id'] as int,
@@ -564,7 +637,8 @@ class _$MemoAccountAssociationDao extends MemoAccountAssociationDao {
   @override
   Future<FloorMemoAccountAssociation> findMemoAccountAssociationByMemoId(
       int memoId) async {
-    return _queryAdapter.query('SELECT * FROM Memo WHERE memoId = ?',
+    return _queryAdapter.query(
+        'SELECT * FROM FloorMemoAccountAssociation WHERE memoId = ?',
         arguments: <dynamic>[memoId],
         mapper: (Map<String, dynamic> row) => FloorMemoAccountAssociation(
             row['id'] as int,
@@ -644,7 +718,7 @@ class _$MemoTagAssociationDao extends MemoTagAssociationDao {
   @override
   Future<FloorMemoTagAssociation> findTagByMemoId(int memoId) async {
     return _queryAdapter.query(
-        'SELECT * FROM MemoTagAssociation WHERE memoId = ?',
+        'SELECT * FROM FloorMemoTagAssociation WHERE memoId = ?',
         arguments: <dynamic>[memoId],
         mapper: (Map<String, dynamic> row) => FloorMemoTagAssociation(
             row['id'] as int, row['memoId'] as int, row['tagId'] as int));
@@ -652,7 +726,8 @@ class _$MemoTagAssociationDao extends MemoTagAssociationDao {
 
   @override
   Future<FloorMemoTagAssociation> findTagByTagId(int tagId) async {
-    return _queryAdapter.query('SELECT * FROM Tag WHERE tagId = ?',
+    return _queryAdapter.query(
+        'SELECT * FROM FloorMemoTagAssociation WHERE tagId = ?',
         arguments: <dynamic>[tagId],
         mapper: (Map<String, dynamic> row) => FloorMemoTagAssociation(
             row['id'] as int, row['memoId'] as int, row['tagId'] as int));
@@ -729,7 +804,19 @@ class _$TagDao extends TagDao {
 
   @override
   Future<List<FloorTag>> findAllTag() async {
-    return _queryAdapter.queryList('SELECT * FROM Tag',
+    return _queryAdapter.queryList('SELECT * FROM FloorTag',
+        mapper: (Map<String, dynamic> row) => FloorTag(
+            id: row['id'] as int,
+            name: row['name'] as String,
+            description: row['description'] as String,
+            creationDate: row['creationDate'] as String,
+            lastModifiedDate: row['lastModifiedDate'] as String));
+  }
+
+  @override
+  Future<FloorTag> findLastTag() async {
+    return _queryAdapter.query(
+        'SELECT * FROM FloorTag WHERE id=(SELECT max(id) FROM FloorTag)',
         mapper: (Map<String, dynamic> row) => FloorTag(
             id: row['id'] as int,
             name: row['name'] as String,
@@ -740,7 +827,7 @@ class _$TagDao extends TagDao {
 
   @override
   Future<FloorTag> findTagById(int id) async {
-    return _queryAdapter.query('SELECT * FROM Tag WHERE id = ?',
+    return _queryAdapter.query('SELECT * FROM FloorTag WHERE id = ?',
         arguments: <dynamic>[id],
         mapper: (Map<String, dynamic> row) => FloorTag(
             id: row['id'] as int,
@@ -752,7 +839,7 @@ class _$TagDao extends TagDao {
 
   @override
   Future<FloorTag> findTagByAccountId(int accountId) async {
-    return _queryAdapter.query('SELECT * FROM Tag WHERE accountId = ?',
+    return _queryAdapter.query('SELECT * FROM FloorTag WHERE accountId = ?',
         arguments: <dynamic>[accountId],
         mapper: (Map<String, dynamic> row) => FloorTag(
             id: row['id'] as int,
@@ -764,8 +851,20 @@ class _$TagDao extends TagDao {
 
   @override
   Future<FloorTag> findTagByName(String name) async {
-    return _queryAdapter.query('SELECT * FROM Tag WHERE name = ?',
+    return _queryAdapter.query('SELECT * FROM FloorTag WHERE name = ?',
         arguments: <dynamic>[name],
+        mapper: (Map<String, dynamic> row) => FloorTag(
+            id: row['id'] as int,
+            name: row['name'] as String,
+            description: row['description'] as String,
+            creationDate: row['creationDate'] as String,
+            lastModifiedDate: row['lastModifiedDate'] as String));
+  }
+
+  @override
+  Future<FloorTag> deleteTagById(int id) async {
+    return _queryAdapter.query('DELETE FROM FloorTag WHERE id = ?',
+        arguments: <dynamic>[id],
         mapper: (Map<String, dynamic> row) => FloorTag(
             id: row['id'] as int,
             name: row['name'] as String,

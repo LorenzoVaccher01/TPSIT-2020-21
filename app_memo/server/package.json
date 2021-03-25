@@ -1,0 +1,34 @@
+{
+  "name": "app-memo",
+  "version": "1.0.0",
+  "description": "Server per l'applicazione memo",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon ./server.js"
+  },
+  "keywords": [
+    "server",
+    "memo",
+    "flutter",
+    "dart"
+  ],
+  "author": "Lorenzo Vaccher",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "express-mysql-session": "^2.1.5",
+    "express-session": "^1.17.1",
+    "express-useragent": "^1.0.15",
+    "fs": "0.0.1-security",
+    "geoip-lite": "^1.4.2",
+    "http": "0.0.1-security",
+    "i18n-iso-countries": "^6.5.0",
+    "mysql": "^2.18.1",
+    "nodemailer": "^6.4.11",
+    "sync-mysql": "^3.0.1"
+  }
+}
