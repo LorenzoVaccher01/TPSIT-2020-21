@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../main.dart' as App;
+import 'package:floor/floor.dart';
 
 class Category {
   int _id;
