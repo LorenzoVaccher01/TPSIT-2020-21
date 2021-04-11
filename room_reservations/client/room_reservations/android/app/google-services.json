@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "650806048269",
+    "project_id": "room-reservations-d0dcd",
+    "storage_bucket": "room-reservations-d0dcd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:650806048269:android:34aaee5f709f3088478744",
+        "android_client_info": {
+          "package_name": "com.lorenzovaccher.roomReservations"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "650806048269-7v7h32qm5shumr9j5o0l14smq7tc97tb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lorenzovaccher.roomReservations",
+            "certificate_hash": "00a655bd9d162c022d7aa426ef2511f13077ce02"
+          }
+        },
+        {
+          "client_id": "650806048269-ktr7q50lap1mn6et5gqt5up0vp9o267t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqBb8fsQRaNsohmZptKSs2gTtIJ_Ooevk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "650806048269-ktr7q50lap1mn6et5gqt5up0vp9o267t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
