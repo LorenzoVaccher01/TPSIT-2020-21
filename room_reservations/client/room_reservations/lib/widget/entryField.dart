@@ -7,7 +7,7 @@ class EntryField extends StatelessWidget {
   TextEditingController _textEditingController;
   String _hintText;
 
-  EntryField({String title, Icon icon, bool isPassword, TextEditingController controller, String hintText}) {
+  EntryField({@required String title, Icon icon, bool isPassword = false, @required TextEditingController controller, String hintText}) {
     this._title = title;
     this._icon = icon;
     this._isPassword = isPassword;
@@ -34,6 +34,7 @@ class EntryField extends StatelessWidget {
               autocorrect: false,
               obscureText: this._isPassword,
               decoration: InputDecoration(
+                prefixStyle: TextStyle(color: Theme.of(context).primaryColor),
                 hintText: this._hintText,
                   prefixIcon: this._icon,
                   border: InputBorder.none,

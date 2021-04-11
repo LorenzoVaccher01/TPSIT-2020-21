@@ -1,37 +1,33 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:room_reservations/utils/auth.dart';
-import 'package:room_reservations/utils/client.dart';
-import 'package:room_reservations/views/login/components/createAccountLabel.dart';
-import 'package:room_reservations/views/login/components/googleButton.dart';
-import 'package:room_reservations/views/login/components/title.dart';
+import 'package:room_reservations/views/signup/components/loginAccountLabel.dart';
+import 'package:room_reservations/views/signup/components/title.dart';
 import 'package:room_reservations/widget/blazierContainer.dart';
 import 'package:room_reservations/widget/entryField.dart';
 import 'package:room_reservations/widget/submitButton.dart';
-import '../../main.dart';
-import 'package:room_reservations/views/login/components/divider.dart';
 
-class LoginView extends StatefulWidget {
+class SignupView extends StatefulWidget {
   @override
-  _LoginViewState createState() => _LoginViewState();
+  _SignupViewState createState() => _SignupViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class _SignupViewState extends State<SignupView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
-        body: Container(
+      body: Container(
         height: height,
         child: Stack(
           children: <Widget>[
             Positioned(
-                top: -height * .15,
-                right: -MediaQuery.of(context).size.width * .4,
-                child: BezierContainer()),
+              top: -MediaQuery.of(context).size.height * .15,
+              right: -MediaQuery.of(context).size.width * .4,
+              child: BezierContainer(),
+            ),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: SingleChildScrollView(
@@ -41,8 +37,10 @@ class _LoginViewState extends State<LoginView> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(height: height * .2),
-                    LoginTitle(),
-                    SizedBox(height: 50),
+                    SignupTitle(),
+                    SizedBox(
+                      height: 50,
+                    ),
                     EntryField(
                       title: "Email",
                       isPassword: false,
@@ -52,22 +50,28 @@ class _LoginViewState extends State<LoginView> {
                     ),
                     EntryField(
                       title: "Password",
-                      isPassword: false,
-                      icon: Icon(Icons.lock),
+                      isPassword: true,
+                      icon: Icon(Icons.person),
                       controller: _passwordController,
                       hintText: "*************",
                     ),
-                    SizedBox(height: 20),
-                    SubmitButton("Login"),
-                    SizedBox(height: 20),
-                    LoginDivider(),
-                    LoginGoogleButton(),
-                    SizedBox(height: height * .025),
-                    LoginCreateAccountLabel(),
+                    EntryField(
+                      title: "Confirm password",
+                      isPassword: true,
+                      icon: Icon(Icons.person),
+                      controller: _confirmPasswordController,
+                      hintText: "*************",
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    SubmitButton("Signup"),
+                    SizedBox(height: height * .065),
+                    SignupLoginAccountLabel(),
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
