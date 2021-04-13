@@ -1,14 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:room_reservations/utils/auth.dart';
-import 'package:room_reservations/utils/client.dart';
 import 'package:room_reservations/views/login/components/createAccountLabel.dart';
 import 'package:room_reservations/views/login/components/googleButton.dart';
 import 'package:room_reservations/views/login/components/title.dart';
 import 'package:room_reservations/widget/blazierContainer.dart';
 import 'package:room_reservations/widget/entryField.dart';
 import 'package:room_reservations/widget/submitButton.dart';
-import '../../main.dart';
 import 'package:room_reservations/views/login/components/divider.dart';
 
 class LoginView extends StatefulWidget {
@@ -17,14 +15,14 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
-        body: Container(
+      body: Container(
         height: height,
         child: Stack(
           children: <Widget>[
@@ -52,13 +50,26 @@ class _LoginViewState extends State<LoginView> {
                     ),
                     EntryField(
                       title: "Password",
-                      isPassword: false,
+                      isPassword: true,
                       icon: Icon(Icons.lock),
                       controller: _passwordController,
                       hintText: "*************",
                     ),
                     SizedBox(height: 20),
-                    SubmitButton("Login"),
+                    InkWell(
+                      child: SubmitButton("Login"),
+                      onTap: () async {
+                        User user;
+                        try {
+                        user = await Auth.signIn(_emailController.text, _passwordController.text);
+                        } catch (error) {
+                          print(error);
+                        }
+                        print(_emailController.text);
+                        print(_passwordController.text);
+                        print(user);
+                      }
+                    ),
                     SizedBox(height: 20),
                     LoginDivider(),
                     LoginGoogleButton(),
