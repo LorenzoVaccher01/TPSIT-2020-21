@@ -17,8 +17,8 @@ Client client;
 bool isConnected = false;
 
 main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
   runApp(App());
 }
 
@@ -27,12 +27,6 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: "test@gmail.com", password: "12345")
-        .then((value) => print(value))
-        .catchError((error) {
-      print(error);
-    });
 
     _connectivity.initialise();
     _connectivity.stream.listen((source) {
@@ -62,7 +56,7 @@ class App extends StatelessWidget {
           primaryColor: Color(0xfff78c2b),
           accentColor: Color(0xfffbb448),
           brightness: Brightness.light),
-      initialRoute: '/login',
+      initialRoute: '/welcome',
       routes: {
         '/welcome': (context) => WelcomeView(),
         '/login': (context) => LoginView(),

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:room_reservations/views/home/components/menu.dart';
 import 'package:room_reservations/views/home/components/reservationListItem.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class HomeView extends StatelessWidget {
-  CalendarController _calendarController;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  CalendarController _calendarController = CalendarController();
 
   /*final List<String> _weekDays = ["S", "M", "T", "W", "T", "F", "S"];
   final List<int> dates = [5, 6, 7, 8, 9, 10, 11];
@@ -69,9 +71,10 @@ class HomeView extends StatelessWidget {
   */
   @override
   Widget build(BuildContext context) {
-    _calendarController = CalendarController();
     return Scaffold(
       backgroundColor: Color(0xfff0f0f0),
+      key: _scaffoldKey,
+      drawer: Menu(),
       body: SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height,
@@ -92,7 +95,9 @@ class HomeView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          _scaffoldKey.currentState.openDrawer();
+                        },
                         icon: Icon(
                           Icons.menu,
                           color: Colors.white,
@@ -118,6 +123,7 @@ class HomeView extends StatelessWidget {
               ),
               TableCalendar(
                 initialCalendarFormat: CalendarFormat.week,
+                startingDayOfWeek: StartingDayOfWeek.monday,
                 calendarStyle: CalendarStyle(
                     todayColor: Colors.grey,
                     selectedColor: Theme.of(context).primaryColor,
@@ -134,7 +140,6 @@ class HomeView extends StatelessWidget {
                   formatButtonTextStyle: TextStyle(color: Colors.white),
                   formatButtonShowsNext: false,
                 ),
-                startingDayOfWeek: StartingDayOfWeek.monday,
                 onDaySelected: (date, events, boh) {
                   print(date);
                   print(events);

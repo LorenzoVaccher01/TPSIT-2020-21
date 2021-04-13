@@ -7,37 +7,26 @@ class Auth {
   static final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   static Future<User> signUp(String email, String password) async {
-    try {
-      UserCredential authResult = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      final User user = authResult.user;
-      assert(user != null);
-      assert(await user.getIdToken() != null);
-      return user;
-    } catch (e) {
-      print(e);
-    }
+    UserCredential authResult = await _auth.createUserWithEmailAndPassword(
+        email: email, password: password);
+    final User user = authResult.user;
+    assert(user != null);
+    assert(await user.getIdToken() != null);
+    return user;
   }
 
   static Future<User> signIn(String email, String password) async {
-    try {
-      UserCredential authResult = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
-      final User user = authResult.user;
-      assert(user != null);
-      assert(await user.getIdToken() != null);
-      final User currentUser = _auth.currentUser;
-      assert(user.uid == currentUser.uid);
-      return user;
-    } catch (e) {
-      print(e);
-      return null;
-    }
+    UserCredential authResult = await _auth.signInWithEmailAndPassword(
+        email: email, password: password);
+    final User user = authResult.user;
+    assert(user != null);
+    assert(await user.getIdToken() != null);
+    final User currentUser = _auth.currentUser;
+    assert(user.uid == currentUser.uid);
+    return user;
   }
 
   static Future<User> signInWithGoogle() async {
-    await Firebase.initializeApp();
-
     final GoogleSignInAccount googleSignInAccount =
         await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleSignInAuthentication =

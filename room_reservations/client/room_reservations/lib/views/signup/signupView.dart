@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:room_reservations/utils/auth.dart';
 import 'package:room_reservations/views/signup/components/loginAccountLabel.dart';
 import 'package:room_reservations/views/signup/components/title.dart';
+import 'package:room_reservations/widget/alert.dart';
 import 'package:room_reservations/widget/blazierContainer.dart';
 import 'package:room_reservations/widget/entryField.dart';
 import 'package:room_reservations/widget/submitButton.dart';
@@ -67,7 +69,26 @@ class _SignupViewState extends State<SignupView> {
                     ),
                     SubmitButton("Signup"),
                     SizedBox(height: height * .065),
-                    SignupLoginAccountLabel(),
+                    InkWell(
+                      child: SignupLoginAccountLabel(),
+                      onTap: () {
+                        if (_passwordController.text ==
+                            _confirmPasswordController.text) {
+                          Auth.signUp(
+                              _emailController.text, _passwordController.text);
+                          Navigator.pushNamed(context, '/login');
+                        } else {
+                          Alert(
+                              context: context,
+                              title: 'Error!',
+                              closeButton: false,
+                              textConfirmButton: 'Ok',
+                              body: Text("Passwords do not match."),
+                              textCanelButton: "",
+                              onClick: () {});
+                        }
+                      },
+                    ),
                   ],
                 ),
               ),

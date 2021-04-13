@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Client {
   int _id;
+  bool _loggedWithGoogle;
   String _name;
   String _email;
   String _sessionCookie;
@@ -14,9 +15,10 @@ class Client {
       {int id,
       String imagePath,
       bool getSession = false,
+      loggedWithGoogle = false,
       @required String name,
       @required String email,
-      @required String sessionCookie,
+      String sessionCookie,
       @required String uid}) {
     this._id = id;
     this._imagePath = imagePath;
@@ -24,6 +26,7 @@ class Client {
     this._email = email;
     this._sessionCookie = sessionCookie;
     this._uid = uid;
+    this._loggedWithGoogle = loggedWithGoogle;
 
     if (getSession) this._sessionCookie = getSessionId();
   }
@@ -34,6 +37,7 @@ class Client {
   String get sessionCookie => _sessionCookie;
   String get imagePath => _imagePath;
   String get uid => _uid;
+  bool get loggedWithGoogle => _loggedWithGoogle;
 
   String getSessionId() {
     return "";
@@ -74,10 +78,12 @@ class Client {
           int.parse(date[4].split(':')[2]));
 
       if (cookieDate.isAfter(DateTime.now())) {
+        //TODO: verificare correttezza
         App.client = new Client(
             id: _prefs.getInt('user.id'),
             name: _prefs.getString('user.name'),
             email: _prefs.getString('user.email'),
+            loggedWithGoogle: _prefs.getBool('user.loggedWithGoogle'),
             sessionCookie: _prefs.getString('user.sessionCookie'),
             uid: _prefs.getString('user.uid'));
         return true;
