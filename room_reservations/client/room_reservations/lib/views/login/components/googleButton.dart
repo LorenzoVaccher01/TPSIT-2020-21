@@ -18,8 +18,8 @@ class LoginGoogleButton extends StatelessWidget {
                 name: user.displayName,
                 uid: user.uid,
                 loggedWithGoogle: true,
-                imagePath: user.photoURL,
-                getSession: true);
+                imagePath: user.photoURL);
+            App.client.sessionCookie = await App.client.getSessionCookie();
             Navigator.pushNamed(context, '/home');
           } else {
             throw("Something went wrong with accessing the application via the Google service.");

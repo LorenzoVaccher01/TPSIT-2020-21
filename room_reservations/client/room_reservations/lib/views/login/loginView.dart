@@ -63,13 +63,15 @@ class LoginView extends StatelessWidget {
                             try {
                               user = await Auth.signIn(_emailController.text,
                                   _passwordController.text);
+                              //print(await user.getIdToken(true));
                               if (user != null) {
                                 App.client = new Client(
                                     email: user.email,
                                     name: user.displayName,
                                     uid: user.uid,
-                                    imagePath: user.photoURL,
-                                    getSession: true);
+                                    imagePath: user.photoURL);
+                                App.client.sessionCookie =
+                                    await App.client.getSessionCookie();
                                 Navigator.pushNamed(context, '/home');
                               }
                             } catch (error) {

@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:room_reservations/main.dart' as App;
 import 'package:room_reservations/utils/auth.dart';
+import 'package:room_reservations/utils/client.dart';
 import 'package:room_reservations/views/signup/components/loginAccountLabel.dart';
 import 'package:room_reservations/views/signup/components/title.dart';
 import 'package:room_reservations/widget/alert.dart';
@@ -53,42 +56,61 @@ class _SignupViewState extends State<SignupView> {
                     EntryField(
                       title: "Password",
                       isPassword: true,
-                      icon: Icon(Icons.person),
+                      icon: Icon(Icons.lock),
                       controller: _passwordController,
                       hintText: "*************",
                     ),
                     EntryField(
                       title: "Confirm password",
                       isPassword: true,
-                      icon: Icon(Icons.person),
+                      icon: Icon(Icons.lock),
                       controller: _confirmPasswordController,
                       hintText: "*************",
                     ),
                     SizedBox(
                       height: 20,
                     ),
-                    SubmitButton("Signup"),
-                    SizedBox(height: height * .065),
                     InkWell(
-                      child: SignupLoginAccountLabel(),
-                      onTap: () {
-                        if (_passwordController.text ==
-                            _confirmPasswordController.text) {
-                          Auth.signUp(
-                              _emailController.text, _passwordController.text);
-                          Navigator.pushNamed(context, '/login');
-                        } else {
-                          Alert(
-                              context: context,
-                              title: 'Error!',
-                              closeButton: false,
-                              textConfirmButton: 'Ok',
-                              body: Text("Passwords do not match."),
-                              textCanelButton: "",
-                              onClick: () {});
-                        }
-                      },
-                    ),
+                        child: SubmitButton("Signup"),
+                        onTap: () async {
+                          try {
+                            if (_passwordController.text ==
+                                _confirmPasswordController.text) {
+                              User user = await Auth.signUp(
+                                  _emailController.text,
+                                  _passwordController.text);
+                              if (user != null) {
+                                App.client = new Client(
+                                    email: user.email,
+                                    name: user.displayName,
+                                    uid: user.uid,
+                                    imagePath: user.photoURL);
+                                App.client.sessionCookie =
+                                    await App.client.getSessionCookie();
+                                Navigator.pushNamed(context, '/home');
+                              }
+                            } else {
+                              throw ("Passwords do not match.");
+                            }
+                          } catch (error) {
+                            Alert(
+                                context: context,
+                                title: 'Error!',
+                                closeButton: false,
+                                textConfirmButton: 'Ok',
+                                body: Text(error
+                                    .toString()
+                                    .replaceAll(
+                                        error.toString().substring(0,
+                                            error.toString().indexOf("]") + 1),
+                                        "")
+                                    .trim()),
+                                textCanelButton: "",
+                                onClick: () {});
+                          }
+                        }),
+                    SizedBox(height: height * .065),
+                    SignupLoginAccountLabel(),
                   ],
                 ),
               ),

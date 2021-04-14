@@ -14,8 +14,7 @@ class Client {
   Client(
       {int id,
       String imagePath,
-      bool getSession = false,
-      loggedWithGoogle = false,
+      bool loggedWithGoogle = false,
       @required String name,
       @required String email,
       String sessionCookie,
@@ -27,8 +26,6 @@ class Client {
     this._sessionCookie = sessionCookie;
     this._uid = uid;
     this._loggedWithGoogle = loggedWithGoogle;
-
-    if (getSession) this._sessionCookie = getSessionId();
   }
 
   int get id => _id;
@@ -39,11 +36,14 @@ class Client {
   String get uid => _uid;
   bool get loggedWithGoogle => _loggedWithGoogle;
 
-  String getSessionId() {
-    return "";
+  set sessionCookie(String sessionCookie) => _sessionCookie = sessionCookie;
+    
+  Future<String> getSessionCookie() async {
+    return "TODO";
   }
 
   static Future<bool> isLogged() async {
+    //TODO: verificare utilizzando direttamente le funzioni di Firebase e verificando la data del cookie
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     String cookie = _prefs.getString('user.sessionCookie');
 
