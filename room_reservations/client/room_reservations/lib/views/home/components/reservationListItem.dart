@@ -110,7 +110,7 @@ class HomeReservationListItem extends StatelessWidget {
                 Row(
                   children: <Widget>[
                     Icon(
-                      Icons.location_on,
+                      Icons.school,
                       color: Colors.grey[900],
                       size: 20,
                     ),
@@ -130,7 +130,7 @@ class HomeReservationListItem extends StatelessWidget {
                 Row(
                   children: <Widget>[
                     Icon(
-                      Icons.school,
+                      Icons.schedule,
                       color: Colors.grey[900],
                       size: 20,
                     ),

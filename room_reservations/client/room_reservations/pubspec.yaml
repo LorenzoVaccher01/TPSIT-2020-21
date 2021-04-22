@@ -22,6 +22,7 @@ dependencies:
   connectivity: ^3.0.3
   table_calendar: ^2.0.1
   shared_preferences: any
+  flutter_launcher_icons: any
 
 dev_dependencies:
   flutter_test:

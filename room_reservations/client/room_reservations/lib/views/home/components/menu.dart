@@ -30,10 +30,23 @@ class _MenuState extends State<Menu> {
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                //Image.asset("assets/img/compose.png", height: 60, width: 60),
+                Container(
+                  width: 60,
+                  height: 60,
+                  margin: EdgeInsets.only(right: 15, top: 15),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    /*border:
+                    Border.all(width: 2, color: Theme.of(context).primaryColor),*/
+                    image: DecorationImage(
+                        image: NetworkImage(
+                            App.client.imagePath != null ? App.client.imagePath : App.DEFAULT_PROFILE_IMAGE),
+                        fit: BoxFit.fill),
+                  ),
+                ),
                 Container(
                   margin: EdgeInsets.only(top: 10, bottom: 5),
-                  child: Text(App.client.name,
+                  child: Text(App.client.name != null ? App.client.name : "",
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 24,
@@ -49,10 +62,10 @@ class _MenuState extends State<Menu> {
           InkWell(
               child: ListTile(
                   title: Text(
-                    'Memos',
+                    'Events',
                     style: TextStyle(fontSize: 15),
                   ),
-                  leading: Icon(Icons.note_add),
+                  leading: Icon(Icons.event),
                   dense: true),
               onTap: () {
                 Navigator.pushNamed(context, '/home');
@@ -61,10 +74,10 @@ class _MenuState extends State<Menu> {
           InkWell(
               child: ListTile(
                   title: Text(
-                    'Categories',
+                    'New event',
                     style: TextStyle(fontSize: 15),
                   ),
-                  leading: Icon(Icons.category),
+                  leading: Icon(Icons.event_available_outlined),
                   dense: true),
               onTap: () {
                 Navigator.pushNamed(context, '/categories');
@@ -73,10 +86,10 @@ class _MenuState extends State<Menu> {
           InkWell(
               child: ListTile(
                   title: Text(
-                    'Tags',
+                    'Settings',
                     style: TextStyle(fontSize: 15),
                   ),
-                  leading: Icon(Icons.tag),
+                  leading: Icon(Icons.miscellaneous_services),
                   dense: true),
               onTap: () {
                 Navigator.pushNamed(context, '/tags');
