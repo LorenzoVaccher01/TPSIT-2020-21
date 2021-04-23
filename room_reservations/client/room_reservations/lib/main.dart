@@ -29,7 +29,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
 
     _connectivity.initialise();
-    _connectivity.stream.listen((source) {
+    _connectivity.stream.asBroadcastStream().listen((source) {
       switch (source.keys.toList()[0]) {
         case ConnectivityResult.none:
           isConnected = false;
@@ -42,11 +42,11 @@ class App extends StatelessWidget {
       }
 
       //TODO: mostrare alert come avviso per la disconnessione e connessione a internet?
-      if (isConnected) {
+      /*if (isConnected) {
         print("The client is connected to the internet");
       } else {
         print("The client is not connected to the internet");
-      }
+      }*/
     });
 
     return MaterialApp(
