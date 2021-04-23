@@ -1,73 +1,24 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:room_reservations/utils/models/event.dart';
+import 'package:room_reservations/main.dart' as App;
 
 class HomeReservationListItem extends StatelessWidget {
 
-  final int index;
+  Event event;
+  int index;
   String imageLink;
 
-  HomeReservationListItem({this.index});
-
-  final List<Map> schoolLists = [
-    {
-      "name": "Edgewick Scchol",
-      "location": "572 Statan NY, 12483",
-      "type": "Higher Secondary School",
-      "logoText":
-          "https://cdn.pixabay.com/photo/2017/03/16/21/18/logo-2150297_960_720.png"
-    },
-    {
-      "name": "Xaviers International",
-      "location": "234 Road Kathmandu, Nepal",
-      "type": "Higher Secondary School",
-      "logoText":
-          "https://cdn.pixabay.com/photo/2017/01/31/13/14/animal-2023924_960_720.png"
-    },
-    {
-      "name": "Kinder Garden",
-      "location": "572 Statan NY, 12483",
-      "type": "Play Group School",
-      "logoText":
-          "https://cdn.pixabay.com/photo/2016/06/09/18/36/logo-1446293_960_720.png"
-    },
-    {
-      "name": "WilingTon Cambridge",
-      "location": "Kasai Pantan NY, 12483",
-      "type": "Lower Secondary School",
-      "logoText":
-          "https://cdn.pixabay.com/photo/2017/01/13/01/22/rocket-1976107_960_720.png"
-    },
-    {
-      "name": "Fredik Panlon",
-      "location": "572 Statan NY, 12483",
-      "type": "Higher Secondary School",
-      "logoText":
-          "https://cdn.pixabay.com/photo/2017/03/16/21/18/logo-2150297_960_720.png"
-    },
-    {
-      "name": "Whitehouse International",
-      "location": "234 Road Kathmandu, Nepal",
-      "type": "Higher Secondary School",
-      "logoText":
-          "https://cdn.pixabay.com/photo/2017/01/31/13/14/animal-2023924_960_720.png"
-    },
-    {
-      "name": "Haward Play",
-      "location": "572 Statan NY, 12483",
-      "type": "Play Group School",
-      "logoText":
-          "https://cdn.pixabay.com/photo/2016/06/09/18/36/logo-1446293_960_720.png"
-    },
-    {
-      "name": "Campare Handeson",
-      "location": "Kasai Pantan NY, 12483",
-      "type": "Lower Secondary School",
-      "logoText":
-          "https://cdn.pixabay.com/photo/2017/01/13/01/22/rocket-1976107_960_720.png"
-    },
-  ];
+  HomeReservationListItem({this.event, this.index});
 
   @override
   Widget build(BuildContext context) {
+
+    /// Funzione utilizzata per ottenere la data dell'evento
+    String _getTime(String time) {
+      return time.split(" ")[1].split(":")[0] + ":" + time.split(" ")[1].split(":")[1];
+    }
+
     return Container(
       width: double.infinity,
       margin: EdgeInsets.only(top: index != 0 ? 10 : 0, bottom: 10, left: 10, right: 10),
@@ -86,10 +37,10 @@ class HomeReservationListItem extends StatelessWidget {
             margin: EdgeInsets.only(right: 15, top: 15),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50),
-              /*border:
-                    Border.all(width: 2, color: Theme.of(context).primaryColor),*/
+              border:
+                    Border.all(width: 2, color: Theme.of(context).accentColor),
               image: DecorationImage(
-                  image: NetworkImage("https://lh3.googleusercontent.com/a-/AOh14GgNkkH1R4EkCZ7XHqEixzcTrd3OQH5Xjcgb2zXDGA=s96-c"),
+                  image: NetworkImage(event.teacher.profileImage != null ? event.teacher.profileImage : App.DEFAULT_PROFILE_IMAGE),
                   fit: BoxFit.fill),
             ),
           ),
@@ -98,7 +49,7 @@ class HomeReservationListItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  schoolLists[index]['name'], //TODO: controllare la lunghezza massima
+                  event.teacher.name, //TODO: controllare la lunghezza massima
                   style: TextStyle(
                       color: Colors.black87,
                       fontWeight: FontWeight.bold,
@@ -117,7 +68,7 @@ class HomeReservationListItem extends StatelessWidget {
                     SizedBox(
                       width: 5,
                     ),
-                    Text(schoolLists[index]['location'],
+                    Text(event.room.identificator,
                         style: TextStyle(
                             color: Colors.grey[800],
                             fontSize: 13,
@@ -137,7 +88,7 @@ class HomeReservationListItem extends StatelessWidget {
                     SizedBox(
                       width: 5,
                     ),
-                    Text(schoolLists[index]['type'],
+                    Text(_getTime(event.dateFrom) + " - " + _getTime(event.dateTo),
                         style: TextStyle(
                             color: Colors.grey[800],
                             fontSize: 13,

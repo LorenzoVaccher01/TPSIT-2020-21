@@ -1,10 +1,10 @@
 
-class Class {
+class SchoolClass {
   int _id;
   String _section;
   int _year;
 
-  Class({int id, String section, int year}) {
+  SchoolClass({int id, String section, int year}) {
     this._id = id;
     this._section = section;
     this._year = year;
@@ -17,7 +17,7 @@ class Class {
   int get year => _year;
   set year(int year) => _year = year;
 
-  Class.fromJson(Map<String, dynamic> json) {
+  SchoolClass.fromJson(Map<String, dynamic> json) {
     _id = json['id'];
     _section = json['section'];
     _year = json['year'];

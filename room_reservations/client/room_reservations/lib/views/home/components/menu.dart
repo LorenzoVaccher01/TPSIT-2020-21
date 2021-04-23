@@ -129,7 +129,7 @@ class _MenuState extends State<Menu> {
                     title: 'Error!',
                     closeButton: false,
                     textConfirmButton: 'Ok',
-                    body: Text(e),
+                    body: Text(e.toString()),
                     textCanelButton: "",
                     onClick: () {});
               }

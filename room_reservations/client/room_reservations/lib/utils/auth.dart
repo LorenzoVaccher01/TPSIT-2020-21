@@ -12,6 +12,7 @@ class Auth {
     final User user = authResult.user;
     assert(user != null);
     assert(await user.getIdToken() != null);
+    //TODO: notificare server della creazione dell'utente
     return user;
   }
 
