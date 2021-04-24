@@ -80,7 +80,7 @@ class _MenuState extends State<Menu> {
                   leading: Icon(Icons.event_available_outlined),
                   dense: true),
               onTap: () {
-                Navigator.pushNamed(context, '/categories');
+                Navigator.pushNamed(context, '/newEvent');
               }),
           Divider(),
           InkWell(
@@ -92,7 +92,7 @@ class _MenuState extends State<Menu> {
                   leading: Icon(Icons.miscellaneous_services),
                   dense: true),
               onTap: () {
-                Navigator.pushNamed(context, '/tags');
+                Navigator.pushNamed(context, '/settings');
               }),
           Divider(),
           InkWell(

@@ -1,10 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:room_reservations/main.dart' as App;
+import 'package:http/http.dart' as http;
+import 'package:room_reservations/utils/auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class Client {
   int _id;
-  bool _loggedWithGoogle;
+  bool _isAdmin;
   String _name;
   String _email;
   String _sessionCookie;
@@ -14,18 +19,18 @@ class Client {
   Client(
       {int id,
       String imagePath,
-      bool loggedWithGoogle = false,
+      bool isAdmin = false,
       @required String name,
       @required String email,
       String sessionCookie,
       @required String uid}) {
     this._id = id;
     this._imagePath = imagePath;
+    this._isAdmin = isAdmin;
     this._name = name;
     this._email = email;
     this._sessionCookie = sessionCookie;
     this._uid = uid;
-    this._loggedWithGoogle = loggedWithGoogle;
   }
 
   int get id => _id;
@@ -34,18 +39,41 @@ class Client {
   String get sessionCookie => _sessionCookie;
   String get imagePath => _imagePath;
   String get uid => _uid;
-  bool get loggedWithGoogle => _loggedWithGoogle;
+  bool get isAdmin => _isAdmin;
 
   set sessionCookie(String sessionCookie) => _sessionCookie = sessionCookie;
-    
+
   Future<String> getSessionCookie() async {
-    return "TODO";
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final User user = FirebaseAuth.instance.currentUser;
+    final String fcmToken = await FirebaseMessaging.instance.getToken();
+    final String token = await user.getIdToken(true);
+
+    print(fcmToken);
+
+    final response = await http.post(Uri.parse(App.SERVER_WEB + '/login'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: "{\"token\":\"" + token + "\", \"fcmToken\": \"" + fcmToken + "\"}");
+    
+    if (response.statusCode == 200) {
+      final bodyResponse = json.decode(response.body);
+      if (bodyResponse['error'] == 200) {
+        prefs.setString("user.sessionCookie", response.headers['set-cookie']);
+        return response.headers['set-cookie'];
+      } else {
+        throw (bodyResponse['message']);
+      }
+    } else {
+      throw ("Internal server error");
+    }
   }
 
   static Future<bool> isLogged() async {
-    //TODO: verificare utilizzando direttamente le funzioni di Firebase e verificando la data del cookie
-    SharedPreferences _prefs = await SharedPreferences.getInstance();
-    String cookie = _prefs.getString('user.sessionCookie');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String cookie = prefs.getString('user.sessionCookie');
+    User currentUser = FirebaseAuth.instance.currentUser;
 
     if (cookie != null) {
       const Map<String, int> monthsInYear = {
@@ -77,16 +105,22 @@ class Client {
           int.parse(date[4].split(':')[1]),
           int.parse(date[4].split(':')[2]));
 
-      if (cookieDate.isAfter(DateTime.now())) {
-        //TODO: verificare correttezza
-        App.client = new Client(
-            id: _prefs.getInt('user.id'),
-            name: _prefs.getString('user.name'),
-            email: _prefs.getString('user.email'),
-            loggedWithGoogle: _prefs.getBool('user.loggedWithGoogle'),
-            sessionCookie: _prefs.getString('user.sessionCookie'),
-            uid: _prefs.getString('user.uid'));
-        return true;
+      if (currentUser != null) {
+        if (cookieDate.isAfter(DateTime.now())) {
+          App.client = new Client(
+              name: currentUser.displayName,
+              email: currentUser.email,
+              isAdmin: prefs.getBool('user.isAdmin') ?? false,
+              sessionCookie: prefs.getString('user.sessionCookie'),
+              uid: currentUser.uid,
+              imagePath: currentUser.photoURL);
+          return true;
+        } else {
+          // viene eseguito il logout dell'utente, così potrà effettuare nuovamente
+          // l'accesso e ottenere una nuova sessione
+          await Auth.googleSignout();
+          return false;
+        }
       } else {
         return false;
       }

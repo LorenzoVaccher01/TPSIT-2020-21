@@ -1,11 +1,13 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:room_reservations/utils/client.dart';
 import 'package:room_reservations/utils/connection.dart';
 import 'package:room_reservations/views/home/homeView.dart';
 import 'package:room_reservations/views/login/loginView.dart';
+import 'package:room_reservations/views/newEvent/newEventView.dart';
 import 'package:room_reservations/views/signup/signupView.dart';
 import 'package:room_reservations/views/welcome/welcome.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,28 +29,18 @@ main() async {
 
   _connectivity.initialise();
 
-  SharedPreferences _prefs = await SharedPreferences.getInstance();
-  User currentUser = FirebaseAuth.instance.currentUser;
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool isLogged = await Client.isLogged();
   String initialRoute = "/welcome";
 
-  // print(_prefs.getString('user.sessionCookie'));
-  
-  //TODO: impostare correttamente la sessione
-  if (currentUser != null) {
-    initialRoute = "/home";
-    client = new Client(
-        email: currentUser.email,
-        name: currentUser.displayName,
-        uid: currentUser.uid,
-        imagePath: currentUser.photoURL);
-
-    String _sess = _prefs.getString('user.sessionCookie');
-    client.sessionCookie =
-        _sess != null ? _sess : await client.getSessionCookie();
+  if (isLogged) {
+    initialRoute = '/home';
   } else {
-    //TODO: controllare se il client ha mai visto il messaggio di benvenuto ed eventualmente mostrarlo o inviarlo nella pagina login
+    if (!(prefs.getBool('user.welcomeMessage') ?? true)) {
+      initialRoute = '/login';
+    }
   }
-
+  
   runApp(App(initialRoute: initialRoute));
 }
 
@@ -74,7 +66,9 @@ class App extends StatelessWidget {
         '/welcome': (context) => WelcomeView(),
         '/login': (context) => LoginView(),
         '/signup': (context) => SignupView(),
-        '/home': (context) => HomeView()
+        '/home': (context) => HomeView(),
+        '/newEvent': (context) => NewEventView(),
+        //'/settings': (context) => SettingsView(),
       },
     );
   }

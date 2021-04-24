@@ -12,7 +12,6 @@ class Auth {
     final User user = authResult.user;
     assert(user != null);
     assert(await user.getIdToken() != null);
-    //TODO: notificare server della creazione dell'utente
     return user;
   }
 
@@ -45,12 +44,8 @@ class Auth {
     if (user != null) {
       assert(!user.isAnonymous);
       assert(await user.getIdToken() != null);
-
       final User currentUser = _auth.currentUser;
       assert(user.uid == currentUser.uid);
-
-      print('signInWithGoogle succeeded: $user');
-
       return user;
     }
     return null;

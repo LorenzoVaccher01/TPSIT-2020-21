@@ -19,6 +19,7 @@ class _SignupViewState extends State<SignupView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _nameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +45,7 @@ class _SignupViewState extends State<SignupView> {
                     SizedBox(height: height * .2),
                     SignupTitle(),
                     SizedBox(
-                      height: 50,
+                      height: 20,
                     ),
                     EntryField(
                       title: "Email",
@@ -52,6 +53,13 @@ class _SignupViewState extends State<SignupView> {
                       icon: Icon(Icons.person),
                       controller: _emailController,
                       hintText: "test@gmail.com",
+                    ),
+                    EntryField(
+                      title: "Name",
+                      isPassword: false,
+                      icon: Icon(Icons.person),
+                      controller: _nameController,
+                      hintText: "Mario Rossi",
                     ),
                     EntryField(
                       title: "Password",
@@ -79,7 +87,12 @@ class _SignupViewState extends State<SignupView> {
                               User user = await Auth.signUp(
                                   _emailController.text,
                                   _passwordController.text);
-                              if (user != null) {
+
+                              print(_nameController.text);
+                              
+                              if (user != null || _nameController.text == null || _nameController.text == '') {
+                                FirebaseAuth.instance.currentUser.updateProfile(displayName: _nameController.text);
+
                                 App.client = new Client(
                                     email: user.email,
                                     name: user.displayName,
@@ -90,7 +103,7 @@ class _SignupViewState extends State<SignupView> {
                                 Navigator.pushNamed(context, '/home');
                               }
                             } else {
-                              throw ("Passwords do not match.");
+                              throw ("Passwords do not match or user aname is empty.");
                             }
                           } catch (error) {
                             Alert(
@@ -109,7 +122,7 @@ class _SignupViewState extends State<SignupView> {
                                 onClick: () {});
                           }
                         }),
-                    SizedBox(height: height * .065),
+                    SizedBox(height: height * .005),
                     SignupLoginAccountLabel(),
                   ],
                 ),

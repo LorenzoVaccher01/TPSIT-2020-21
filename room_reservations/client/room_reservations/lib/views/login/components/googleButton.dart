@@ -17,7 +17,6 @@ class LoginGoogleButton extends StatelessWidget {
                 email: user.email,
                 name: user.displayName,
                 uid: user.uid,
-                loggedWithGoogle: true,
                 imagePath: user.photoURL);
             App.client.sessionCookie = await App.client.getSessionCookie();
             Navigator.pushNamed(context, '/home');

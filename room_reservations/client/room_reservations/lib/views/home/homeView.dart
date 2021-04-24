@@ -6,6 +6,7 @@ import 'package:room_reservations/utils/cubits/events_cubit.dart';
 import 'package:room_reservations/utils/models/event.dart';
 import 'package:room_reservations/views/home/components/menu.dart';
 import 'package:room_reservations/views/home/components/reservationListItem.dart';
+import 'package:room_reservations/views/newEvent/newEventView.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class HomeView extends StatelessWidget {
@@ -15,6 +16,7 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     CalendarController _calendarController = CalendarController();
+    DateTime _selectedDate;
 
     _connectivity.initialise();
 
@@ -106,6 +108,7 @@ class HomeView extends StatelessWidget {
                                   formatButtonShowsNext: false,
                                 ),
                                 onDaySelected: (date, events, boh) {
+                                  _selectedDate = date;
                                   cubitContext.cubit<EventsCubit>().get(date);
                                 },
                                 builders: CalendarBuilders(
@@ -214,10 +217,12 @@ class HomeView extends StatelessWidget {
                         child: FloatingActionButton(
                             child:
                                 Icon(Icons.add, color: Colors.white, size: 28),
-                            onPressed: () {
-                              //TODO: creare pagina per l'aggiunta evento
-                              print(
-                                  "TODO: creare pagina per l'aggiunta di un evento");
+                            onPressed: () async {
+                              await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => NewEventView()));
+                              cubitContext.cubit<EventsCubit>().get(_selectedDate);
                             }),
                       ),
                     );
