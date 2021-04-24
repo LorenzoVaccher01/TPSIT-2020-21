@@ -12,8 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const String VERSION = "v0.1";
 const String SERVER_WEB = "https://lorenzovaccher.com:8443";
-const String DEFAULT_PROFILE_IMAGE =
-    "https://lorenzovaccher.com:8443/public/images/profile.png";
+const String DEFAULT_IMAGE = "assets/images/profile.png";
 const String DATABASE_NAME = "app_database.db";
 
 Client client;

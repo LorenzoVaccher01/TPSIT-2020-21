@@ -40,7 +40,7 @@ class HomeReservationListItem extends StatelessWidget {
               border:
                     Border.all(width: 2, color: Theme.of(context).accentColor),
               image: DecorationImage(
-                  image: NetworkImage(event.teacher.profileImage != null ? event.teacher.profileImage : App.DEFAULT_PROFILE_IMAGE),
+                  image: NetworkImage(event.teacher.profileImage != null ? event.teacher.profileImage : App.DEFAULT_IMAGE),
                   fit: BoxFit.fill),
             ),
           ),

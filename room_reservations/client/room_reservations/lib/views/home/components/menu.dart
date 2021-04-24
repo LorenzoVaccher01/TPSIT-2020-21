@@ -40,7 +40,7 @@ class _MenuState extends State<Menu> {
                     Border.all(width: 2, color: Theme.of(context).primaryColor),*/
                     image: DecorationImage(
                         image: NetworkImage(
-                            App.client.imagePath != null ? App.client.imagePath : App.DEFAULT_PROFILE_IMAGE),
+                            App.client.imagePath != null ? App.client.imagePath : App.DEFAULT_IMAGE),
                         fit: BoxFit.fill),
                   ),
                 ),

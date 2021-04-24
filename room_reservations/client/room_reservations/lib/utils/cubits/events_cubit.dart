@@ -13,11 +13,17 @@ class EventsCubit extends Cubit<List<Event>> {
 
   void get(DateTime newDate) async {
     this.date = newDate;
+    print("Getting data....");
     List<Event> _events = await Event.get(context, newDate);
+    print("Sending data....");
     emit(_events);
   }
 
-  void remove(int eventId) {}
+  void remove(int eventId) {
 
-  void add(Event event) {}
+  }
+
+  void add(Event event) {
+    
+  }
 }
