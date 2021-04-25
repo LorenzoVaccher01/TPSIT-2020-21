@@ -4,9 +4,9 @@ import 'package:room_reservations/main.dart' as App;
 import 'package:room_reservations/utils/connection.dart';
 import 'package:room_reservations/utils/cubits/events_cubit.dart';
 import 'package:room_reservations/utils/models/event.dart';
-import 'package:room_reservations/views/home/components/menu.dart';
+import 'package:room_reservations/widget/menu.dart';
 import 'package:room_reservations/views/home/components/reservationListItem.dart';
-import 'package:room_reservations/views/newEvent/newEventView.dart';
+import 'package:room_reservations/widget/newEvent.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class HomeView extends StatelessWidget {
@@ -16,7 +16,7 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     CalendarController _calendarController = CalendarController();
-    DateTime _selectedDate;
+    DateTime _selectedDate = DateTime.now();
 
     _connectivity.initialise();
 
@@ -218,10 +218,11 @@ class HomeView extends StatelessWidget {
                             child:
                                 Icon(Icons.add, color: Colors.white, size: 28),
                             onPressed: () async {
-                              await Navigator.push(
+                              await NewEvent.show(context);
+                              /*await Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => NewEventView()));
+                                      builder: (context) => NewEventView()));*/
                               cubitContext.cubit<EventsCubit>().get(_selectedDate);
                             }),
                       ),

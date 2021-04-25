@@ -1,3 +1,8 @@
+import 'dart:convert';
+import 'package:flutter/cupertino.dart';
+import 'package:room_reservations/main.dart' as App;
+import 'package:http/http.dart' as http;
+import 'package:room_reservations/widget/alert.dart';
 
 class SchoolClass {
   int _id;
@@ -11,11 +16,50 @@ class SchoolClass {
   }
 
   int get id => _id;
-  set id(int id) => _id = id;
   String get section => _section;
-  set section(String section) => _section = section;
   int get year => _year;
-  set year(int year) => _year = year;
+
+  static Future<List<SchoolClass>> get(BuildContext context) async {
+    List<SchoolClass> _schoolClasses = [];
+
+    if (App.isConnected) {
+      final serverResponse = await http.get(
+        Uri.parse(App.SERVER_WEB + '/api/classes'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Cookie': App.client.sessionCookie
+        },
+      );
+
+      try {
+        if (serverResponse.statusCode == 200) {
+          final bodyResponse = json.decode(serverResponse.body);
+          if (bodyResponse['status'] == 200) {
+            bodyResponse['data'].forEach((item) {
+              _schoolClasses.add(SchoolClass.fromJson(item));
+            });
+            return _schoolClasses;
+          } else {
+            throw (bodyResponse['message']);
+          }
+        } else {
+          throw ("Internal server errror");
+        }
+      } catch (e) {
+        Alert(
+            context: context,
+            title: 'Error!',
+            closeButton: false,
+            textConfirmButton: 'Ok',
+            body: Text(e.toString()),
+            textCanelButton: "",
+            onClick: () {});
+        return [];
+      }
+    } else {
+      return [];
+    }
+  }
 
   SchoolClass.fromJson(Map<String, dynamic> json) {
     _id = json['id'];

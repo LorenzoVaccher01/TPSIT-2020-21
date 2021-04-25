@@ -86,7 +86,7 @@ class _MenuState extends State<Menu> {
           InkWell(
               child: ListTile(
                   title: Text(
-                    'Settings',
+                    'Dashboard',
                     style: TextStyle(fontSize: 15),
                   ),
                   leading: Icon(Icons.miscellaneous_services),

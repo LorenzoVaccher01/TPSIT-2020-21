@@ -1,3 +1,8 @@
+import 'dart:convert';
+import 'package:flutter/cupertino.dart';
+import 'package:room_reservations/main.dart' as App;
+import 'package:http/http.dart' as http;
+import 'package:room_reservations/widget/alert.dart';
 
 class Teacher {
   int _id;
@@ -20,15 +25,53 @@ class Teacher {
   }
 
   int get id => _id;
-  set id(int id) => _id = id;
   String get name => _name;
-  set name(String name) => _name = name;
   String get email => _email;
-  set email(String email) => _email = email;
   String get concourseClass => _concourseClass;
-  set concourseClass(String concourseClass) => _concourseClass = concourseClass;
   String get profileImage => _profileImage;
-  set profileImage(String profileImage) => _profileImage = profileImage;
+
+  static Future<List<Teacher>> get(BuildContext context) async {
+    List<Teacher> _teachers = [];
+
+    if (App.isConnected) {
+      final serverResponse = await http.get(
+        //TODO: verificare se nella session del server è presente il fatto che il client è un admin
+        Uri.parse(App.SERVER_WEB + '/api/teachers'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Cookie': App.client.sessionCookie
+        },
+      );
+
+      try {
+        if (serverResponse.statusCode == 200) {
+          final bodyResponse = json.decode(serverResponse.body);
+          if (bodyResponse['status'] == 200) {
+            bodyResponse['data'].forEach((item) {
+              _teachers.add(Teacher.fromJson(item));
+            });
+            return _teachers;
+          } else {
+            throw (bodyResponse['message']);
+          }
+        } else {
+          throw ("Internal server errror");
+        }
+      } catch (e) {
+        Alert(
+            context: context,
+            title: 'Error!',
+            closeButton: false,
+            textConfirmButton: 'Ok',
+            body: Text(e.toString()),
+            textCanelButton: "",
+            onClick: () {});
+        return [];
+      }
+    } else {
+      return [];
+    }
+  }
 
   Teacher.fromJson(Map<String, dynamic> json) {
     _id = json['id'];

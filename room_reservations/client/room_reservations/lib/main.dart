@@ -5,21 +5,54 @@ import 'package:room_reservations/utils/client.dart';
 import 'package:room_reservations/utils/connection.dart';
 import 'package:room_reservations/views/home/homeView.dart';
 import 'package:room_reservations/views/login/loginView.dart';
-import 'package:room_reservations/views/newEvent/newEventView.dart';
+import 'package:room_reservations/widget/newEvent.dart';
+import 'package:room_reservations/views/settings/settingsView.dart';
 import 'package:room_reservations/views/signup/signupView.dart';
 import 'package:room_reservations/views/welcome/welcome.dart';
+import 'package:room_reservations/widget/alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String VERSION = "v0.1";
 const String SERVER_WEB = "https://lorenzovaccher.com:8443";
 const String DEFAULT_IMAGE = "assets/images/profile.png";
-const String DEFAULT_IMAGE_SERVER = "https://lorenzovaccher.com:8443/public/images/profile.png";
+const String DEFAULT_IMAGE_SERVER =
+    "https://lorenzovaccher.com:8443/public/images/profile.png";
 const String DATABASE_NAME = "app_database.db";
 
 Client client;
 bool isConnected = true;
 
 final ConnectionChecker _connectivity = ConnectionChecker.instance;
+
+void checkConnection(BuildContext context) {
+  _connectivity.stream.asBroadcastStream().listen((source) {
+    switch (source.keys.toList()[0]) {
+      case ConnectivityResult.none:
+        isConnected = false;
+        break;
+      case ConnectivityResult.mobile:
+        isConnected = true;
+        break;
+      case ConnectivityResult.wifi:
+        isConnected = true;
+    }
+
+    if (isConnected) {
+      print("The client is connected to the internet");
+    } else {
+      Alert(
+          context: context,
+          title: 'Error!',
+          closeButton: false,
+          textConfirmButton: 'Ok',
+          body: Text(
+              "You are not connected to the internet, some application features are not available in offline mode."),
+          textCanelButton: "",
+          onClick: () {});
+      print("The client is not connected to the internet");
+    }
+  });
+}
 
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,59 +72,31 @@ main() async {
       initialRoute = '/login';
     }
   }
-  
+
   runApp(App(initialRoute: initialRoute));
 }
 
 class App extends StatelessWidget {
-
   String initialRoute;
 
   App({this.initialRoute});
 
   @override
   Widget build(BuildContext context) {
-    _checkConnection(context);
-
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Room Reservations',
-      theme: ThemeData(
-          primaryColor: Color(0xfff78c2b),
-          accentColor: Color(0xfffbb448),
-          brightness: Brightness.light),
-      initialRoute: initialRoute,
-      routes: {
-        '/welcome': (context) => WelcomeView(),
-        '/login': (context) => LoginView(),
-        '/signup': (context) => SignupView(),
-        '/home': (context) => HomeView(),
-        '/newEvent': (context) => NewEventView(),
-        //'/settings': (context) => SettingsView(),
-      },
-    );
-  }
-
-  void _checkConnection(BuildContext context) {
-    _connectivity.initialise();
-    _connectivity.stream.asBroadcastStream().listen((source) {
-      switch (source.keys.toList()[0]) {
-        case ConnectivityResult.none:
-          isConnected = false;
-          break;
-        case ConnectivityResult.mobile:
-          isConnected = true;
-          break;
-        case ConnectivityResult.wifi:
-          isConnected = true;
-      }
-
-      //TODO: mostrare alert come avviso per la disconnessione e connessione a internet?
-      /*if (isConnected) {
-        print("The client is connected to the internet");
-      } else {
-        print("The client is not connected to the internet");
-      }*/
-    });
+        debugShowCheckedModeBanner: false,
+        title: 'Room Reservations',
+        theme: ThemeData(
+            primaryColor: Color(0xfff78c2b),
+            accentColor: Color(0xfffbb448),
+            brightness: Brightness.light),
+        initialRoute: initialRoute,
+        routes: {
+          '/welcome': (context) => WelcomeView(),
+          '/login': (context) => LoginView(),
+          '/signup': (context) => SignupView(),
+          '/home': (context) => HomeView(),
+          '/settings': (context) => SettingsView(),
+        });
   }
 }

@@ -40,7 +40,7 @@ class Alert {
               Visibility(
                 visible: _closeButton,
                 child: TextButton(
-                  child: Text(_textCanelButton),
+                  child: Text(_textCanelButton, style: TextStyle(color: Colors.red)),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
