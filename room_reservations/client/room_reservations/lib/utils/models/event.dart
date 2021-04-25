@@ -71,13 +71,14 @@ class Event {
   static Future<List<Event>> get(BuildContext context, DateTime date) async {
     List<Event> _events = [];
 
+    String dateFormat = date.year.toString() + "-" + date.month.toString().padLeft(2, "0") + "-" + date.day.toString().padLeft(2, "0");
+
     if (App.isConnected) {
       final serverResponse = await http.get(
-        Uri.parse(App.SERVER_WEB + '/api/events'),
+        Uri.parse(App.SERVER_WEB + '/api/events?date=' + dateFormat),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
-          'Cookie': /*_prefs.getString('user.sessionCookie')*/ App
-              .client.sessionCookie
+          'Cookie': App.client.sessionCookie
         },
       );
 
@@ -108,8 +109,9 @@ class Event {
       }
     } else {
       //TODO: prendere i dati dal database in locale
-      
-      final database = await $FloorAppDatabase.databaseBuilder(App.DATABASE_NAME).build();
+
+      final database =
+          await $FloorAppDatabase.databaseBuilder(App.DATABASE_NAME).build();
       final eventDao = database.eventDao;
       _events = (await eventDao.findAllEvent()).cast<Event>();
       print(_events);

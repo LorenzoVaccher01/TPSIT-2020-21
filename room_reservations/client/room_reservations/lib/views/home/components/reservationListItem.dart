@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:room_reservations/utils/models/event.dart';
 import 'package:room_reservations/main.dart' as App;
@@ -8,15 +7,19 @@ class HomeReservationListItem extends StatelessWidget {
   Event event;
   int index;
   String imageLink;
+  bool isOwner = false;
 
-  HomeReservationListItem({this.event, this.index});
+  HomeReservationListItem({this.event, this.index}) {
+    if (App.client.email == event.teacher.email || App.client.isAdmin)
+      isOwner = true;
+  }
 
   @override
   Widget build(BuildContext context) {
 
     /// Funzione utilizzata per ottenere la data dell'evento
     String _getTime(String time) {
-      return time.split(" ")[1].split(":")[0] + ":" + time.split(" ")[1].split(":")[1];
+      return time.split("T")[1].split(":")[0] + ":" + time.split("T")[1].split(":")[1];
     }
 
     return Container(
@@ -25,7 +28,7 @@ class HomeReservationListItem extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        color: Colors.white,
+        color: (isOwner) ? Theme.of(context).accentColor.withOpacity(0.25) : Colors.white,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +43,7 @@ class HomeReservationListItem extends StatelessWidget {
               border:
                     Border.all(width: 2, color: Theme.of(context).accentColor),
               image: DecorationImage(
-                  image: NetworkImage(event.teacher.profileImage != null ? event.teacher.profileImage : App.DEFAULT_IMAGE),
+                  image: (event.teacher.profileImage != null || App.isConnected) ? NetworkImage(event.teacher.profileImage) : Image.asset(App.DEFAULT_IMAGE),
                   fit: BoxFit.fill),
             ),
           ),

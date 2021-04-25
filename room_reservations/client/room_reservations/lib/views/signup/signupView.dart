@@ -83,27 +83,28 @@ class _SignupViewState extends State<SignupView> {
                         onTap: () async {
                           try {
                             if (_passwordController.text ==
-                                _confirmPasswordController.text) {
+                                _confirmPasswordController.text &&
+                                (_nameController.text != null &&
+                                _nameController.text != '' &&
+                                _nameController.text != ' ')) {
                               User user = await Auth.signUp(
                                   _emailController.text,
                                   _passwordController.text);
-
-                              print(_nameController.text);
                               
-                              if (user != null || _nameController.text == null || _nameController.text == '') {
-                                FirebaseAuth.instance.currentUser.updateProfile(displayName: _nameController.text);
-
+                              if (user != null) {
+                                await user.updateProfile(displayName: _nameController.text, photoURL: App.DEFAULT_IMAGE_SERVER);
+                                
                                 App.client = new Client(
                                     email: user.email,
-                                    name: user.displayName,
+                                    name: _nameController.text,
                                     uid: user.uid,
-                                    imagePath: user.photoURL);
+                                    imagePath: App.DEFAULT_IMAGE_SERVER);
                                 App.client.sessionCookie =
                                     await App.client.getSessionCookie();
                                 Navigator.pushNamed(context, '/home');
                               }
                             } else {
-                              throw ("Passwords do not match or user aname is empty.");
+                              throw ("Passwords do not match or user name is empty.");
                             }
                           } catch (error) {
                             Alert(
