@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:connectivity/connectivity.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:room_reservations/widget/alert.dart';
 import '../main.dart' as App;
 
@@ -27,19 +27,8 @@ class ConnectionChecker {
   }
 
   void check(BuildContext context) {
-   /* _instance.stream.asBroadcastStream().listen((source) {
-      switch (source.keys.toList()[0]) {
-        case ConnectivityResult.none:
-          App.isConnected = false;
-          break;
-        case ConnectivityResult.mobile:
-          App.isConnected = true;
-          break;
-        case ConnectivityResult.wifi:
-          App.isConnected = true;
-      }*/
-
-      if (App.isConnected) {
+      stream.asBroadcastStream().listen((source) {
+        if (App.isConnected) {
         print("The client is connected to the internet");
       } else {
         Alert(
@@ -53,7 +42,7 @@ class ConnectionChecker {
             onClick: () {});
         print("The client is not connected to the internet");
       }
-    /*});*/
+    });
   }
 
 

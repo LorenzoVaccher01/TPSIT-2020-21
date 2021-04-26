@@ -5,11 +5,9 @@ import 'package:room_reservations/utils/client.dart';
 import 'package:room_reservations/utils/connection.dart';
 import 'package:room_reservations/views/home/homeView.dart';
 import 'package:room_reservations/views/login/loginView.dart';
-import 'package:room_reservations/widget/newEvent.dart';
 import 'package:room_reservations/views/settings/settingsView.dart';
 import 'package:room_reservations/views/signup/signupView.dart';
 import 'package:room_reservations/views/welcome/welcome.dart';
-import 'package:room_reservations/widget/alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String VERSION = "v0.1";
@@ -29,7 +27,7 @@ main() async {
 
   await Firebase.initializeApp();
 
-  ConnectionChecker.instance.initialise();
+  _connectivity.initialise();
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool isLogged = await Client.isLogged();

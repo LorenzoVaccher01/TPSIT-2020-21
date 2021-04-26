@@ -13,9 +13,9 @@ class EventsCubit extends Cubit<List<Event>> {
 
   void get(DateTime newDate) async {
     this.date = newDate;
-    print("Getting data....");
+    //print("Getting data....");
     List<Event> _events = await Event.get(context, newDate);
-    print("Sending data....");
+    //print("Sending data....");
     emit(_events);
   }
 
