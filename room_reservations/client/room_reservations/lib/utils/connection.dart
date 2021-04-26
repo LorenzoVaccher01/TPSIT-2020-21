@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:connectivity/connectivity.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:room_reservations/widget/alert.dart';
+import '../main.dart' as App;
 
 class ConnectionChecker {
   ConnectionChecker._internal();
@@ -22,6 +25,37 @@ class ConnectionChecker {
       _checkStatus(result);
     });
   }
+
+  void check(BuildContext context) {
+   /* _instance.stream.asBroadcastStream().listen((source) {
+      switch (source.keys.toList()[0]) {
+        case ConnectivityResult.none:
+          App.isConnected = false;
+          break;
+        case ConnectivityResult.mobile:
+          App.isConnected = true;
+          break;
+        case ConnectivityResult.wifi:
+          App.isConnected = true;
+      }*/
+
+      if (App.isConnected) {
+        print("The client is connected to the internet");
+      } else {
+        Alert(
+            context: context,
+            title: 'Error!',
+            closeButton: false,
+            textConfirmButton: 'Ok',
+            body: Text(
+                "You are not connected to the internet, some application features are not available in offline mode."),
+            textCanelButton: "",
+            onClick: () {});
+        print("The client is not connected to the internet");
+      }
+    /*});*/
+  }
+
 
   void _checkStatus(ConnectivityResult result) async {
     bool isOnline = false;

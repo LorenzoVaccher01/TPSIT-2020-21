@@ -4,6 +4,7 @@ import 'package:room_reservations/main.dart' as App;
 import 'package:room_reservations/utils/connection.dart';
 import 'package:room_reservations/utils/cubits/events_cubit.dart';
 import 'package:room_reservations/utils/models/event.dart';
+import 'package:room_reservations/widget/alert.dart';
 import 'package:room_reservations/widget/menu.dart';
 import 'package:room_reservations/views/home/components/reservationListItem.dart';
 import 'package:room_reservations/widget/newEvent.dart';
@@ -18,13 +19,24 @@ class HomeView extends StatelessWidget {
     CalendarController _calendarController = CalendarController();
     DateTime _selectedDate = DateTime.now();
 
-    _connectivity.initialise();
-
     return WillPopScope(
         onWillPop: () async => false,
         child: StreamBuilder(
             stream: _connectivity.stream.asBroadcastStream(),
             builder: (context, builders) {
+              //_connectivity.check(context);
+              //TODO: non funziona
+              /*if (!App.isConnected) {
+                Alert(
+                    context: context,
+                    title: 'Error!',
+                    closeButton: false,
+                    textConfirmButton: 'Ok',
+                    body: Text(
+                        "You are not connected to the internet, some application features are not available in offline mode."),
+                    textCanelButton: "",
+                    onClick: () {});
+              }*/
               return CubitProvider<EventsCubit>(
                   lazy: false,
                   create: (_) => EventsCubit(context: context),

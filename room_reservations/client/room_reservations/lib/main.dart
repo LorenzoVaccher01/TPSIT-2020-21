@@ -22,48 +22,31 @@ const String DATABASE_NAME = "app_database.db";
 Client client;
 bool isConnected = true;
 
-final ConnectionChecker _connectivity = ConnectionChecker.instance;
-
-void checkConnection(BuildContext context) {
-  _connectivity.stream.asBroadcastStream().listen((source) {
-    switch (source.keys.toList()[0]) {
-      case ConnectivityResult.none:
-        isConnected = false;
-        break;
-      case ConnectivityResult.mobile:
-        isConnected = true;
-        break;
-      case ConnectivityResult.wifi:
-        isConnected = true;
-    }
-
-    if (isConnected) {
-      print("The client is connected to the internet");
-    } else {
-      Alert(
-          context: context,
-          title: 'Error!',
-          closeButton: false,
-          textConfirmButton: 'Ok',
-          body: Text(
-              "You are not connected to the internet, some application features are not available in offline mode."),
-          textCanelButton: "",
-          onClick: () {});
-      print("The client is not connected to the internet");
-    }
-  });
-}
-
 main() async {
+  final ConnectionChecker _connectivity = ConnectionChecker.instance;
+
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp();
 
-  _connectivity.initialise();
+  ConnectionChecker.instance.initialise();
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool isLogged = await Client.isLogged();
   String initialRoute = "/welcome";
+
+  _connectivity.stream.asBroadcastStream().listen((source) {
+      switch (source.keys.toList()[0]) {
+        case ConnectivityResult.none:
+          isConnected = false;
+          break;
+        case ConnectivityResult.mobile:
+          isConnected = true;
+          break;
+        case ConnectivityResult.wifi:
+          isConnected = true;
+      }
+  });
 
   if (isLogged) {
     initialRoute = '/home';
