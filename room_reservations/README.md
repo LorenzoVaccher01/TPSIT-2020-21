@@ -144,14 +144,14 @@ Come per quanto riguarda l'invio di email e la gestione della console, anche per
 - Una per l'esecuzione di Query in modo Asincrono
 - Ed un'altra per l'esecusione di Query in modo Sincrono (Gestite tramite delle Promise)
 
-### Console
+#### Console
 Per una miglior gestione del progetto e per il debug è stato realizzato un sistema di LOG che permette di salvare tutti gli eventi invocati mediante il modulo personalizzato `logger`. Tutte le azioni degli utenti, errori e avvisi, quindi, vengono salvati nella cartella LOG del progetto.
 Qui di seguito è riportata l'immagini visiva della chat del server.
 <div align="center">
   <img src="./_img/console.png" alt="Console server">
 </div>
 
-### Struttura del server
+#### Struttura del server
 ``` php
 +-- log/                  //Cartella che contiene tutti i LOG del server
 |
