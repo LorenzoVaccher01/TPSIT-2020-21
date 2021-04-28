@@ -57,7 +57,7 @@ class Client {
     
     if (response.statusCode == 200) {
       final bodyResponse = json.decode(response.body);
-      if (bodyResponse['error'] == 200) {
+      if (bodyResponse['status'] == 200) {
         this._isAdmin = bodyResponse['isAdmin'];
         prefs.setBool("user.isAdmin", bodyResponse['isAdmin']);
         prefs.setString("user.sessionCookie", response.headers['set-cookie']);

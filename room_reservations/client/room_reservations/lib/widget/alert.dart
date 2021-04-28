@@ -10,13 +10,13 @@ class Alert {
   String _textCanelButton;
 
   Alert(
-      {String title,
-      Widget body,
-      Function onClick,
-      bool closeButton,
-      String textConfirmButton,
-      String textCanelButton,
-      BuildContext context}) {
+      {@required String title,
+      @required Widget body,
+      Function onClick = null,
+      bool closeButton = false,
+      String textConfirmButton = 'Ok',
+      String textCanelButton = '',
+      @required BuildContext context}) {
     this._title = title;
     this._body = body;
     this._onClick = onClick;

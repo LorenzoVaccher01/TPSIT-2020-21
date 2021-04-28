@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:room_reservations/main.dart' as App;
 import 'package:room_reservations/utils/auth.dart';
 import 'package:room_reservations/widget/alert.dart';
+import 'package:room_reservations/widget/newEvent.dart';
 
 class Menu extends StatefulWidget {
   Menu();
@@ -80,7 +81,7 @@ class _MenuState extends State<Menu> {
                   leading: Icon(Icons.event_available_outlined),
                   dense: true),
               onTap: () {
-                Navigator.pushNamed(context, '/newEvent');
+                NewEvent.show(context, DateTime.now());
               }),
           Divider(),
           InkWell(

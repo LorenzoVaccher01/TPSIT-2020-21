@@ -123,7 +123,52 @@ class Event {
     }
   }
 
-  Future<void> add(Event event) {}
+  static Future<void> add(BuildContext context,
+      {@required String teacher,
+      @required String schoolClass,
+      @required String room,
+      @required String day,
+      @required String dateFrom,
+      @required String dateTo}) async {
+    try {
+      final serverResponse = await http.post(
+          Uri.parse(App.SERVER_WEB + '/api/event'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Cookie': App.client.sessionCookie
+          },
+          body: json.encode({
+            "teacher": teacher,
+            "schoolClass": schoolClass,
+            "room": room,
+            "day": day,
+            "dateFrom": dateFrom,
+            "dateTo": dateTo
+          }));
+
+      if (serverResponse.statusCode == 200) {
+        final bodyResponse = json.decode(serverResponse.body);
+        if (bodyResponse['status'] == 200) {
+          //TODO: aggiungere l'evento nel database in locale con l'id specificato sotto
+          final int eventId = bodyResponse['data']['eventId'];
+          print(eventId);
+        } else {
+          throw (bodyResponse['message']);
+        }
+      } else {
+        throw ("Internal server errror");
+      }
+    } catch (e) {
+      Alert(
+          context: context,
+          title: 'Error!',
+          closeButton: false,
+          textConfirmButton: 'Ok',
+          body: Text(e.toString()),
+          textCanelButton: "",
+          onClick: () {});
+    }
+  }
 
   Future<void> remove(Event event) {}
 

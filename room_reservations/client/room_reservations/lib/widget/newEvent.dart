@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:room_reservations/main.dart' as App;
 import 'package:room_reservations/utils/cubits/events_cubit.dart';
 import 'package:room_reservations/utils/models/class.dart';
+import 'package:room_reservations/utils/models/event.dart';
 import 'package:room_reservations/utils/models/room.dart';
 import 'package:room_reservations/utils/models/teacher.dart';
 import 'package:room_reservations/widget/alert.dart';
@@ -24,6 +25,13 @@ class NewEvent {
       teachers = await Teacher.get(context);
     }
 
+    String selectedTeacher;
+    String selectedSchoolClass;
+    String selectedRoom;
+    String selectedDay;
+    String selectedDateFrom;
+    String selectedDateTo;
+
     Alert(
         context: context,
         title: 'New Event',
@@ -31,26 +39,46 @@ class NewEvent {
         textConfirmButton: 'Add',
         textCanelButton: "Cancel",
         onClick: () {
-          //TODO: avvisare il server
+          if (selectedTeacher != null &&
+              selectedSchoolClass != null &&
+              selectedRoom != null &&
+              selectedDay != null &&
+              selectedDateFrom != null &&
+              selectedDateTo != null) {
+            Event.add(context,
+                teacher: selectedTeacher,
+                schoolClass: selectedSchoolClass,
+                room: selectedRoom,
+                day: selectedDay,
+                dateFrom: selectedDateFrom,
+                dateTo: selectedDateTo);
+          } else {
+            Alert(
+                title: "Error",
+                body: Text(
+                    "Before inserting a new event you have to fill in all the fields"),
+                context: context);
+          }
         },
         body: Container(
-          height: MediaQuery.of(context).size.height * (App.client.isAdmin ? 0.6 : 0.45), //TODO: verificare valore quando ci sono i professori
+          height: MediaQuery.of(context).size.height *
+              (App.client.isAdmin ? 0.57 : 0.45),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Visibility(
                 visible: App.client.isAdmin,
-                child: Text("Recipient"), //TODO: da fare
+                child: Text("Recipient"),
               ),
               Visibility(
                 visible: App.client.isAdmin,
                 child: DropdownButtonItem(
                   initialValue: rooms[0].identificator,
                   hint: "Teachers",
-                  items: teachers.map<String>((value) => value.name).toList(),
+                  items: teachers.map<String>((value) => value.email).toList(),
                   onSelect: (value) {
-                    print(value);
+                    selectedTeacher = value;
                   },
                 ),
               ),
@@ -66,6 +94,9 @@ class NewEvent {
                 lastDate: DateTime(2100),
                 icon: Icon(Icons.event),
                 dateLabelText: "Date",
+                onChanged: (value) {
+                  selectedDay = value;
+                },
               ),
               Padding(padding: EdgeInsets.only(top: 5)),
               DateTimePicker(
@@ -75,6 +106,9 @@ class NewEvent {
                 lastDate: DateTime(2100),
                 icon: Icon(Icons.timer),
                 timeLabelText: "Time from",
+                onChanged: (value) {
+                  selectedDateFrom = value;
+                },
               ),
               Padding(padding: EdgeInsets.only(top: 5)),
               DateTimePicker(
@@ -84,6 +118,9 @@ class NewEvent {
                 lastDate: DateTime(2100),
                 icon: Icon(Icons.timer),
                 timeLabelText: "Time to",
+                onChanged: (value) {
+                  selectedDateTo = value;
+                },
               ),
               Padding(padding: EdgeInsets.only(top: 30)),
               Text("Other informations"),
@@ -94,7 +131,7 @@ class NewEvent {
                 items:
                     rooms.map<String>((value) => value.identificator).toList(),
                 onSelect: (value) {
-                  print(value);
+                  selectedRoom = value;
                 },
               ),
               Padding(padding: EdgeInsets.only(top: 10)),
@@ -107,7 +144,7 @@ class NewEvent {
                         (value) => value.year.toString() + value.section)
                     .toList(),
                 onSelect: (value) {
-                  print(value);
+                  selectedSchoolClass = value;
                 },
               ),
             ],
