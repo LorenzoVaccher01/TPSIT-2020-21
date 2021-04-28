@@ -10,7 +10,7 @@ class HomeReservationListItem extends StatelessWidget {
   bool isOwner = false;
 
   HomeReservationListItem({this.event, this.index}) {
-    if (App.client.email == event.teacher.email || App.client.isAdmin)
+    if (App.client.email == event.teacher.email)
       isOwner = true;
   }
 
@@ -37,13 +37,14 @@ class HomeReservationListItem extends StatelessWidget {
           child: Icon(Icons.delete, color: Colors.white, size: 45)),
       confirmDismiss: (direction) async {
         bool status;
+
         await showDialog<bool>(
             context: context,
             barrierDismissible: false,
             builder: (BuildContext context) {
               return AlertDialog(
                 title: Text("Warning"),
-                content: Text("Are you sure you want to delete this event?"),
+                content: Text(isOwner || App.client.isAdmin ? "Are you sure you want to delete this event?" : "You cannot delete this event as you are not the owner."),
                 actions: [
                   TextButton(
                     child: Text("Cancel", style: TextStyle(color: Colors.red)),
@@ -52,12 +53,15 @@ class HomeReservationListItem extends StatelessWidget {
                       Navigator.of(context).pop();
                     },
                   ),
-                  TextButton(
-                    child: Text("Ok"),
-                    onPressed: () {
-                      status = true;
-                      Navigator.of(context).pop();
-                    },
+                  Visibility(
+                    visible: isOwner || App.client.isAdmin,
+                    child: TextButton(
+                      child: Text("Ok"),
+                      onPressed: () {
+                        status = true;
+                        Navigator.of(context).pop();
+                      },
+                    ),
                   )
                 ],
               );

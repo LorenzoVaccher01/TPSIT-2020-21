@@ -49,8 +49,6 @@ class Client {
     final String fcmToken = await FirebaseMessaging.instance.getToken();
     final String token = await user.getIdToken(true);
 
-    print(fcmToken);
-
     final response = await http.post(Uri.parse(App.SERVER_WEB + '/login'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
@@ -60,6 +58,8 @@ class Client {
     if (response.statusCode == 200) {
       final bodyResponse = json.decode(response.body);
       if (bodyResponse['error'] == 200) {
+        this._isAdmin = bodyResponse['isAdmin'];
+        prefs.setBool("user.isAdmin", bodyResponse['isAdmin']);
         prefs.setString("user.sessionCookie", response.headers['set-cookie']);
         return response.headers['set-cookie'];
       } else {
