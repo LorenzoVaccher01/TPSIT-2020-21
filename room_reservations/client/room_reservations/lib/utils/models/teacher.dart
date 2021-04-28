@@ -33,17 +33,17 @@ class Teacher {
   static Future<List<Teacher>> get(BuildContext context) async {
     List<Teacher> _teachers = [];
 
-    if (App.isConnected) {
-      final serverResponse = await http.get(
-        //TODO: verificare se nella session del server è presente il fatto che il client è un admin
-        Uri.parse(App.SERVER_WEB + '/api/teachers'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Cookie': App.client.sessionCookie
-        },
-      );
+    try {
+      if (App.isConnected) {
+        final serverResponse = await http.get(
+          //TODO: verificare se nella session del server è presente il fatto che il client è un admin
+          Uri.parse(App.SERVER_WEB + '/api/teachers'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Cookie': App.client.sessionCookie
+          },
+        );
 
-      try {
         if (serverResponse.statusCode == 200) {
           final bodyResponse = json.decode(serverResponse.body);
           if (bodyResponse['status'] == 200) {
@@ -57,18 +57,18 @@ class Teacher {
         } else {
           throw ("Internal server errror");
         }
-      } catch (e) {
-        Alert(
-            context: context,
-            title: 'Error!',
-            closeButton: false,
-            textConfirmButton: 'Ok',
-            body: Text(e.toString()),
-            textCanelButton: "",
-            onClick: () {});
+      } else {
         return [];
       }
-    } else {
+    } catch (e) {
+      Alert(
+          context: context,
+          title: 'Error!',
+          closeButton: false,
+          textConfirmButton: 'Ok',
+          body: Text(e.toString()),
+          textCanelButton: "",
+          onClick: () {});
       return [];
     }
   }

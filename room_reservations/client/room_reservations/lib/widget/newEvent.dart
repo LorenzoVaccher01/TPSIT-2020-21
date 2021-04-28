@@ -18,7 +18,7 @@ class NewEvent {
 
     List<Room> rooms = await Room.get(context);
     List<SchoolClass> schoolClasses = await SchoolClass.get(context);
-    List<Teacher> teachers = null;
+    List<Teacher> teachers = [];
 
     if (App.client.isAdmin) {
       teachers = await Teacher.get(context);
@@ -34,15 +34,31 @@ class NewEvent {
           //TODO: avvisare il server
         },
         body: Container(
-          height: MediaQuery.of(context).size.height * 0.5,
+          height: MediaQuery.of(context).size.height * (App.client.isAdmin ? 0.6 : 0.45), //TODO: verificare valore quando ci sono i professori
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Visibility(
                 visible: App.client.isAdmin,
-                child: Text("Mostrare select professori"), //TODO: da fare
+                child: Text("Recipient"), //TODO: da fare
               ),
+              Visibility(
+                visible: App.client.isAdmin,
+                child: DropdownButtonItem(
+                  initialValue: rooms[0].identificator,
+                  hint: "Teachers",
+                  items: teachers.map<String>((value) => value.name).toList(),
+                  onSelect: (value) {
+                    print(value);
+                  },
+                ),
+              ),
+              Visibility(
+                visible: App.client.isAdmin,
+                child: Padding(padding: EdgeInsets.only(top: 30)),
+              ),
+              Text("Date & Time"),
               DateTimePicker(
                 controller: dateController,
                 type: DateTimePickerType.date,
@@ -69,67 +85,81 @@ class NewEvent {
                 icon: Icon(Icons.timer),
                 timeLabelText: "Time to",
               ),
+              Padding(padding: EdgeInsets.only(top: 30)),
+              Text("Other informations"),
               Padding(padding: EdgeInsets.only(top: 10)),
-              DropdownButton(
-                  hint: Text("Room"),
-                  value: "Test1",
-                  isExpanded: true,
-                  iconSize: 24,
-                  elevation: 16,
-                  underline: Container(
-                    height: 1.5,
-                    color: Colors.grey,
-                  ),
-                  onChanged: (String newValue) {
-                    print(newValue);
-                  },
-                  items: <String>[
-                    "Test1",
-                    "Test2",
-                    "Test",
-                    "Test",
-                    "Test",
-                    "Test",
-                    "Test"
-                  ].map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList()),
-              /*CupertinoDatePicker(
-                mode: CupertinoDatePickerMode.dateAndTime,
-                use24hFormat: true,
-                maximumDate: new DateTime(2018, 12, 30),
-                minimumYear: 2010,
-                maximumYear: 2021,
-                minuteInterval: 1,
-                initialDateTime: DateTime.now(),
-                minimumDate: DateTime.now(),
-                onDateTimeChanged: (DateTime value) {  },
-              ),*/
-              /*Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  DateTimePicker(
-                    controller: hourFromController,
-                    type: DateTimePickerType.time,
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime(2100),
-                    icon: Icon(Icons.timer),
-                  ),
-                  DateTimePicker(
-                    controller: hourToController,
-                    type: DateTimePickerType.time,
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime(2100),
-                    icon: Icon(Icons.timer),
-                  ),
-                ],
-              ),*/
+              DropdownButtonItem(
+                initialValue: rooms[0].identificator,
+                hint: "Rooms",
+                items:
+                    rooms.map<String>((value) => value.identificator).toList(),
+                onSelect: (value) {
+                  print(value);
+                },
+              ),
+              Padding(padding: EdgeInsets.only(top: 10)),
+              DropdownButtonItem(
+                initialValue:
+                    schoolClasses[0].year.toString() + schoolClasses[0].section,
+                hint: "School classes",
+                items: schoolClasses
+                    .map<String>(
+                        (value) => value.year.toString() + value.section)
+                    .toList(),
+                onSelect: (value) {
+                  print(value);
+                },
+              ),
             ],
           ),
         ));
+  }
+}
+
+class DropdownButtonItem extends StatefulWidget {
+  List<String> items;
+  Function onSelect;
+  String initialValue;
+  String hint;
+
+  DropdownButtonItem({this.items, this.onSelect, this.initialValue, this.hint});
+
+  @override
+  _DropdownButtonItemState createState() => _DropdownButtonItemState();
+}
+
+class _DropdownButtonItemState extends State<DropdownButtonItem> {
+  String newValue;
+
+  @override
+  void initState() {
+    //newValue = widget.initialValue;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton(
+        hint: Text(widget.hint),
+        value: newValue,
+        isExpanded: true,
+        iconSize: 24,
+        elevation: 16,
+        underline: Container(
+          height: 1,
+          color: Colors.grey[500],
+        ),
+        onChanged: (String val) {
+          widget.onSelect(val);
+          setState(() {
+            newValue = val;
+          });
+        },
+        items: widget.items.map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList());
   }
 }

@@ -1,6 +1,7 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:room_reservations/utils/client.dart';
 import 'package:room_reservations/utils/connection.dart';
 import 'package:room_reservations/views/home/homeView.dart';
@@ -64,13 +65,19 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Room Reservations',
         theme: ThemeData(
             primaryColor: Color(0xfff78c2b),
             accentColor: Color(0xfffbb448),
+            splashColor: Color(0xfffbb448),
             brightness: Brightness.light),
+            
         initialRoute: initialRoute,
         routes: {
           '/welcome': (context) => WelcomeView(),

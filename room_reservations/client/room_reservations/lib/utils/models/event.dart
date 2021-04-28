@@ -71,18 +71,22 @@ class Event {
   static Future<List<Event>> get(BuildContext context, DateTime date) async {
     List<Event> _events = [];
 
-    String dateFormat = date.year.toString() + "-" + date.month.toString().padLeft(2, "0") + "-" + date.day.toString().padLeft(2, "0");
+    String dateFormat = date.year.toString() +
+        "-" +
+        date.month.toString().padLeft(2, "0") +
+        "-" +
+        date.day.toString().padLeft(2, "0");
 
-    if (App.isConnected) {
-      final serverResponse = await http.get(
-        Uri.parse(App.SERVER_WEB + '/api/events?date=' + dateFormat),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Cookie': App.client.sessionCookie
-        },
-      );
+    try {
+      if (App.isConnected) {
+        final serverResponse = await http.get(
+          Uri.parse(App.SERVER_WEB + '/api/events?date=' + dateFormat),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Cookie': App.client.sessionCookie
+          },
+        );
 
-      try {
         if (serverResponse.statusCode == 200) {
           final bodyResponse = json.decode(serverResponse.body);
           if (bodyResponse['status'] == 200) {
@@ -96,25 +100,25 @@ class Event {
         } else {
           throw ("Internal server errror");
         }
-      } catch (e) {
-        Alert(
-            context: context,
-            title: 'Error!',
-            closeButton: false,
-            textConfirmButton: 'Ok',
-            body: Text(e.toString()),
-            textCanelButton: "",
-            onClick: () {});
+      } else {
+        //TODO: prendere i dati dal database in locale
+
+        final database =
+            await $FloorAppDatabase.databaseBuilder(App.DATABASE_NAME).build();
+        final eventDao = database.eventDao;
+        _events = (await eventDao.findAllEvent()).cast<Event>();
+        print(_events);
         return [];
       }
-    } else {
-      //TODO: prendere i dati dal database in locale
-
-      final database =
-          await $FloorAppDatabase.databaseBuilder(App.DATABASE_NAME).build();
-      final eventDao = database.eventDao;
-      _events = (await eventDao.findAllEvent()).cast<Event>();
-      print(_events);
+    } catch (e) {
+      Alert(
+          context: context,
+          title: 'Error!',
+          closeButton: false,
+          textConfirmButton: 'Ok',
+          body: Text(e.toString()),
+          textCanelButton: "",
+          onClick: () {});
       return [];
     }
   }

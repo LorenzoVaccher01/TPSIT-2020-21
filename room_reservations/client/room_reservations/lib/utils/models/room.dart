@@ -18,17 +18,16 @@ class Room {
 
   static Future<List<Room>> get(BuildContext context) async {
     List<Room> _rooms = [];
+    try {
+      if (App.isConnected) {
+        final serverResponse = await http.get(
+          Uri.parse(App.SERVER_WEB + '/api/rooms'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Cookie': App.client.sessionCookie
+          },
+        );
 
-    if (App.isConnected) {
-      final serverResponse = await http.get(
-        Uri.parse(App.SERVER_WEB + '/api/rooms'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Cookie': App.client.sessionCookie
-        },
-      );
-
-      try {
         if (serverResponse.statusCode == 200) {
           final bodyResponse = json.decode(serverResponse.body);
           if (bodyResponse['status'] == 200) {
@@ -42,18 +41,18 @@ class Room {
         } else {
           throw ("Internal server errror");
         }
-      } catch (e) {
-        Alert(
-            context: context,
-            title: 'Error!',
-            closeButton: false,
-            textConfirmButton: 'Ok',
-            body: Text(e.toString()),
-            textCanelButton: "",
-            onClick: () {});
+      } else {
         return [];
       }
-    } else {
+    } catch (e) {
+      Alert(
+          context: context,
+          title: 'Error!',
+          closeButton: false,
+          textConfirmButton: 'Ok',
+          body: Text(e.toString()),
+          textCanelButton: "",
+          onClick: () {});
       return [];
     }
   }
