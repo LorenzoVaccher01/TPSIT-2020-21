@@ -41,7 +41,7 @@ class HomeView extends StatelessWidget {
                         child: Column(
                           children: <Widget>[
                             Container(
-                              height: 85,
+                              height: 90,
                               width: double.infinity,
                               decoration: BoxDecoration(
                                   color: Theme.of(context).primaryColor,
@@ -49,7 +49,7 @@ class HomeView extends StatelessWidget {
                                       bottomLeft: Radius.circular(15),
                                       bottomRight: Radius.circular(15))),
                               child: Padding(
-                                padding: EdgeInsets.only(top: 25),
+                                padding: EdgeInsets.only(top: 35),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: <Widget>[

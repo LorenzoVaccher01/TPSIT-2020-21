@@ -49,7 +49,7 @@ class _MenuState extends State<Menu> {
                   child: Text(App.client.name != null ? App.client.name : "",
                       style: TextStyle(
                           color: Colors.white,
-                          fontSize: 24,
+                          fontSize: 22,
                           fontWeight: FontWeight.bold)),
                 ),
                 Text(
