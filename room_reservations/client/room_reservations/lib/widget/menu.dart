@@ -111,12 +111,13 @@ class _MenuState extends State<Menu> {
                     headers: <String, String>{
                       'Content-Type': 'application/json; charset=UTF-8',
                     });
-
+                
                 if (response.statusCode == 200) {
                   final bodyResponse = json.decode(response.body);
-                  if (bodyResponse['error'] == 200) {
+                  if (bodyResponse['status'] == 200) {
                     Auth.googleSignout();
                     App.client = null;
+                    //TODO: ripulire le preferenze della sessione e dell'admin?
                     Navigator.pushNamed(context, '/login');
                   } else {
                     throw (bodyResponse['message']);
@@ -125,6 +126,7 @@ class _MenuState extends State<Menu> {
                   throw("Internal server error");
                 }
               } catch (e) {
+                print(e);
                 Alert(
                     context: context,
                     title: 'Error!',

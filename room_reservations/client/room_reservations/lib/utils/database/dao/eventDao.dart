@@ -5,5 +5,5 @@ import 'package:room_reservations/utils/database/models/event.dart';
 abstract class EventDao {
   @Query("SELECT * FROM Event")
   Future<List<Event>> findAllEvent();
-
+  
 }

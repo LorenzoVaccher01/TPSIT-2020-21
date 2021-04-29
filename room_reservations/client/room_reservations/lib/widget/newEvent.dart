@@ -1,18 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:room_reservations/main.dart' as App;
-import 'package:room_reservations/utils/cubits/events_cubit.dart';
 import 'package:room_reservations/utils/models/class.dart';
 import 'package:room_reservations/utils/models/event.dart';
 import 'package:room_reservations/utils/models/room.dart';
 import 'package:room_reservations/utils/models/teacher.dart';
 import 'package:room_reservations/widget/alert.dart';
 import 'package:date_time_picker/date_time_picker.dart';
-import 'package:flutter/cupertino.dart';
 
 class NewEvent {
   static Future<bool> show(BuildContext context, DateTime date) async {
-    //TODO: se l'utente è admin deve poter aggiungere una nuova prenotazione anche per altri docenti, e quindi prendere tutti i docenti
+
     final TextEditingController dateController = TextEditingController();
     final TextEditingController hourToController = TextEditingController();
     final TextEditingController hourFromController = TextEditingController();
@@ -39,14 +37,14 @@ class NewEvent {
         textConfirmButton: 'Add',
         textCanelButton: "Cancel",
         onClick: () {
-          if (selectedTeacher != null &&
+          if ((selectedTeacher != null || !App.client.isAdmin) &&
               selectedSchoolClass != null &&
               selectedRoom != null &&
               selectedDay != null &&
               selectedDateFrom != null &&
               selectedDateTo != null) {
             Event.add(context,
-                teacher: selectedTeacher,
+                teacher: selectedTeacher == null && !App.client.isAdmin ? App.client.email : selectedTeacher,
                 schoolClass: selectedSchoolClass,
                 room: selectedRoom,
                 day: selectedDay,

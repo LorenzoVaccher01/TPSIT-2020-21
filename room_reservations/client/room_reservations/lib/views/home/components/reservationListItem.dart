@@ -73,6 +73,7 @@ class HomeReservationListItem extends StatelessWidget {
       },
       onDismissed: (direction) {
         print("Evento da eliminare con id: " + event.id.toString());
+        //Event.remove();
         //TODO: avvisare il server dell'eliminazione dell'evento
         //TODO: eliminare l'evento nel database in locale
       },
@@ -112,34 +113,24 @@ class HomeReservationListItem extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(
-                            event.teacher.name.length >= 24
-                                ? event.teacher.name.substring(0, 24)
-                                : event.teacher.name,
-                            style: TextStyle(
-                                color:
-                                    isOwner ? Colors.red[400] : Colors.black87,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18),
-                          ),
-                          SizedBox(
-                            height: 8,
-                          ),
                           Row(
-                            children: <Widget>[
-                              Icon(
-                                Icons.school,
-                                color: Colors.grey[900],
-                                size: 20,
+                            children: [
+                              Text(
+                                event.teacher.name.length >= 21
+                                    ? event.teacher.name.substring(0, 21)
+                                    : event.teacher.name,
+                                style: TextStyle(
+                                    color:
+                                        isOwner ? Colors.red[400] : Colors.black87,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18),
                               ),
                               SizedBox(
-                                width: 5,
+                                width: 8,
                               ),
-                              Text(event.room.identificator,
-                                  style: TextStyle(
-                                      color: Colors.grey[800],
-                                      fontSize: 13,
-                                      letterSpacing: .3)),
+                              Text("(" + event.schoolClass.year.toString() + event.schoolClass.section + ")", style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 17))
                             ],
                           ),
                           SizedBox(
@@ -159,6 +150,26 @@ class HomeReservationListItem extends StatelessWidget {
                                   _getTime(event.dateFrom) +
                                       " - " +
                                       _getTime(event.dateTo),
+                                  style: TextStyle(
+                                      color: Colors.grey[800],
+                                      fontSize: 13,
+                                      letterSpacing: .3)),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Icon(
+                                Icons.place,
+                                color: Colors.grey[900],
+                                size: 20,
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(event.room.identificator,
                                   style: TextStyle(
                                       color: Colors.grey[800],
                                       fontSize: 13,

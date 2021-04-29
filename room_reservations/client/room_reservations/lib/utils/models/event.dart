@@ -56,17 +56,11 @@ class Event {
   }
 
   int get id => _id;
-  set id(int id) => _id = id;
   String get dateFrom => _dateFrom;
-  set dateFrom(String dateFrom) => _dateFrom = dateFrom;
   String get dateTo => _dateTo;
-  set dateTo(String dateTo) => _dateTo = dateTo;
   Teacher get teacher => _teacher;
-  set teacher(Teacher teacher) => _teacher = teacher;
   SchoolClass get schoolClass => _schoolClass;
-  set schoolClass(SchoolClass schoolClass) => _schoolClass = schoolClass;
   Room get room => _room;
-  set room(Room room) => _room = room;
 
   static Future<List<Event>> get(BuildContext context, DateTime date) async {
     List<Event> _events = [];
@@ -90,6 +84,7 @@ class Event {
         if (serverResponse.statusCode == 200) {
           final bodyResponse = json.decode(serverResponse.body);
           if (bodyResponse['status'] == 200) {
+            print(bodyResponse['data']);
             bodyResponse['data'].forEach((item) {
               _events.add(Event.fromJson(item));
             });
@@ -170,7 +165,9 @@ class Event {
     }
   }
 
-  Future<void> remove(Event event) {}
+  Future<void> remove(int id) {
+    
+  }
 
   Event.fromJson(Map<String, dynamic> json) {
     _id = json['id'];
