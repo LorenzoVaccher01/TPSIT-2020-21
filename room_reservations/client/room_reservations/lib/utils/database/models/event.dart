@@ -1,7 +1,7 @@
 import 'package:floor/floor.dart';
 
 @entity
-class Event {
+class EventFloor {
   @PrimaryKey(autoGenerate: true)
   final int id;
   final String dateFrom;
@@ -10,7 +10,7 @@ class Event {
   final int schoolClassId;
   final int roomId;
 
-  Event(
+  EventFloor(
       this.id,
       this.dateFrom,
       this.dateTo,

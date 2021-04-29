@@ -27,6 +27,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:room_reservations/main.dart' as App;
 import 'package:room_reservations/utils/database/database.dart';
+import 'package:room_reservations/utils/database/models/event.dart';
 import 'package:room_reservations/utils/models/class.dart';
 import 'package:room_reservations/utils/models/room.dart';
 import 'package:room_reservations/utils/models/teacher.dart';
@@ -101,8 +102,9 @@ class Event {
         final database =
             await $FloorAppDatabase.databaseBuilder(App.DATABASE_NAME).build();
         final eventDao = database.eventDao;
-        _events = (await eventDao.findAllEvent()).cast<Event>();
-        print(_events);
+
+        List<EventFloor> _dbEvents = await eventDao.getAllEvents();
+        print(_dbEvents);
         return [];
       }
     } catch (e) {

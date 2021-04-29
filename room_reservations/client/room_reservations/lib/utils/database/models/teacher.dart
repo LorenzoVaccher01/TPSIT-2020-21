@@ -1,7 +1,7 @@
 import 'package:floor/floor.dart';
 
 @entity
-class Teacher {
+class TeacherFloor {
   @PrimaryKey(autoGenerate: true)
   final int id;
   final String name;
@@ -9,7 +9,7 @@ class Teacher {
   final String concourseClass;
   final String profileImage;
 
-  Teacher(
+  TeacherFloor(
       this.id,
       this.name,
       this.email,

@@ -1,10 +1,10 @@
 import 'package:floor/floor.dart';
 
 @entity
-class Room {
+class RoomFloor {
   @PrimaryKey(autoGenerate: true)
   final int id;
   final String identificator;
 
-  Room(this.id, this.identificator);
+  RoomFloor(this.id, this.identificator);
 }

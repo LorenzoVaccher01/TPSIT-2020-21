@@ -15,10 +15,10 @@ import 'dart:async';
 
 part 'database.g.dart';
 @Database(version: 1, entities: [
-  Event,
-  Teacher,
-  SchoolClass,
-  Room
+  EventFloor,
+  TeacherFloor,
+  SchoolClassFloor,
+  RoomFloor
 ])
 
 abstract class AppDatabase extends FloorDatabase {
