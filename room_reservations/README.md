@@ -1,4 +1,8 @@
 # Room reservations
+<div align="center">
+  <img src="./_img/app.png" alt="Struttura del database 1" width="800px">
+</div>
+
 Progetto che verte sulla realizzazione di una infrastruttura Client-Server che permetta la gestione (attraverso le operazioni CRUD) delle pronotazioni di alcune aule da parte dei docenti della scuola.
 Come richiesto dalla consegna dell'esercizio sono state realizzare diverse features sia grafiche che tecniche, come per esempio il salvataggio di tutti in un server MySQL con una password criptata associata, la possibilità di aggiungere degli eventi ad altri professori sse si è amministratori e così via.
 
@@ -21,7 +25,7 @@ Di seguito è illustrata, attraverso un diagramma ad albero, la struttura del pr
 ### Server (MySQL)
 Per il salvataggio di tutti i memo, di tutte le categorie, di tutti i tags e di tutti gli utenti è stato utilizzato un database relazionale (MySQL) strutturato nel seguente modo:
 <div align="center">
-  <img src="./_img/db1.png" alt="Struttura del database 1" width="800px">
+  <img src="./_img/database.png" alt="Struttura del database 1" width="800px">
 </div>
 
 Per offrire una maggior sicurezza agli utenti registrati al sito è stato utilizzato il sistema fornito da Firebase (Google).
@@ -62,7 +66,7 @@ La struttura di tale database è simile a quella di MySQL, tranne per il fatto c
 ### UML
 #### Grafico UML degli eventi:
 <div align="center">
-  <img src="./_img/clientUML.png" alt="Struttura classi" width="700px">
+  <img src="./_img/umlEvents.png" alt="Struttura classi" width="700px">
 </div>
 
 
