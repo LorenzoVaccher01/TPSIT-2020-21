@@ -27,14 +27,19 @@ Per il salvataggio di tutti i memo, di tutte le categorie, di tutti i tags e di 
 Per offrire una maggior sicurezza agli utenti registrati al sito è stato utilizzato il sistema fornito da Firebase (Google).
 
 #### Query particolari
-**Eliminazione evento dal database:**
+**Registrazione di un utente:**
 ``` SQL
-TODO: inserire query
+INSERT INTO teachers(name, email, uid, fcmToken) VALUES(${decodedToken.name}, ${decodedToken.email}, ${decodedToken.uid}, ${fcmToken})
 ```
 
-**Selezione di tutti gli eventi per un determinato account:**
+**Selezione di tutti gli eventi:**
 ```SQL
-TODO: inserire query
+SELECT reservations.id, reservations.dateFrom, reservations.dateTo, reservations.creationDate, rooms.id AS roomId, rooms.identifier AS roomIdentifier, teachers.id AS teacherId, teachers.name, teachers.email, classes.id as classId, classes.section, classes.year
+FROM reservations
+INNER JOIN rooms ON rooms.id = reservations.roomId
+INNER JOIN teachers ON teachers.id = reservations.teacherId
+INNER JOIN classes ON classes.id = reservations.classId
+WHERE reservations.dateFrom LIKE "${date} %" ${sorting}
 ```
 ## Client
 Il client è stato realizzato in Flutter (Dart) prendendo spunto da diverse immagini presenti in internet.
