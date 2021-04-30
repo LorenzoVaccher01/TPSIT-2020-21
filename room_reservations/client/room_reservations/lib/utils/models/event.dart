@@ -72,9 +72,6 @@ class Event {
         "-" +
         date.day.toString().padLeft(2, "0");
 
-
-    print(sorting);
-
     try {
       if (App.isConnected) {
         final serverResponse = await http.get(

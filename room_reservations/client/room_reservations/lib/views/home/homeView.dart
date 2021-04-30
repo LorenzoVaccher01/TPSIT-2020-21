@@ -39,6 +39,7 @@ class HomeView extends StatelessWidget {
               return StreamBuilder<Object>(
                   stream: _connectivity.stream.asBroadcastStream(),
                   builder: (stramBuilderContext, snapshot) {
+                    print("asdasd");
                     return Scaffold(
                       backgroundColor: Color(0xfff0f0f0),
                       key: _scaffoldKey,

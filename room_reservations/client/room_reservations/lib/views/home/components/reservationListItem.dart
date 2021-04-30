@@ -10,8 +10,7 @@ class HomeReservationListItem extends StatelessWidget {
   bool isOwner = false;
 
   HomeReservationListItem({this.event, this.index}) {
-    if (App.client.email == event.teacher.email)
-      isOwner = true;
+    if (App.client.email == event.teacher.email) isOwner = true;
   }
 
   @override
@@ -27,9 +26,9 @@ class HomeReservationListItem extends StatelessWidget {
       key: Key(event.id.toString()),
       direction: DismissDirection.endToStart,
       background: Container(
-        alignment: Alignment.centerRight,
-          margin: EdgeInsets.only(
-              top: index != 0 ? 10 : 0, bottom: 10, right: 0),
+          alignment: Alignment.centerRight,
+          margin:
+              EdgeInsets.only(top: index != 0 ? 10 : 0, bottom: 10, right: 0),
           padding: EdgeInsets.only(top: 15, bottom: 15, right: 15),
           decoration: BoxDecoration(
             color: Colors.red[400],
@@ -44,7 +43,9 @@ class HomeReservationListItem extends StatelessWidget {
             builder: (BuildContext context) {
               return AlertDialog(
                 title: Text("Warning"),
-                content: Text(isOwner || App.client.isAdmin ? "Are you sure you want to delete this event?" : "You cannot delete this event as you are not the owner."),
+                content: Text(isOwner || App.client.isAdmin
+                    ? "Are you sure you want to delete this event?"
+                    : "You cannot delete this event as you are not the owner."),
                 actions: [
                   TextButton(
                     child: Text("Cancel", style: TextStyle(color: Colors.red)),
@@ -77,119 +78,121 @@ class HomeReservationListItem extends StatelessWidget {
         //TODO: avvisare il server dell'eliminazione dell'evento
         //TODO: eliminare l'evento nel database in locale
       },
-      child: Container(
-          width: double.infinity,
-          margin: EdgeInsets.only(
-              top: index != 0 ? 8 : 0, bottom: 8, left: 10, right: 10),
-          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            color: Colors.white,
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      width: 50,
-                      height: 50,
-                      margin: EdgeInsets.only(right: 15, top: 15),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(
-                            width: 2, color: Theme.of(context).accentColor),
-                        image: DecorationImage(
-                            image: (event.teacher.profileImage != null ||
-                                    App.isConnected)
-                                ? NetworkImage(event.teacher.profileImage)
-                                : Image.asset(App.DEFAULT_IMAGE),
-                            fit: BoxFit.fill),
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            children: [
-                              Text(
-                                event.teacher.name.length >= 21
-                                    ? event.teacher.name.substring(0, 21)
-                                    : event.teacher.name,
-                                style: TextStyle(
-                                    color:
-                                        isOwner ? Colors.red[400] : Colors.black87,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18),
-                              ),
-                              SizedBox(
-                                width: 8,
-                              ),
-                              Text("(" + event.schoolClass.year.toString() + event.schoolClass.section + ")", style: TextStyle(
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 17))
-                            ],
+      child: InkWell(
+        child: Container(
+            width: double.infinity,
+            margin: EdgeInsets.only(
+                top: index != 0 ? 8 : 0, bottom: 8, left: 10, right: 10),
+            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.white,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  width: 50,
+                  height: 50,
+                  margin: EdgeInsets.only(right: 15, top: 15),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(
+                        width: 2, color: Theme.of(context).accentColor),
+                    image: DecorationImage(
+                        image: (event.teacher.profileImage != null ||
+                                App.isConnected)
+                            ? NetworkImage(event.teacher.profileImage)
+                            : Image.asset(App.DEFAULT_IMAGE),
+                        fit: BoxFit.fill),
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        children: [
+                          Text(
+                            event.teacher.name.length >= 21
+                                ? event.teacher.name.substring(0, 21)
+                                : event.teacher.name,
+                            style: TextStyle(
+                                color:
+                                    isOwner ? Colors.red[400] : Colors.black87,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18),
                           ),
                           SizedBox(
-                            height: 8,
+                            width: 8,
                           ),
-                          Row(
-                            children: <Widget>[
-                              Icon(
-                                Icons.schedule,
-                                color: Colors.grey[900],
-                                size: 20,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                  _getTime(event.dateFrom) +
-                                      " - " +
-                                      _getTime(event.dateTo),
-                                  style: TextStyle(
-                                      color: Colors.grey[800],
-                                      fontSize: 13,
-                                      letterSpacing: .3)),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 8,
-                          ),
-                          Row(
-                            children: <Widget>[
-                              Icon(
-                                Icons.place,
-                                color: Colors.grey[900],
-                                size: 20,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(event.room.identificator,
-                                  style: TextStyle(
-                                      color: Colors.grey[800],
-                                      fontSize: 13,
-                                      letterSpacing: .3)),
-                            ],
-                          ),
+                          Text(
+                              "(" +
+                                  event.schoolClass.year.toString() +
+                                  event.schoolClass.section +
+                                  ")",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.normal, fontSize: 17))
                         ],
                       ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 25),
-                      child: Icon(Icons.remove_red_eye_rounded,
-                          color: Colors.grey[800]),
-                    ),
-                  ],
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Icon(
+                            Icons.schedule,
+                            color: Colors.grey[900],
+                            size: 20,
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                              _getTime(event.dateFrom) +
+                                  " - " +
+                                  _getTime(event.dateTo),
+                              style: TextStyle(
+                                  color: Colors.grey[800],
+                                  fontSize: 13,
+                                  letterSpacing: .3)),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Icon(
+                            Icons.place,
+                            color: Colors.grey[900],
+                            size: 20,
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text(event.room.identificator,
+                              style: TextStyle(
+                                  color: Colors.grey[800],
+                                  fontSize: 13,
+                                  letterSpacing: .3)),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                onTap: () {
-                  print("Visualizzazione Memo");
-                }),
-          )),
+                Container(
+                  margin: EdgeInsets.only(top: 25),
+                  child: Icon(Icons.remove_red_eye_rounded,
+                      color: Colors.grey[800]),
+                ),
+              ],
+            )),
+        onTap: () {
+          print("Visualizzazione Memo");
+        },
+      ),
     );
   }
 }
