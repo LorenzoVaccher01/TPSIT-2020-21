@@ -36,7 +36,6 @@ class Teacher {
     try {
       if (App.isConnected) {
         final serverResponse = await http.get(
-          //TODO: verificare se nella session del server è presente il fatto che il client è un admin
           Uri.parse(App.SERVER_WEB + '/api/teachers'),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',

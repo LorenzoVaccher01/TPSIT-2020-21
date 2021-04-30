@@ -117,7 +117,6 @@ class _MenuState extends State<Menu> {
                   if (bodyResponse['status'] == 200) {
                     Auth.googleSignout();
                     App.client = null;
-                    //TODO: ripulire le preferenze della sessione e dell'admin?
                     Navigator.pushNamed(context, '/login');
                   } else {
                     throw (bodyResponse['message']);

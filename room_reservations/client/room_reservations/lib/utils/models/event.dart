@@ -63,7 +63,7 @@ class Event {
   SchoolClass get schoolClass => _schoolClass;
   Room get room => _room;
 
-  static Future<List<Event>> get(BuildContext context, DateTime date) async {
+  static Future<List<Event>> get(BuildContext context, DateTime date, String sorting) async {
     List<Event> _events = [];
 
     String dateFormat = date.year.toString() +
@@ -72,10 +72,13 @@ class Event {
         "-" +
         date.day.toString().padLeft(2, "0");
 
+
+    print(sorting);
+
     try {
       if (App.isConnected) {
         final serverResponse = await http.get(
-          Uri.parse(App.SERVER_WEB + '/api/events?date=' + dateFormat),
+          Uri.parse(App.SERVER_WEB + '/api/events?date=' + dateFormat + '&sorting=' + sorting),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
             'Cookie': App.client.sessionCookie
@@ -85,7 +88,6 @@ class Event {
         if (serverResponse.statusCode == 200) {
           final bodyResponse = json.decode(serverResponse.body);
           if (bodyResponse['status'] == 200) {
-            print(bodyResponse['data']);
             bodyResponse['data'].forEach((item) {
               _events.add(Event.fromJson(item));
             });
@@ -98,6 +100,7 @@ class Event {
         }
       } else {
         //TODO: prendere i dati dal database in locale
+        //TODO: verificare il tipo di sorting
 
         final database =
             await $FloorAppDatabase.databaseBuilder(App.DATABASE_NAME).build();

@@ -8,13 +8,13 @@ class EventsCubit extends Cubit<List<Event>> {
 
   EventsCubit({this.context}) : super([]) {
     date = DateTime.now();
-    get(date);
+    get(date, 'name');
   }
 
-  void get(DateTime newDate) async {
+  void get(DateTime newDate, String sorting) async {
     emit([]);
     this.date = newDate;
-    List<Event> _events = await Event.get(context, newDate);
+    List<Event> _events = await Event.get(context, newDate, sorting);
     emit(_events);
   }
 
