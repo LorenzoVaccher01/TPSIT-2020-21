@@ -1,6 +1,6 @@
 # Room reservations
 <div align="center">
-  <img src="./_img/app.png" alt="Struttura del database 1" width="800px">
+  <img src="./_img/app.png" alt="App" width="800px">
 </div>
 
 Progetto che verte sulla realizzazione di una infrastruttura Client-Server che permetta la gestione (attraverso le operazioni CRUD) delle pronotazioni di alcune aule da parte dei docenti della scuola.
