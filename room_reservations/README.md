@@ -58,17 +58,15 @@ Per semplicità, nello schema qui sopra riportato non sono stati indicati i meto
 
 Struttura analoga, hanno i modelli utilizzati per la gestione e creazione del database gestito con Floor. L'unica osservazione da fare su quest'ultimi è che non presentano oggetti come `Category` o `Tag` in quanto il database non è predisposto per salvare questa tipologia di dati.
 
-### Floor
-Floor fornisce una chiara astrazione SQLite le applicazioni Flutter ispirata alla libreria di persistenza Room. Viene fornito con la mappatura automatica tra gli oggetti in memoria e le righe del database, pur offrendo il pieno controllo del database con l'uso di SQL. Di conseguenza, è necessario avere una comprensione di SQL e SQLite per sfruttare appieno il potenziale di Floor.
-
-La struttura di tale database è simile a quella di MySQL, tranne per il fatto che non sono presenti le password nella tabella utenti, la tabella sessioni, utenti bloccati, visitatori e tentativi.
-
-### UML
-#### Grafico UML degli eventi:
+### Grafico UML degli eventi:
 <div align="center">
   <img src="./_img/umlEvents.png" alt="Struttura classi" width="700px">
 </div>
 
+### Floor
+Floor fornisce una chiara astrazione SQLite le applicazioni Flutter ispirata alla libreria di persistenza Room. Viene fornito con la mappatura automatica tra gli oggetti in memoria e le righe del database, pur offrendo il pieno controllo del database con l'uso di SQL. Di conseguenza, è necessario avere una comprensione di SQL e SQLite per sfruttare appieno il potenziale di Floor.
+
+La struttura di tale database è simile a quella di MySQL, tranne per il fatto che non sono presenti le password nella tabella utenti, la tabella sessioni, utenti bloccati, visitatori e tentativi.
 
 ## Server
 Il server che gestisce tutte le connessioni degli utenti è stato scritto in NodeJs, in contemporanea ai seguenti moduli:
