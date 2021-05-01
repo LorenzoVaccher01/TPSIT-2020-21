@@ -27,7 +27,7 @@ class ConnectionChecker {
   }
 
   void check(BuildContext context) {
-      stream.asBroadcastStream().listen((source) {
+     _instance.stream.listen((source) {
         if (App.isConnected) {
         print("The client is connected to the internet");
       } else {

@@ -15,7 +15,7 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Stream<dynamic> connStream = _connectivity.stream.asBroadcastStream();
+    Stream<dynamic> connStream = _connectivity.stream;
     CalendarController _calendarController = CalendarController();
     DateTime _selectedDate = DateTime.now();
 
@@ -35,12 +35,12 @@ class HomeView extends StatelessWidget {
             create: (_) => EventsCubit(context: context),
             child: CubitBuilder<EventsCubit, List<Event>>(
                 builder: (cubitContext, state) {
-              _connectivity.check(context);
 
               return StreamBuilder<Object>(
                   stream: connStream,
                   builder: (stramBuilderContext, snapshot) {
                     print("asdasd");
+                    _connectivity.check(context);
                     return Scaffold(
                       backgroundColor: Color(0xfff0f0f0),
                       key: _scaffoldKey,

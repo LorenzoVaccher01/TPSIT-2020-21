@@ -35,16 +35,16 @@ main() async {
   String initialRoute = "/welcome";
 
   _connectivity.stream.asBroadcastStream().listen((source) {
-      switch (source.keys.toList()[0]) {
-        case ConnectivityResult.none:
-          isConnected = false;
-          break;
-        case ConnectivityResult.mobile:
-          isConnected = true;
-          break;
-        case ConnectivityResult.wifi:
-          isConnected = true;
-      }
+    switch (source.keys.toList()[0]) {
+      case ConnectivityResult.none:
+        isConnected = false;
+        break;
+      case ConnectivityResult.mobile:
+        isConnected = true;
+        break;
+      case ConnectivityResult.wifi:
+        isConnected = true;
+    }
   });
 
   if (isLogged) {
@@ -77,7 +77,6 @@ class App extends StatelessWidget {
             accentColor: Color(0xfffbb448),
             splashColor: Color(0xfffbb448),
             brightness: Brightness.light),
-            
         initialRoute: initialRoute,
         routes: {
           '/welcome': (context) => WelcomeView(),

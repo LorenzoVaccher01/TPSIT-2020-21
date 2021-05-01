@@ -99,13 +99,15 @@ class Event {
         //TODO: prendere i dati dal database in locale
         //TODO: verificare il tipo di sorting
 
-        final database =
+        /*final database =
             await $FloorAppDatabase.databaseBuilder(App.DATABASE_NAME).build();
         final eventDao = database.eventDao;
 
         List<EventFloor> _dbEvents = await eventDao.getAllEvents();
-        print(_dbEvents);
-        return [];
+        print(_dbEvents);*/
+        return [
+          //new Event(1, ""),
+        ];
       }
     } catch (e) {
       Alert(
