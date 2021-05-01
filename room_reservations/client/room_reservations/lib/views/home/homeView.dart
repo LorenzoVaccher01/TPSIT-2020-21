@@ -15,9 +15,11 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Stream<dynamic> connStream = _connectivity.stream.asBroadcastStream();
     CalendarController _calendarController = CalendarController();
     DateTime _selectedDate = DateTime.now();
 
+    int sortingType = 0;
     List<String> sortingTypes = ['name', 'hour', 'class', 'room'];
     List<IconData> sortingIcons = [
       Icons.sort_by_alpha,
@@ -25,7 +27,6 @@ class HomeView extends StatelessWidget {
       Icons.school,
       Icons.place
     ];
-    int sortingType = 0;
 
     return WillPopScope(
         onWillPop: () async => false,
@@ -37,7 +38,7 @@ class HomeView extends StatelessWidget {
               _connectivity.check(context);
 
               return StreamBuilder<Object>(
-                  stream: _connectivity.stream.asBroadcastStream(),
+                  stream: connStream,
                   builder: (stramBuilderContext, snapshot) {
                     print("asdasd");
                     return Scaffold(
