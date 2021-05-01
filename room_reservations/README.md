@@ -60,7 +60,7 @@ Struttura analoga, hanno i modelli utilizzati per la gestione e creazione del da
 
 ### Grafico UML degli eventi:
 <div align="center">
-  <img src="./_img/umlEvents.png" alt="Struttura classi" width="700px">
+  <img src="./_img/umlEvents.png" alt="Struttura classi">
 </div>
 
 ### Floor
