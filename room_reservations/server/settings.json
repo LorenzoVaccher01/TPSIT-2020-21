@@ -1,0 +1,35 @@
+{
+  "debug": true,
+  "website": {
+    "http": {
+      "port": 8080
+    },
+    "https": {
+      "port": 8443,
+      "certificate": {
+        "key": "/etc/letsencrypt/live/lorenzovaccher.com/privkey.pem",
+        "cert": "/etc/letsencrypt/live/lorenzovaccher.com/cert.pem",
+        "ca": "/etc/letsencrypt/live/lorenzovaccher.com/chain.pem"
+      }
+    }
+  },
+  "database": {
+    "host": "localhost",
+    "database": "roomReservations",
+    "port": 3306,
+    "user": "roomReservations",
+    "password": "",
+    "insecureAuth": true
+  },
+  "email": {
+    "from": "Room Reservations <info@lorenzovaccher.com>",
+    "host": "pro2.mail.ovh.net",
+    "port": 587,
+    "secure": false,
+    "pool": false,
+    "auth": {
+      "user": "info@lorenzovaccher.com",
+      "password": ""
+    }
+  }
+}

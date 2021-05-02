@@ -63,7 +63,8 @@ class Event {
   SchoolClass get schoolClass => _schoolClass;
   Room get room => _room;
 
-  static Future<List<Event>> get(BuildContext context, DateTime date, String sorting) async {
+  static Future<List<Event>> get(
+      BuildContext context, DateTime date, String sorting) async {
     List<Event> _events = [];
 
     String dateFormat = date.year.toString() +
@@ -75,7 +76,11 @@ class Event {
     try {
       if (App.isConnected) {
         final serverResponse = await http.get(
-          Uri.parse(App.SERVER_WEB + '/api/events?date=' + dateFormat + '&sorting=' + sorting),
+          Uri.parse(App.SERVER_WEB +
+              '/api/events?date=' +
+              dateFormat +
+              '&sorting=' +
+              sorting),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
             'Cookie': App.client.sessionCookie
@@ -106,7 +111,21 @@ class Event {
         List<EventFloor> _dbEvents = await eventDao.getAllEvents();
         print(_dbEvents);*/
         return [
-          //new Event(1, ""),
+          Event.fromJson({
+            "id": 21,
+            "dateFrom": "2021-05-04T08:00:00.000Z",
+            "dateTo": "2021-05-04T09:05:00.000Z",
+            "teacher": {
+              "id": 1,
+              "name": "Lorenzo Vaccher",
+              "email": "lorenzo.vaccher@itiszuccante.edu.it",
+              "concourseClass": "",
+              "profileImage":
+                  "https://lh3.googleusercontent.com/a-/AOh14GgL28Obw3vm3NsL_Mjd4qX01-GvKHyJvB1Ui8QiAQ=s96-c"
+            },
+            "schoolClass": {"id": 16, "section": "EA", "year": 3},
+            "room": {"id": 5, "identificator": "Aula-05"}
+          }),
         ];
       }
     } catch (e) {
@@ -130,20 +149,20 @@ class Event {
       @required String dateFrom,
       @required String dateTo}) async {
     try {
-      final serverResponse = await http.post(
-          Uri.parse(App.SERVER_WEB + '/api/event'),
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-            'Cookie': App.client.sessionCookie
-          },
-          body: json.encode({
-            "teacher": teacher,
-            "schoolClass": schoolClass,
-            "room": room,
-            "day": day,
-            "dateFrom": dateFrom,
-            "dateTo": dateTo
-          }));
+      final serverResponse =
+          await http.post(Uri.parse(App.SERVER_WEB + '/api/event'),
+              headers: <String, String>{
+                'Content-Type': 'application/json; charset=UTF-8',
+                'Cookie': App.client.sessionCookie
+              },
+              body: json.encode({
+                "teacher": teacher,
+                "schoolClass": schoolClass,
+                "room": room,
+                "day": day,
+                "dateFrom": dateFrom,
+                "dateTo": dateTo
+              }));
 
       if (serverResponse.statusCode == 200) {
         final bodyResponse = json.decode(serverResponse.body);
@@ -169,9 +188,7 @@ class Event {
     }
   }
 
-  Future<void> remove(int id) {
-    
-  }
+  Future<void> remove(int id) {}
 
   Event.fromJson(Map<String, dynamic> json) {
     _id = json['id'];
