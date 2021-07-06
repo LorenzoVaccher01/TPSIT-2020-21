@@ -5,6 +5,7 @@ import 'package:memo/pages/home/tags.dart';
 import 'package:memo/utils/client.dart';
 import 'package:flutter/material.dart';
 
+//Variabili
 final String VERSION = "v0.1";
 final String SERVER_WEB = "https://lorenzovaccher.com:8443";
 final String DATABASE_NAME = "app_database.db";
